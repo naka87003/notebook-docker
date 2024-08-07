@@ -1,0 +1,38 @@
+services:
+  web:
+    container_name: web-laravel_vue
+    build:
+      context: ./docker/nginx/
+    ports:
+      - "8000:80"
+    volumes:
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./src:/var/www/html
+    depends_on:
+      - app
+      - db
+
+  app:
+    container_name: app-laravel_vue
+    build:
+      context: ./docker/app/
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./src:/var/www/html/
+      - ./docker/app/www.conf:/etc/php-fpm.d/www.conf
+      - ./docker/app/php.ini:/etc/php.ini
+  db:
+    container_name: pgdb-laravel_vue
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./docker/postgresql/postgresql.conf:/etc/postgresql/postgresql.conf
+      - pgdb-laravel_vue-volume:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: laravel
+      POSTGRES_USER: laravel
+      POSTGRES_PASSWORD: laravel
+volumes:
+  pgdb-laravel_vue-volume:
