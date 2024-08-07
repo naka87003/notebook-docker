@@ -1,6 +1,6 @@
 services:
   web:
-    container_name: web-laravel_vue
+    container_name: web-notebook
     build:
       context: ./docker/nginx/
     ports:
@@ -13,7 +13,7 @@ services:
       - db
 
   app:
-    container_name: app-laravel_vue
+    container_name: app-notebook
     build:
       context: ./docker/app/
     ports:
@@ -23,13 +23,13 @@ services:
       - ./docker/app/www.conf:/etc/php-fpm.d/www.conf
       - ./docker/app/php.ini:/etc/php.ini
   db:
-    container_name: pgdb-laravel_vue
+    container_name: pgdb-notebook
     image: postgres:latest
     ports:
       - "5432:5432"
     volumes:
       - ./docker/postgresql/postgresql.conf:/etc/postgresql/postgresql.conf
-      - pgdb-laravel_vue-volume:/var/lib/postgresql/data
+      - pgdb-notebook-volume:/var/lib/postgresql/data
     environment:
       POSTGRES_DB: laravel
       POSTGRES_USER: laravel
@@ -40,4 +40,4 @@ services:
     ports:
       - 8080:8080
 volumes:
-  pgdb-laravel_vue-volume:
+  pgdb-notebook-volume:
