@@ -1,11 +1,7 @@
 <script setup>
-import Checkbox from '@/Components/Checkbox.vue';
 import GuestLayout from '@/Layouts/GuestLayout.vue';
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, useForm } from '@inertiajs/vue3';
+import { ref } from 'vue';
 
 defineProps({
     canResetPassword: {
@@ -22,6 +18,8 @@ const form = useForm({
     remember: false,
 });
 
+const visible = ref(false);
+
 const submit = () => {
     form.post(route('login'), {
         onFinish: () => form.reset('password'),
@@ -31,64 +29,43 @@ const submit = () => {
 
 <template>
     <GuestLayout>
+
         <Head title="Log in" />
-
-        <div v-if="status" class="mb-4 font-medium text-sm text-green-600">
-            {{ status }}
-        </div>
-
-        <form @submit.prevent="submit">
-            <div>
-                <InputLabel for="email" value="Email" />
-
-                <TextInput
-                    id="email"
-                    type="email"
-                    class="mt-1 block w-full"
-                    v-model="form.email"
-                    required
-                    autofocus
-                    autocomplete="username"
-                />
-
-                <InputError class="mt-2" :message="form.errors.email" />
+        <v-card class="mx-auto pa-12 pb-8" elevation="8" max-width="448" rounded="lg">
+            <div class="mx-auto text-success">
+                {{ status }}
             </div>
+            <form @submit.prevent="submit">
+                <div class="text-subtitle-1 text-medium-emphasis">Email</div>
+                <v-text-field v-model="form.email" type="email" density="compact" placeholder="Email address"
+                    prepend-inner-icon="mdi-email-outline" variant="outlined" :error="form.errors.email"
+                    :error-messages="form.errors.email" required autofocus autocomplete="username"
+                    @input="form.errors.email = null"></v-text-field>
 
-            <div class="mt-4">
-                <InputLabel for="password" value="Password" />
-
-                <TextInput
-                    id="password"
-                    type="password"
-                    class="mt-1 block w-full"
-                    v-model="form.password"
-                    required
-                    autocomplete="current-password"
-                />
-
-                <InputError class="mt-2" :message="form.errors.password" />
-            </div>
-
-            <div class="block mt-4">
-                <label class="flex items-center">
-                    <Checkbox name="remember" v-model:checked="form.remember" />
-                    <span class="ms-2 text-sm text-gray-600">Remember me</span>
-                </label>
-            </div>
-
-            <div class="flex items-center justify-end mt-4">
-                <Link
-                    v-if="canResetPassword"
-                    :href="route('password.request')"
-                    class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                    Forgot your password?
-                </Link>
-
-                <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Log in
-                </PrimaryButton>
-            </div>
-        </form>
+                <div class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between">
+                    Password
+                    <a v-if="canResetPassword" :href="route('password.request')"
+                        class="text-caption text-decoration-none text-blue" rel="noopener noreferrer">
+                        Forgot login password?</a>
+                </div>
+                <v-text-field :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
+                    :type="visible ? 'text' : 'password'" density="compact" placeholder="Enter your password"
+                    prepend-inner-icon="mdi-lock-outline" variant="outlined" v-model="form.password"
+                    :error="form.errors.password" :error-messages="form.errors.password"
+                    @click:append-inner="visible = !visible" autocomplete="current-password" required
+                    @input="form.errors.password = null"></v-text-field>
+                <v-btn color="blue" size="large" variant="tonal" :class="{ 'text-disabled': form.processing }"
+                    :disabled="form.processing" block @click="submit">
+                    Log In
+                </v-btn>
+                <v-checkbox color="info" name="remember" label="Remember me"
+                    v-model:checked="form.remember"></v-checkbox>
+                <v-card-text class="text-center">
+                    <a class="text-blue text-decoration-none" :href="route('register')" rel="noopener noreferrer">
+                        Sign up now <v-icon icon="mdi-chevron-right"></v-icon>
+                    </a>
+                </v-card-text>
+            </form>
+        </v-card>
     </GuestLayout>
 </template>
