@@ -34,5 +34,10 @@ services:
       POSTGRES_DB: laravel
       POSTGRES_USER: laravel
       POSTGRES_PASSWORD: laravel
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
 volumes:
   pgdb-laravel_vue-volume:
