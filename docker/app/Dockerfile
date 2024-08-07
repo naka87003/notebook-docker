@@ -25,7 +25,7 @@ RUN mv composer.phar /usr/local/bin/composer
 RUN composer self-update
 
 # nodeのインストール
-RUN curl -fsSL https://rpm.nodesource.com/setup_18.x | bash -
+RUN curl -fsSL https://rpm.nodesource.com/setup_20.x | bash -
 RUN dnf -y install nodejs
 
 # コンテナのディレクトリ指定
