@@ -7,19 +7,17 @@ const props = defineProps<{
   canResetPassword: boolean,
   status: string
 }>();
-
 const form = useForm({
   email: '',
   password: '',
   remember: false,
 });
-
 const visible = ref(false);
-const snackbar = ref(false);
+const alert = ref(false);
 
 onMounted(() => {
   if (props.status) {
-    snackbar.value = true;
+    alert.value = true;
   }
 });
 
@@ -32,15 +30,10 @@ const submit = () => {
 
 <template>
   <GuestLayout>
-    <v-snackbar v-model="snackbar" :timeout="3000" color="success" elevation="24" location="top right">
-      {{ status }}
-      <template v-slot:actions>
-        <v-btn variant="text" icon="mdi-close" @click="snackbar = false" />
-      </template>
-    </v-snackbar>
 
     <Head title="Log in" />
     <v-card class="mx-auto pa-12 pb-8" elevation="8" max-width="448" rounded="lg">
+      <v-alert v-model="alert" :text="status" type="success" variant="tonal" closable />
       <form @submit.prevent="submit">
         <div class="text-subtitle-1 text-medium-emphasis">Email</div>
         <v-text-field v-model="form.email" type="email" density="compact" placeholder="Email address"
