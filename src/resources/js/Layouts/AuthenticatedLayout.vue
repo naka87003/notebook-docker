@@ -4,7 +4,13 @@ import { router } from '@inertiajs/vue3';
 
 const xsMenu = ref(false);
 
-const currentPageName = computed((): string => route().current());
+const currentPageName = computed({
+  get() {
+    return route().current();
+  },
+  set(newValue) { }
+}
+);
 
 const logout = () => {
   router.post('logout');
