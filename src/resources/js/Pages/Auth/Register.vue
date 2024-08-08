@@ -1,103 +1,69 @@
-<script setup>
+<script setup lang="ts">
 import GuestLayout from '@/Layouts/GuestLayout.vue';
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, useForm } from '@inertiajs/vue3';
+import { ref } from 'vue';
 
 const form = useForm({
-    name: '',
-    email: '',
-    password: '',
-    password_confirmation: '',
+	name: '',
+	email: '',
+	password: '',
+	password_confirmation: '',
 });
 
+const visible = ref(false);
+
 const submit = () => {
-    form.post(route('register'), {
-        onFinish: () => form.reset('password', 'password_confirmation'),
-    });
+	form.post(route('register'), {
+		onFinish: () => form.reset('password', 'password_confirmation'),
+	});
 };
 </script>
 
 <template>
-    <GuestLayout>
-        <Head title="Register" />
+	<GuestLayout>
 
-        <form @submit.prevent="submit">
-            <div>
-                <InputLabel for="name" value="Name" />
+		<Head title="Register" />
+		<v-card class="mx-auto pa-12 pb-8" elevation="8" max-width="448" rounded="lg">
 
-                <TextInput
-                    id="name"
-                    type="text"
-                    class="mt-1 block w-full"
-                    v-model="form.name"
-                    required
-                    autofocus
-                    autocomplete="name"
-                />
+			<form @submit.prevent="submit">
+				<div class="text-subtitle-1 text-medium-emphasis">Name</div>
+				<v-text-field v-model="form.name" type="text" density="compact" placeholder="Enter your name"
+					prepend-inner-icon="mdi-account-outline" variant="outlined" :error="Boolean(form.errors.name)"
+					:error-messages="form.errors.name" required autofocus autocomplete="username"
+					@input="form.errors.name = null" />
 
-                <InputError class="mt-2" :message="form.errors.name" />
-            </div>
+				<div class="text-subtitle-1 text-medium-emphasis">Email</div>
+				<v-text-field v-model="form.email" type="email" density="compact" placeholder="Enter your email address"
+					prepend-inner-icon="mdi-email-outline" variant="outlined" :error="Boolean(form.errors.email)"
+					:error-messages="form.errors.email" required autofocus autocomplete="username"
+					@input="form.errors.email = null" />
 
-            <div class="mt-4">
-                <InputLabel for="email" value="Email" />
-
-                <TextInput
-                    id="email"
-                    type="email"
-                    class="mt-1 block w-full"
-                    v-model="form.email"
-                    required
-                    autocomplete="username"
-                />
-
-                <InputError class="mt-2" :message="form.errors.email" />
-            </div>
-
-            <div class="mt-4">
-                <InputLabel for="password" value="Password" />
-
-                <TextInput
-                    id="password"
-                    type="password"
-                    class="mt-1 block w-full"
-                    v-model="form.password"
-                    required
-                    autocomplete="new-password"
-                />
-
-                <InputError class="mt-2" :message="form.errors.password" />
-            </div>
-
-            <div class="mt-4">
-                <InputLabel for="password_confirmation" value="Confirm Password" />
-
-                <TextInput
-                    id="password_confirmation"
-                    type="password"
-                    class="mt-1 block w-full"
-                    v-model="form.password_confirmation"
-                    required
-                    autocomplete="new-password"
-                />
-
-                <InputError class="mt-2" :message="form.errors.password_confirmation" />
-            </div>
-
-            <div class="flex items-center justify-end mt-4">
-                <Link
-                    :href="route('login')"
-                    class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                    Already registered?
-                </Link>
-
-                <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Register
-                </PrimaryButton>
-            </div>
-        </form>
-    </GuestLayout>
+				<div class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between">
+					Password
+				</div>
+				<v-text-field :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'" :type="visible ? 'text' : 'password'"
+					density="compact" placeholder="Enter your password" prepend-inner-icon="mdi-lock-outline" variant="outlined"
+					v-model="form.password" :error="Boolean(form.errors.password)" :error-messages="form.errors.password"
+					@click:append-inner="visible = !visible" autocomplete="new-password" required
+					@input="form.errors.password = null" />
+				<div class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between">
+					Confirm Password
+				</div>
+				<v-text-field :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'" :type="visible ? 'text' : 'password'"
+					density="compact" placeholder="Enter your password again" prepend-inner-icon="mdi-lock-outline"
+					variant="outlined" v-model="form.password_confirmation" :error="Boolean(form.errors.password_confirmation)"
+					:error-messages="form.errors.password_confirmation" @click:append-inner="visible = !visible"
+					autocomplete="new-password" required @input="form.errors.password_confirmation = null" />
+				<v-btn color="primary" size="large" variant="tonal" :class="{ 'text-disabled': form.processing }"
+					:disabled="form.processing" block @click="submit">
+					Register
+				</v-btn>
+				<v-card-text class="text-center">
+					<a class="text-primary text-decoration-none" :href="route('login')" rel="noopener noreferrer">
+						Already registered? <v-icon icon="mdi-chevron-right" />
+					</a>
+				</v-card-text>
+			</form>
+		</v-card>
+	</GuestLayout>
 </template>
