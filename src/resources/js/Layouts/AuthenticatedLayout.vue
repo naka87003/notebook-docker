@@ -4,7 +4,7 @@ import { router } from '@inertiajs/vue3';
 
 const xsMenu = ref(false);
 
-const tab = computed((): string => route().current());
+const currentPageName = computed((): string => route().current());
 
 const logout = () => {
   router.post('logout');
@@ -17,7 +17,7 @@ const logout = () => {
       <v-container class="mx-auto d-flex align-center justify-center">
         <v-img class="mx-auto my-6" max-width="60"
           src="https://cdn.vuetifyjs.com/docs/images/brand-kit/v-logo.svg"></v-img>
-        <v-tabs v-model="tab" class="hidden-xs">
+        <v-tabs v-model="currentPageName" class="hidden-xs">
           <v-tab value="dashboard" :href="route('dashboard')">Note</v-tab>
           <v-tab value="calendar" :href="route('calendar')">Calendar</v-tab>
         </v-tabs>
@@ -48,14 +48,14 @@ const logout = () => {
     <v-main>
       <v-list v-if="xsMenu" lines="two">
         <v-list-subheader>Menu</v-list-subheader>
-        <v-list-item title="Note" :active="tab === 'note'" @click="tab = 'note'">
+        <v-list-item title="Note" :active="currentPageName === 'dashboard'" :href="route('dashboard')">
           <template v-slot:prepend>
             <v-avatar color="info">
               <v-icon>mdi-book-open-outline</v-icon>
             </v-avatar>
           </template>
         </v-list-item>
-        <v-list-item title="Calendar" :active="tab === 'calendar'" @click="tab = 'calendar'">
+        <v-list-item title="Calendar" :active="currentPageName === 'calendar'" :href="route('calendar')">
           <template v-slot:prepend>
             <v-avatar color="warning">
               <v-icon>mdi-calendar-multiselect-outline</v-icon>
@@ -65,7 +65,7 @@ const logout = () => {
         <v-divider></v-divider>
         <v-list-subheader>Account</v-list-subheader>
         <v-list-item :title="$page.props.auth.user.name" :subtitle="$page.props.auth.user.email"
-          :href="route('profile.edit')">
+          :active="currentPageName === 'profile.edit'" :href="route('profile.edit')">
           <template v-slot:prepend>
             <v-avatar color="surface-light">
               <v-icon>mdi-account</v-icon>
