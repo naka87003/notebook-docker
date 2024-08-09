@@ -63,9 +63,6 @@ const logout = () => {
         <v-btn icon="mdi-menu" size="x-large" class="hidden-md-and-up" @click="xsMenu = !xsMenu" />
       </v-container>
     </v-app-bar>
-    <v-navigation-drawer location="right" rail>
-
-    </v-navigation-drawer>
     <v-main>
       <v-container class="hidden-md-and-up">
         <v-list v-if="xsMenu" lines="two" density="compact">
