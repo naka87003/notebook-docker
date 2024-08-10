@@ -15,7 +15,7 @@ class NoteSeeder extends Seeder
     {
         Note::create([
             'title' => 'サウナ',
-            'description' => "8:15 集合\r\n8:30 白玉温泉\r\n11:00 肉五郎（焼肉ランチ\r\n14:00 解散",
+            'description' => "8:15 集合\r\n8:30 白玉温泉\r\n11:00 肉五郎（焼肉ランチ）\r\n14:00 解散",
             'starts_at' => '2024-08-11 08:15:00',
             'ends_at' => '2024-08-11 14:00:00',
             'public' => true,
