@@ -37,7 +37,7 @@ const logout = () => {
         <v-img class="mx-auto my-6" max-width="60"
           src="https://cdn.vuetifyjs.com/docs/images/brand-kit/v-logo.svg"></v-img>
         <v-tabs v-model="currentPageName" class="hidden-xs">
-          <v-tab value="dashboard" :href="route('dashboard')">Note</v-tab>
+          <v-tab value="dashboard" :href="route('dashboard')">Notebook</v-tab>
           <v-tab value="calendar" :href="route('calendar')">Calendar</v-tab>
         </v-tabs>
         <v-spacer />
