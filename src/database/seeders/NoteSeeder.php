@@ -57,7 +57,7 @@ class NoteSeeder extends Seeder
         ]);
         Note::create([
             'title' => 'toast',
-            'description' => "不可算名詞\r\nHow may slices of toast do you have for breakfast?",
+            'description' => "不可算名詞\r\nHow many slices of toast do you have for breakfast?",
             'starts_at' => null,
             'ends_at' => null,
             'public' => false,
