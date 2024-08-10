@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('tags', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('hex_color', length: 7);
+            $table->string('hex_color', length: 7)->nullable();
             $table->foreignId('user_id')->nullable()->constrained();
             $table->timestamps();
         });
