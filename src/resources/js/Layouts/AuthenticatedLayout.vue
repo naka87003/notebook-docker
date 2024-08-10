@@ -27,7 +27,12 @@ const logout = () => {
 
 <template>
   <v-layout>
-    <v-app-bar>
+    <v-app-bar :extended="Boolean($slots.action)">
+      <template v-if="$slots.action" #extension>
+        <v-container class="mx-auto d-flex align-center justify-center">
+        <slot name="action" />
+        </v-container>
+      </template>
       <v-container class="mx-auto d-flex align-center justify-center">
         <v-img class="mx-auto my-6" max-width="60"
           src="https://cdn.vuetifyjs.com/docs/images/brand-kit/v-logo.svg"></v-img>
