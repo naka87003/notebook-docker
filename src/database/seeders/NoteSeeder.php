@@ -52,8 +52,8 @@ class NoteSeeder extends Seeder
             'category_id' => 2,
             'status_id' => 1,
             'tag_id' => null,
-            'created_at' => '2024-08-10 20:47:00',
-            'updated_at' => '2024-08-10 20:47:00'
+            'created_at' => '2024-08-09 20:47:00',
+            'updated_at' => '2024-08-09 20:47:00'
         ]);
         Note::create([
             'title' => 'toast',
