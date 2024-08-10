@@ -11,10 +11,10 @@ class Tag extends Model
     use HasFactory;
 
     /**
-     * Tagに所属するItemをまとめて取得
+     * Tagに所属するNoteをまとめて取得
      */
-    public function items(): HasMany
+    public function Notes(): HasMany
     {
-        return $this->hasMany(Item::class);
+        return $this->hasMany(Note::class);
     }
 }

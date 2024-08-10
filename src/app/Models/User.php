@@ -55,10 +55,10 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
-     * 作成したItemをまとめて取得
+     * 作成したNoteをまとめて取得
      */
-    public function items(): HasMany
+    public function Notes(): HasMany
     {
-        return $this->hasMany(Item::class);
+        return $this->hasMany(Note::class);
     }
 }

@@ -11,10 +11,10 @@ class Category extends Model
     use HasFactory;
 
     /**
-     * Categoryに所属するItemをまとめて取得
+     * Categoryに所属するNoteをまとめて取得
      */
-    public function items(): HasMany
+    public function Notes(): HasMany
     {
-        return $this->hasMany(Item::class);
+        return $this->hasMany(Note::class);
     }
 }

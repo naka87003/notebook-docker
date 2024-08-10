@@ -6,12 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Item extends Model
+class Note extends Model
 {
     use HasFactory;
 
     /**
-     *  Itemを作成したUserを取得
+     *  Noteを作成したUserを取得
      */
     public function user(): BelongsTo
     {
@@ -19,7 +19,7 @@ class Item extends Model
     }
 
     /**
-     *  Itemの属するCategoryを取得
+     *  Noteの属するCategoryを取得
      */
     public function category(): BelongsTo
     {
@@ -27,7 +27,7 @@ class Item extends Model
     }
 
     /**
-     *  ItemのTagを取得
+     *  NoteのTagを取得
      */
     public function tag(): BelongsTo
     {
@@ -35,7 +35,7 @@ class Item extends Model
     }
 
     /**
-     *  ItemのStatusを取得
+     *  NoteのStatusを取得
      */
     public function status(): BelongsTo
     {
