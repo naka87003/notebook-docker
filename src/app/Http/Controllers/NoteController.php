@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Note;
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
 
 class NoteController extends Controller
 {
@@ -27,9 +29,26 @@ class NoteController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
-        //
+        $request->validate([
+            'description' => 'required|string|max:500',
+            'title' => 'nullable|string|max:50',
+            'public' => 'required|boolean',
+            'category' => 'required|numeric',
+        ]);
+
+        Note::create([
+            'title' => $request->title,
+            'description' => $request->description,
+            'public' => $request->public,
+            'category_id' => $request->category,
+            'has_image' => false,
+            'user_id' => Auth::id(),
+            'status_id' => 1
+        ]);
+
+        return back();
     }
 
     /**

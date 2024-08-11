@@ -4,9 +4,12 @@ import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import NoteCreateForm from '@/Components/NoteCreateForm.vue';
 
 const search = ref('');
 const notes = ref([]);
+const dialog = ref(false);
+const snackbar = ref(false);
 
 onMounted((): void => {
   loadNotes();
@@ -23,17 +26,26 @@ const loadNotes = (): void => {
 };
 const simplifyDateTime = (str: string): string => dayjs(str).format('YYYY/MM/DD HH:mm');
 const splitByNewline = (text: string): string[] => text.split(/\r?\n/);
+
+const noteCreated = () => {
+  dialog.value = false;
+  loadNotes();
+  snackbar.value = true;
+};
 </script>
 
 <template>
 
   <Head title="Dashboard" />
+  <v-snackbar v-model="snackbar" location="top right" color="success" timeout="3000">
+    <v-icon class="me-3" style="margin-bottom: 2px;">mdi-check-circle</v-icon>New Note Created Successfully.
+  </v-snackbar>
   <AuthenticatedLayout>
     <template #action>
       <v-text-field v-model="search" density="compact" label="Search" prepend-inner-icon="mdi-magnify"
         variant="solo-filled" flat hide-details single-line></v-text-field>
       <v-spacer></v-spacer>
-      <v-btn icon="mdi-plus" variant="flat"></v-btn>
+      <v-btn icon="mdi-plus" variant="flat" @click="dialog = true"></v-btn>
       <v-btn icon="mdi-sort" variant="flat"></v-btn>
       <v-btn icon="mdi-filter-menu" variant="flat"></v-btn>
     </template>
@@ -81,6 +93,9 @@ const splitByNewline = (text: string): string[] => text.split(/\r?\n/);
         </v-col>
       </v-row>
     </v-container>
+    <v-dialog v-model="dialog" fullscreen>
+      <NoteCreateForm @close="dialog = false" @noteCreated="noteCreated" />
+    </v-dialog>
   </AuthenticatedLayout>
 </template>
 
