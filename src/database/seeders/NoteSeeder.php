@@ -42,7 +42,7 @@ class NoteSeeder extends Seeder
             'updated_at' => '2024-08-07 19:33:00'
         ]);
         Note::create([
-            'title' => 'toast',
+            'title' => '買い物',
             'description' => "豆腐\r\nパン\r\nヨーグルト",
             'starts_at' => null,
             'ends_at' => null,
