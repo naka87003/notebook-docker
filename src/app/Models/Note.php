@@ -11,6 +11,13 @@ class Note extends Model
     use HasFactory;
 
     /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $guarded = [];
+
+    /**
      *  Noteを作成したUserを取得
      */
     public function user(): BelongsTo
