@@ -4,12 +4,19 @@ import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import NoteCreateForm from '@/Components/NoteCreateForm.vue';
+import NoteCreateDialog from '@/Components/NoteCreateDialog.vue';
+import ConfirmDialog from '@/Components/ConfirmDialog.vue';
 
 const search = ref('');
 const notes = ref([]);
-const dialog = ref(false);
+const dialog = ref({
+  create: false,
+  edit: false,
+  archiveConfirm: false,
+  deleteConfirm: false
+});
 const snackbar = ref(false);
+const targetId = ref(0);
 
 onMounted((): void => {
   loadNotes();
@@ -28,9 +35,25 @@ const simplifyDateTime = (str: string): string => dayjs(str).format('YYYY/MM/DD 
 const splitByNewline = (text: string): string[] => text.split(/\r?\n/);
 
 const noteCreated = () => {
-  dialog.value = false;
+  dialog.value.create = false;
   loadNotes();
   snackbar.value = true;
+};
+
+const showArchiveConfirmDialog = (id: number): void => {
+  targetId.value = id;
+  dialog.value.archiveConfirm = true;
+};
+
+const showDeleteConfirmDialog = (id: number): void => {
+  targetId.value = id;
+  dialog.value.deleteConfirm = true;
+};
+
+const deleteNote = () => {
+  dialog.value.deleteConfirm = false;
+  console.log(targetId.value);
+  targetId.value = 0;
 };
 </script>
 
@@ -45,7 +68,7 @@ const noteCreated = () => {
       <v-text-field v-model="search" density="compact" label="Search" prepend-inner-icon="mdi-magnify"
         variant="solo-filled" flat hide-details single-line></v-text-field>
       <v-spacer></v-spacer>
-      <v-btn icon="mdi-plus" variant="flat" @click="dialog = true"></v-btn>
+      <v-btn icon="mdi-plus" variant="flat" @click="dialog.create = true"></v-btn>
       <v-btn icon="mdi-sort" variant="flat"></v-btn>
       <v-btn icon="mdi-filter-menu" variant="flat"></v-btn>
     </template>
@@ -78,13 +101,15 @@ const noteCreated = () => {
                       <v-icon :color="note.tag?.hex_color" size="small" class="me-1" icon="mdi-tag"></v-icon>
                       <span class="me-5 text-caption">{{ note.tag?.name }}</span>
                     </template>
-                    <v-icon v-if="note.public === false" size="small" class="me-1" icon="mdi-lock-outline"></v-icon>
+                    <v-icon v-if="note.public === false" size="small" class="me-5" icon="mdi-lock-outline"></v-icon>
                   </div>
                 </template>
                 <template v-slot:append>
                   <div class="justify-self-end">
-                    <v-icon size="small" class="me-5" icon="mdi-pencil-outline"></v-icon>
-                    <v-icon size="small" class="me-1" icon="mdi-archive-outline"></v-icon>
+                    <v-icon size="small" class="ms-5" icon="mdi-pencil-outline"></v-icon>
+                    <v-icon size="small" class="ms-5" icon="mdi-archive-outline"
+                      @click="showArchiveConfirmDialog(note.id)" />
+                    <v-icon size="small" class="ms-5" icon="mdi-delete-outline" @click="showDeleteConfirmDialog(note.id)" />
                   </div>
                 </template>
               </v-list-item>
@@ -93,9 +118,14 @@ const noteCreated = () => {
         </v-col>
       </v-row>
     </v-container>
-    <v-dialog v-model="dialog" fullscreen>
-      <NoteCreateForm @close="dialog = false" @noteCreated="noteCreated" />
-    </v-dialog>
+    <NoteCreateDialog v-model="dialog.create" @noteCreated="noteCreated" />
+    <ConfirmDialog v-model="dialog.archiveConfirm" title="Archive Note"
+      message="Are you sure you want to archive this note?" icon="mdi-archive-outline" confirmBtnName="Archive" max-width="600"
+      @confirmed="deleteNote" />
+    <ConfirmDialog v-model="dialog.deleteConfirm" icon="mdi-delete-outline" title="Delete Note"
+      message="Are you sure you want to delete this note?"
+      description="Once the note is deleted, it will be permanently deleted." confirmBtnName="Delete"
+      confirmBtnColor="error" max-width="600" @confirmed="deleteNote" />
   </AuthenticatedLayout>
 </template>
 
