@@ -3,6 +3,7 @@
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\NoteController;
+use App\Http\Controllers\TagController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -23,6 +24,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('calendar');
 
     Route::resource('notes', NoteController::class);
+
+    Route::get('/tags/selectItems', [TagController::class, 'selectItems'])->name('tags.selectItems');
 });
 
 Route::middleware('auth')->group(function () {
