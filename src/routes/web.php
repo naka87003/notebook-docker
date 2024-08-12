@@ -25,6 +25,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::resource('notes', NoteController::class);
 
+    Route::put('notes/archive/{note}', [NoteController::class, 'archive'])->name('notes.archive');
+
     Route::get('/tags/selectItems', [TagController::class, 'selectItems'])->name('tags.selectItems');
 });
 

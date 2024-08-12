@@ -84,8 +84,19 @@ class NoteController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Note $note)
     {
-        //
+        $note->delete();
+        return response()->json();
+    }
+
+    /**
+     * change status to `archived`
+     */
+    public function archive(Note $note)
+    {
+        $note->status_id = 2;
+        $note->save();
+        return response()->json();
     }
 }
