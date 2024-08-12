@@ -30,7 +30,7 @@ const logout = () => {
     <v-app-bar :extended="Boolean($slots.action)">
       <template v-if="$slots.action" #extension>
         <v-container class="mx-auto d-flex align-center justify-center">
-        <slot name="action" />
+          <slot name="action" />
         </v-container>
       </template>
       <v-container class="mx-auto d-flex align-center justify-center">
@@ -70,59 +70,61 @@ const logout = () => {
     </v-app-bar>
     <v-main>
       <v-container class="hidden-md-and-up">
-        <v-list v-if="xsMenu" lines="two" density="compact">
-          <v-list-subheader>Menu</v-list-subheader>
-          <v-list-item title="Note" density="compact" :active="currentPageName === 'dashboard'"
-            :href="route('dashboard')">
-            <template v-slot:prepend>
-              <v-avatar color="info" density="compact">
-                <v-icon>mdi-book-open-outline</v-icon>
-              </v-avatar>
-            </template>
-          </v-list-item>
-          <v-list-item title="Calendar" density="compact" :active="currentPageName === 'calendar'"
-            :href="route('calendar')">
-            <template v-slot:prepend>
-              <v-avatar color="warning" density="compact">
-                <v-icon>mdi-calendar-multiselect-outline</v-icon>
-              </v-avatar>
-            </template>
-          </v-list-item><v-divider></v-divider>
-          <v-list-subheader>Theme</v-list-subheader>
-          <v-list-item density="compact" class="mb-n3">
-            <v-radio-group v-model="isDark">
-              <v-radio :value="false">
-                <template #label>
-                  <v-icon icon="mdi-weather-sunny mr-2"></v-icon>
-                  Light
-                </template>
-              </v-radio>
-              <v-radio :value="true">
-                <template #label>
-                  <v-icon icon="mdi-weather-night mr-2"></v-icon>
-                  Dark
-                </template>
-              </v-radio>
-            </v-radio-group>
-          </v-list-item>
-          <v-divider></v-divider>
-          <v-list-subheader>Account</v-list-subheader>
-          <v-list-item :title="$page.props.auth.user.name" :subtitle="$page.props.auth.user.email" density="compact"
-            :active="currentPageName === 'profile.edit'" :href="route('profile.edit')">
-            <template v-slot:prepend>
-              <v-avatar color="surface-light" density="compact">
-                <v-icon>mdi-account</v-icon>
-              </v-avatar>
-            </template>
-          </v-list-item>
-          <v-list-item title="Logout" @click="logout">
-            <template v-slot:prepend>
-              <v-avatar color="secondary" density="compact">
-                <v-icon>mdi-logout</v-icon>
-              </v-avatar>
-            </template>
-          </v-list-item>
-        </v-list>
+        <v-dialog v-model="xsMenu">
+          <v-list lines="two" density="compact">
+            <v-list-subheader>Menu</v-list-subheader>
+            <v-list-item title="Note" density="compact" :active="currentPageName === 'dashboard'"
+              :href="route('dashboard')">
+              <template v-slot:prepend>
+                <v-avatar color="info" density="compact">
+                  <v-icon>mdi-book-open-outline</v-icon>
+                </v-avatar>
+              </template>
+            </v-list-item>
+            <v-list-item title="Calendar" density="compact" :active="currentPageName === 'calendar'"
+              :href="route('calendar')">
+              <template v-slot:prepend>
+                <v-avatar color="warning" density="compact">
+                  <v-icon>mdi-calendar-multiselect-outline</v-icon>
+                </v-avatar>
+              </template>
+            </v-list-item><v-divider></v-divider>
+            <v-list-subheader>Theme</v-list-subheader>
+            <v-list-item density="compact" class="mb-n3">
+              <v-radio-group v-model="isDark">
+                <v-radio :value="false">
+                  <template #label>
+                    <v-icon icon="mdi-weather-sunny mr-2"></v-icon>
+                    Light
+                  </template>
+                </v-radio>
+                <v-radio :value="true">
+                  <template #label>
+                    <v-icon icon="mdi-weather-night mr-2"></v-icon>
+                    Dark
+                  </template>
+                </v-radio>
+              </v-radio-group>
+            </v-list-item>
+            <v-divider></v-divider>
+            <v-list-subheader>Account</v-list-subheader>
+            <v-list-item :title="$page.props.auth.user.name" :subtitle="$page.props.auth.user.email" density="compact"
+              :active="currentPageName === 'profile.edit'" :href="route('profile.edit')">
+              <template v-slot:prepend>
+                <v-avatar color="surface-light" density="compact">
+                  <v-icon>mdi-account</v-icon>
+                </v-avatar>
+              </template>
+            </v-list-item>
+            <v-list-item title="Logout" @click="logout">
+              <template v-slot:prepend>
+                <v-avatar color="secondary" density="compact">
+                  <v-icon>mdi-logout</v-icon>
+                </v-avatar>
+              </template>
+            </v-list-item>
+          </v-list>
+        </v-dialog>
       </v-container>
       <slot />
     </v-main>
