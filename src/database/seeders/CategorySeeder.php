@@ -14,17 +14,17 @@ class CategorySeeder extends Seeder
     public function run(): void
     {
         Category::create([
-            'name' => 'note',
+            'name' => 'Note',
             'vuetify_theme_color_name' => null,
             'mdi_name' => 'mdi-note-text-outline'
         ]);
         Category::create([
-            'name' => 'todo',
+            'name' => 'To-Do',
             'vuetify_theme_color_name' => 'primary',
             'mdi_name' => 'mdi-format-list-checks'
         ]);
         Category::create([
-            'name' => 'schedule',
+            'name' => 'Schedule',
             'vuetify_theme_color_name' => 'secondary',
             'mdi_name' => 'mdi-calendar-clock'
         ]);
