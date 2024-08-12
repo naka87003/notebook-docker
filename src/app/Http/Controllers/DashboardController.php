@@ -2,19 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\CategoryService;
+use App\Models\Category;
 use Inertia\Inertia;
-use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(CategoryService $category)
+    public function index()
     {
         return Inertia::render('Dashboard',[
-            'categoryItems' => $category->selectItems()
+            'categoryItems' => Category::get()
         ]);
     }
 }
