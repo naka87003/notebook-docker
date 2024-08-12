@@ -46,8 +46,9 @@ const noteCreated = async () => {
 };
 
 const noteUpdated = async () => {
-  dialog.value.create = false;
+  dialog.value.edit = false;
   await loadNotes();
+  await goTo(0);
   showSnackBar('Updated Successfully.');
 };
 
@@ -130,7 +131,7 @@ const showSnackBar = (msg: string): void => {
       <NoteCreateForm @noteCreated="noteCreated" @close="dialog.create = false"/>
     </v-dialog>
     <v-dialog v-model="dialog.edit" fullscreen>
-      <NoteEditForm :targetId @noteCreated="noteUpdated" @close="dialog.edit = false"/>
+      <NoteEditForm :targetId @noteUpdated="noteUpdated" @close="dialog.edit = false"/>
     </v-dialog>
     <v-dialog v-model="dialog.archiveConfirm" max-width="600">
       <ConfirmCard title="Archive Note" message="Are you sure you want to archive this note?" icon="mdi-archive-outline"

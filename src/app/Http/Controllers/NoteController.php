@@ -14,7 +14,7 @@ class NoteController extends Controller
      */
     public function index()
     {
-        $notes = Note::where('status_id', 1)->with(['user', 'category', 'status', 'tag'])->orderBy('updated_at', 'desc')->get();
+        $notes = Note::where('status_id', 1)->where('user_id', Auth::id())->with(['user', 'category', 'status', 'tag'])->orderBy('updated_at', 'desc')->get();
         return response()->json($notes);
     }
 
@@ -76,9 +76,29 @@ class NoteController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Note $note)
     {
-        //
+        $request->validate([
+            'description' => 'required_unless:category,3|max:500',
+            'title' => 'required_if:category,3|max:50',
+            'public' => 'required|boolean',
+            'category' => 'required|numeric',
+            'tag' => 'numeric|nullable',
+            'starts' => 'exclude_unless:category,3|date',
+            'ends' => 'exclude_unless:category,3|date|after:starts'
+        ]);
+
+        $note->update([
+            'title' => $request->title,
+            'description' => $request->description,
+            'public' => $request->public,
+            'category_id' => $request->category,
+            'tag_id' => $request->tag,
+            'starts_at' => $request->starts,
+            'ends_at' => $request->ends,
+        ]);
+
+        return back();
     }
 
     /**

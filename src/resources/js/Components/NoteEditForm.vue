@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onBeforeMount, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useForm, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 import dayjs from 'dayjs';
@@ -12,8 +12,6 @@ const emit = defineEmits<{
   close: []
   noteUpdated: []
 }>();
-
-const dialogShow = defineModel<boolean>();
 
 const page = usePage();
 const form = useForm({
@@ -60,8 +58,10 @@ onMounted(async () => {
       form.public = response.data.public;
       form.category = response.data.category_id;
       form.tag = response.data.tag_id;
-      form.starts = dayjs(response.data.starts_at).format('YYYY-MM-DDTHH:mm');
-      form.ends = dayjs(response.data.ends_at).format('YYYY-MM-DDTHH:mm');
+      if (response.data.starts_at !== null && response.data.ends_at !== null) {
+        form.starts = dayjs(response.data.starts_at).format('YYYY-MM-DDTHH:mm');
+        form.ends = dayjs(response.data.ends_at).format('YYYY-MM-DDTHH:mm');
+      }
     })
     .catch(error => {
       console.log(error);
@@ -85,9 +85,8 @@ const toAllDayRange = () => {
 };
 
 const submit = () => {
-  form.put(route('notes.update'), {
+  form.put(route('notes.update', props.targetId), {
     onSuccess: () => {
-      form.reset();
       emit('noteUpdated')
     },
   });
@@ -201,7 +200,7 @@ const submit = () => {
     <template v-slot:actions>
       <v-spacer></v-spacer>
       <v-btn variant="plain" @click="$emit('close')">Close</v-btn>
-      <v-btn color="primary" variant="tonal" @click="submit">Save</v-btn>
+      <v-btn color="primary" variant="tonal" :disabled="form.processing" @click="submit">Save</v-btn>
     </template>
   </v-card>
 </template>
