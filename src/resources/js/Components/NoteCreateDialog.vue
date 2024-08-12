@@ -67,7 +67,9 @@ const toAllDayRange = () => {
 
 const submit = () => {
   form.post(route('notes.store'), {
-    onSuccess: () => emit('noteCreated'),
+    onSuccess: () => {
+      form.reset();
+      emit('noteCreated')},
   });
 };
 </script>
