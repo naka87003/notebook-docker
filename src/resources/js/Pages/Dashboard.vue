@@ -4,9 +4,10 @@ import { ref, onMounted } from 'vue';
 import { useGoTo } from 'vuetify'
 import axios from 'axios';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import NoteCreateDialog from '@/Components/NoteCreateDialog.vue';
-import ConfirmDialog from '@/Components/ConfirmDialog.vue';
 import Note from '@/Components/Note.vue';
+import NoteCreateForm from '@/Components/NoteCreateForm.vue';
+import NoteEditForm from '@/Components/NoteEditForm.vue';
+import ConfirmCard from '@/Components/ConfirmCard.vue';
 
 const goTo = useGoTo();
 const search = ref('');
@@ -42,6 +43,17 @@ const noteCreated = async () => {
   await loadNotes();
   await goTo(0);
   showSnackBar('Created Successfully.');
+};
+
+const noteUpdated = async () => {
+  dialog.value.create = false;
+  await loadNotes();
+  showSnackBar('Updated Successfully.');
+};
+
+const showEditDialog = (id: number): void => {
+  targetId.value = id;
+  dialog.value.edit = true;
 };
 
 const showArchiveConfirmDialog = (id: number): void => {
@@ -106,7 +118,7 @@ const showSnackBar = (msg: string): void => {
         <v-col v-for="note in notes" cols="12">
           <Note :note>
             <template #actions>
-              <v-icon size="small" class="ms-5" icon="mdi-pencil-outline"></v-icon>
+              <v-icon size="small" class="ms-5" icon="mdi-pencil-outline" @click="showEditDialog(note.id)" />
               <v-icon size="small" class="ms-5" icon="mdi-archive-outline" @click="showArchiveConfirmDialog(note.id)" />
               <v-icon size="small" class="ms-5" icon="mdi-delete-outline" @click="showDeleteConfirmDialog(note.id)" />
             </template>
@@ -114,14 +126,21 @@ const showSnackBar = (msg: string): void => {
         </v-col>
       </v-row>
     </v-container>
-    <NoteCreateDialog v-model="dialog.create" @noteCreated="noteCreated" />
-    <ConfirmDialog v-model="dialog.archiveConfirm" title="Archive Note"
-      message="Are you sure you want to archive this note?" icon="mdi-archive-outline" confirmBtnName="Archive"
-      max-width="600" @confirmed="archiveNote" />
-    <ConfirmDialog v-model="dialog.deleteConfirm" icon="mdi-delete-outline" title="Delete Note"
-      message="Are you sure you want to delete this note?"
-      description="Once the note is deleted, it will be permanently deleted." confirmBtnName="Delete"
-      confirmBtnColor="error" max-width="600" @confirmed="deleteNote" />
+    <v-dialog v-model="dialog.create" fullscreen>
+      <NoteCreateForm @noteCreated="noteCreated" @close="dialog.create = false"/>
+    </v-dialog>
+    <v-dialog v-model="dialog.edit" fullscreen>
+      <NoteEditForm :targetId @noteCreated="noteUpdated" @close="dialog.edit = false"/>
+    </v-dialog>
+    <v-dialog v-model="dialog.archiveConfirm" max-width="600">
+      <ConfirmCard title="Archive Note" message="Are you sure you want to archive this note?" icon="mdi-archive-outline"
+        confirmBtnName="Archive" @confirmed="archiveNote" />
+    </v-dialog>
+    <v-dialog v-model="dialog.deleteConfirm" max-width="600">
+      <ConfirmCard icon="mdi-delete-outline" title="Delete Note" message="Are you sure you want to delete this note?"
+        description="Once the note is deleted, it will be permanently deleted." confirmBtnName="Delete"
+        confirmBtnColor="error" @confirmed="deleteNote" />
+    </v-dialog>
   </AuthenticatedLayout>
 </template>
 
