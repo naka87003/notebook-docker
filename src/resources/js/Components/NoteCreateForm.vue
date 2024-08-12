@@ -5,10 +5,9 @@ import axios from 'axios';
 import dayjs from 'dayjs';
 
 const emit = defineEmits<{
+  close:[]
   noteCreated: []
 }>();
-
-const dialogShow = defineModel<boolean>();
 
 const page = usePage();
 const form = useForm({
@@ -68,18 +67,17 @@ const toAllDayRange = () => {
 const submit = () => {
   form.post(route('notes.store'), {
     onSuccess: () => {
-      form.reset();
       emit('noteCreated')},
   });
 };
 </script>
 <template>
-  <v-dialog v-model="dialogShow" fullscreen>
+
     <v-card>
       <v-toolbar density="comfortable" color="transparent">
         <v-toolbar-title class="text-h6" text="New Note"></v-toolbar-title>
         <template v-slot:append>
-          <v-btn icon="mdi-close" @click="dialogShow = false"></v-btn>
+          <v-btn icon="mdi-close" @click="$emit('close')"></v-btn>
         </template>
       </v-toolbar>
       <v-divider />
@@ -183,9 +181,8 @@ const submit = () => {
       <v-divider />
       <template v-slot:actions>
         <v-spacer></v-spacer>
-        <v-btn variant="plain" @click="dialogShow = false">Close</v-btn>
+        <v-btn variant="plain" @click="$emit('close')">Close</v-btn>
         <v-btn color="primary" variant="tonal" @click="submit">Save</v-btn>
       </template>
     </v-card>
-  </v-dialog>
 </template>

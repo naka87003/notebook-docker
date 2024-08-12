@@ -13,11 +13,8 @@ defineEmits<{
   close: [],
   confirmed: []
 }>();
-
-const dialogShow = defineModel<boolean>();
 </script>
 <template>
-  <v-dialog v-model="dialogShow" persistent>
     <v-card>
       <v-toolbar density="comfortable" color="transparent">
         <v-toolbar-title class="text-h6" :text="title"></v-toolbar-title>
@@ -25,7 +22,7 @@ const dialogShow = defineModel<boolean>();
           <v-icon class="ms-3" :icon />
         </template>
         <template v-slot:append>
-          <v-btn icon="mdi-close" @click="dialogShow = false"></v-btn>
+          <v-btn icon="mdi-close" @click="$emit('close')"></v-btn>
         </template>
       </v-toolbar>
       <v-divider />
@@ -40,9 +37,8 @@ const dialogShow = defineModel<boolean>();
       <v-divider />
       <template v-slot:actions>
         <v-spacer></v-spacer>
-        <v-btn variant="plain" @click="dialogShow = false">Cancel</v-btn>
+        <v-btn variant="plain" @click="$emit('close')">Cancel</v-btn>
         <v-btn :color="confirmBtnColor" variant="tonal" @click="$emit('confirmed')">{{ confirmBtnName }}</v-btn>
       </template>
     </v-card>
-  </v-dialog>
 </template>
