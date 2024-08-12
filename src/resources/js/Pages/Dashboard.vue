@@ -112,7 +112,7 @@ const showSnackBar = (msg: string): void => {
       <v-spacer></v-spacer>
       <v-btn icon="mdi-plus" variant="flat" @click="dialog.create = true"></v-btn>
       <v-btn icon="mdi-sort" variant="flat"></v-btn>
-      <v-btn icon="mdi-filter-menu" variant="flat"></v-btn>
+      <v-btn icon="mdi-filter-menu-outline" variant="flat"></v-btn>
     </template>
     <v-container>
       <v-row>
