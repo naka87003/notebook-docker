@@ -182,7 +182,7 @@ const submit = () => {
       <template v-slot:actions>
         <v-spacer></v-spacer>
         <v-btn variant="plain" @click="$emit('close')">Close</v-btn>
-        <v-btn color="primary" variant="tonal" @click="submit">Save</v-btn>
+        <v-btn color="primary" variant="tonal" :disabled="form.processing" @click="submit">Save</v-btn>
       </template>
     </v-card>
 </template>
