@@ -14,7 +14,7 @@ class NoteController extends Controller
      */
     public function index()
     {
-        $notes = Note::with(['user', 'category', 'status', 'tag'])->orderBy('updated_at', 'desc')->get();
+        $notes = Note::where('status_id', 1)->with(['user', 'category', 'status', 'tag'])->orderBy('updated_at', 'desc')->get();
         return response()->json($notes);
     }
 
@@ -32,10 +32,13 @@ class NoteController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'description' => 'required|string|max:500',
-            'title' => 'nullable|string|max:50',
+            'description' => 'required_unless:category,3|max:500',
+            'title' => 'required_if:category,3|max:50',
             'public' => 'required|boolean',
             'category' => 'required|numeric',
+            'tag' => 'numeric|nullable',
+            'starts' => 'exclude_unless:category,3|date',
+            'ends' => 'exclude_unless:category,3|date|after:starts'
         ]);
 
         Note::create([
@@ -43,8 +46,11 @@ class NoteController extends Controller
             'description' => $request->description,
             'public' => $request->public,
             'category_id' => $request->category,
+            'tag_id' => $request->tag,
             'has_image' => false,
             'user_id' => Auth::id(),
+            'starts_at' => $request->starts,
+            'ends_at' => $request->ends,
             'status_id' => 1
         ]);
 
