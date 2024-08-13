@@ -188,10 +188,10 @@ const sortApply = async (newSort: {
         </v-col>
       </v-row>
     </v-container>
-    <v-dialog v-model="dialog.create" fullscreen>
+    <v-dialog v-model="dialog.create" fullscreen scrollable>
       <NoteCreateForm @noteCreated="noteCreated" @close="dialog.create = false" />
     </v-dialog>
-    <v-dialog v-model="dialog.edit" fullscreen>
+    <v-dialog v-model="dialog.edit" fullscreen scrollable>
       <NoteEditForm :targetId @noteUpdated="noteUpdated" @close="dialog.edit = false" />
     </v-dialog>
     <v-dialog v-model="dialog.archiveConfirm" max-width="600">
