@@ -17,16 +17,21 @@ class NoteController extends Controller
     {
         $query = Note::where('status_id', 1)->where('user_id', Auth::id());
         if ($request->search) {
-            $query->whereLike('title', "%{$request->search}%")
-                ->orWhereLike('description', "%{$request->search}%")
-                ->orWhereHas('tag', function (Builder $query) use ($request) {
-                    $query->whereLike('name', "%{$request->search}%");
-                });
+            $query->where(function (Builder $query) use ($request) {
+                $query->whereLike('title', "%{$request->search}%")
+                    ->orWhereLike('description', "%{$request->search}%")
+                    ->orWhereHas('tag', function (Builder $query) use ($request) {
+                        $query->whereLike('name', "%{$request->search}%");
+                    });
+            });
+        }
+        if ($request->key === 'starts_at') {
+            $query->where('category_id', 3);
         }
         if (is_numeric($request->offset)) {
             $query->offset($request->offset);
         }
-        $notes = $query->with(['user', 'category', 'status', 'tag'])->orderBy('updated_at', 'desc')->limit(20)->get();
+        $notes = $query->with(['user', 'category', 'status', 'tag'])->orderBy($request->key, $request->order)->limit(20)->get();
         return response()->json($notes);
     }
 
