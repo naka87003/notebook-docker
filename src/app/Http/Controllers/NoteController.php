@@ -6,6 +6,7 @@ use App\Models\Note;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Builder;
 
 class NoteController extends Controller
 {
@@ -14,11 +15,18 @@ class NoteController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Note::where('status_id', 1)->where('user_id', Auth::id())->with(['user', 'category', 'status', 'tag'])->orderBy('updated_at', 'desc')->limit(20);
-        if (is_numeric($request->notesLength)) {
-            $query->offset($request->notesLength);
+        $query = Note::where('status_id', 1)->where('user_id', Auth::id());
+        if ($request->search) {
+            $query->whereLike('title', "%{$request->search}%")
+                ->orWhereLike('description', "%{$request->search}%")
+                ->orWhereHas('tag', function (Builder $query) use ($request) {
+                    $query->whereLike('name', "%{$request->search}%");
+                });
         }
-        $notes = $query->get();
+        if (is_numeric($request->offset)) {
+            $query->offset($request->offset);
+        }
+        $notes = $query->with(['user', 'category', 'status', 'tag'])->orderBy('updated_at', 'desc')->limit(20)->get();
         return response()->json($notes);
     }
 

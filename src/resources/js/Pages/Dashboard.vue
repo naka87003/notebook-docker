@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
 import { ref, onMounted, onUnmounted, type Ref } from 'vue';
+import { watchDebounced } from '@vueuse/core'
 import axios from 'axios';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Note from '@/Components/Note.vue';
@@ -26,6 +27,12 @@ const bottomElement: Ref<HTMLElement | null> = ref();
 
 let observer: IntersectionObserver | null = null;
 
+watchDebounced(
+  search,
+  () => refreshDisplay(),
+  { debounce: 500, maxWait: 1000 },
+);
+
 onMounted(async () => {
   // 最下部までスクロールしたらさらに読み込むイベントを登録
   if (bottomElement.value) {
@@ -48,7 +55,8 @@ onUnmounted(() => {
 const loadNotes = async (): Promise<void> => {
   await axios.get(route('notes.index'), {
     params: {
-      notesLength: notes.value.length
+      offset: notes.value.length,
+      search: search.value
     }
   })
     .then(response => {
@@ -160,12 +168,12 @@ const refreshDisplay = async () => {
     </v-dialog>
     <v-dialog v-model="dialog.archiveConfirm" max-width="600">
       <ConfirmCard title="Archive Note" message="Are you sure you want to archive this note?" icon="mdi-archive-outline"
-        confirmBtnName="Archive" @confirmed="archiveNote" />
+        confirmBtnName="Archive" @confirmed="archiveNote" @close="dialog.archiveConfirm = false"/>
     </v-dialog>
     <v-dialog v-model="dialog.deleteConfirm" max-width="600">
       <ConfirmCard icon="mdi-delete-outline" title="Delete Note" message="Are you sure you want to delete this note?"
         description="Once the note is deleted, it will be permanently deleted." confirmBtnName="Delete"
-        confirmBtnColor="error" @confirmed="deleteNote" />
+        confirmBtnColor="error" @confirmed="deleteNote" @close="dialog.deleteConfirm = false"/>
     </v-dialog>
   </AuthenticatedLayout>
   <div ref="bottomElement"></div>
