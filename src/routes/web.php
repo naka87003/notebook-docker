@@ -23,11 +23,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('Calendar');
     })->name('calendar');
 
-    Route::resource('notes', NoteController::class);
+    Route::resource('/notes', NoteController::class);
 
-    Route::put('notes/archive/{note}', [NoteController::class, 'archive'])->name('notes.archive');
+    Route::put('/notes/archive/{note}', [NoteController::class, 'archive'])->name('notes.archive');
 
     Route::get('/tags/selectItems', [TagController::class, 'selectItems'])->name('tags.selectItems');
+    Route::post('/tags', [TagController::class, 'store'])->name('tags.store');
 });
 
 Route::middleware('auth')->group(function () {

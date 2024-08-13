@@ -11,6 +11,13 @@ class Tag extends Model
     use HasFactory;
 
     /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $guarded = [];
+
+    /**
      * Tagに所属するNoteをまとめて取得
      */
     public function Notes(): HasMany
