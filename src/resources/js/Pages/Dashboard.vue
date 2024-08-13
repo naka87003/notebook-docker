@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
-import { ref, onMounted } from 'vue';
-import { useGoTo } from 'vuetify'
+import { ref, onMounted, onUnmounted, type Ref } from 'vue';
 import axios from 'axios';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Note from '@/Components/Note.vue';
@@ -9,7 +8,6 @@ import NoteCreateForm from '@/Components/NoteCreateForm.vue';
 import NoteEditForm from '@/Components/NoteEditForm.vue';
 import ConfirmCard from '@/Components/ConfirmCard.vue';
 
-const goTo = useGoTo();
 const search = ref('');
 const notes = ref([]);
 const dialog = ref({
@@ -24,14 +22,37 @@ const snackbar = ref({
 });
 const targetId = ref(0);
 
-onMounted((): void => {
-  loadNotes();
+const bottomElement: Ref<HTMLElement | null> = ref();
+
+let observer: IntersectionObserver | null = null;
+
+onMounted(async () => {
+  // 最下部までスクロールしたらさらに読み込むイベントを登録
+  if (bottomElement.value) {
+    observer = new IntersectionObserver(
+      async (entries: IntersectionObserverEntry[]) => {
+        const [entry] = entries;
+        if (entry.isIntersecting) {
+          await loadNotes();
+        }
+      },
+      { root: null, threshold: 0 });
+    observer.observe(bottomElement.value);
+  }
+});
+
+onUnmounted(() => {
+  observer?.disconnect();
 });
 
 const loadNotes = async (): Promise<void> => {
-  axios.get(route('notes.index'))
+  await axios.get(route('notes.index'), {
+    params: {
+      notesLength: notes.value.length
+    }
+  })
     .then(response => {
-      notes.value = response.data;
+      notes.value.push(...response.data);
     })
     .catch(error => {
       console.log(error);
@@ -40,15 +61,13 @@ const loadNotes = async (): Promise<void> => {
 
 const noteCreated = async () => {
   dialog.value.create = false;
-  await loadNotes();
-  await goTo(0);
+  await refreshDisplay();
   showSnackBar('Created Successfully.');
 };
 
 const noteUpdated = async () => {
   dialog.value.edit = false;
-  await loadNotes();
-  await goTo(0);
+  await refreshDisplay();
   showSnackBar('Updated Successfully.');
 };
 
@@ -70,10 +89,9 @@ const showDeleteConfirmDialog = (id: number): void => {
 const archiveNote = async () => {
   dialog.value.archiveConfirm = false;
   await axios.put(route('notes.archive', targetId.value))
-    .then(response => {
-      targetId.value = 0;
+    .then(async () => {
+      await refreshDisplay();
       showSnackBar('Archived Successfully.');
-      loadNotes();
     })
     .catch(error => {
       console.log(error);
@@ -83,10 +101,9 @@ const archiveNote = async () => {
 const deleteNote = async () => {
   dialog.value.deleteConfirm = false;
   await axios.delete(route('notes.destroy', targetId.value))
-    .then(response => {
-      targetId.value = 0;
+    .then(async () => {
+      await refreshDisplay();
       showSnackBar('Deleted Successfully.');
-      loadNotes();
     })
     .catch(error => {
       console.log(error);
@@ -96,6 +113,14 @@ const deleteNote = async () => {
 const showSnackBar = (msg: string): void => {
   snackbar.value.message = msg;
   snackbar.value.display = true;
+};
+
+const refreshDisplay = async () => {
+  observer?.disconnect();
+  targetId.value = 0;
+  notes.value.splice(0);
+  await loadNotes();
+  observer.observe(bottomElement.value);
 };
 </script>
 
@@ -128,10 +153,10 @@ const showSnackBar = (msg: string): void => {
       </v-row>
     </v-container>
     <v-dialog v-model="dialog.create" fullscreen>
-      <NoteCreateForm @noteCreated="noteCreated" @close="dialog.create = false"/>
+      <NoteCreateForm @noteCreated="noteCreated" @close="dialog.create = false" />
     </v-dialog>
     <v-dialog v-model="dialog.edit" fullscreen>
-      <NoteEditForm :targetId @noteUpdated="noteUpdated" @close="dialog.edit = false"/>
+      <NoteEditForm :targetId @noteUpdated="noteUpdated" @close="dialog.edit = false" />
     </v-dialog>
     <v-dialog v-model="dialog.archiveConfirm" max-width="600">
       <ConfirmCard title="Archive Note" message="Are you sure you want to archive this note?" icon="mdi-archive-outline"
@@ -143,6 +168,7 @@ const showSnackBar = (msg: string): void => {
         confirmBtnColor="error" @confirmed="deleteNote" />
     </v-dialog>
   </AuthenticatedLayout>
+  <div ref="bottomElement"></div>
 </template>
 
 <style>

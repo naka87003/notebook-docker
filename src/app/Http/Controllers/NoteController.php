@@ -12,9 +12,13 @@ class NoteController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $notes = Note::where('status_id', 1)->where('user_id', Auth::id())->with(['user', 'category', 'status', 'tag'])->orderBy('updated_at', 'desc')->get();
+        $query = Note::where('status_id', 1)->where('user_id', Auth::id())->with(['user', 'category', 'status', 'tag'])->orderBy('updated_at', 'desc')->limit(20);
+        if (is_numeric($request->notesLength)) {
+            $query->offset($request->notesLength);
+        }
+        $notes = $query->get();
         return response()->json($notes);
     }
 
