@@ -87,6 +87,9 @@ const submit = () => {
   <v-card>
     <v-toolbar density="comfortable" color="transparent">
       <v-toolbar-title class="text-h6" text="Create New Note"></v-toolbar-title>
+      <template v-slot:prepend>
+        <v-icon class="ms-3" icon="mdi-plus"/>
+      </template>
       <template v-slot:append>
         <v-btn icon="mdi-close" @click="$emit('close')"></v-btn>
       </template>
