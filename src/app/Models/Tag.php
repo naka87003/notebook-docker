@@ -20,7 +20,7 @@ class Tag extends Model
     /**
      * Tagに所属するNoteをまとめて取得
      */
-    public function Notes(): HasMany
+    public function notes(): HasMany
     {
         return $this->hasMany(Note::class);
     }

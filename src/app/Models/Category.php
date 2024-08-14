@@ -13,7 +13,7 @@ class Category extends Model
     /**
      * Categoryに所属するNoteをまとめて取得
      */
-    public function Notes(): HasMany
+    public function notes(): HasMany
     {
         return $this->hasMany(Note::class);
     }
