@@ -23,11 +23,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('Calendar');
     })->name('calendar');
 
-    Route::resource('/notes', NoteController::class)->except(['create']);
+    Route::resource('/notes', NoteController::class)->except(['create', 'edit', 'show']);
     Route::put('/notes/archive/{note}', [NoteController::class, 'archive'])->name('notes.archive');
     Route::put('/notes/retrieve/{note}', [NoteController::class, 'retrieve'])->name('notes.retrieve');
-    
-    Route::resource('/tags', TagController::class)->except(['create', 'show']);
+
+    Route::resource('/tags', TagController::class)->except(['create', 'edit', 'show']);
     Route::get('/tags/items/select', [TagController::class, 'selectItems'])->name('tags.items.select');
     Route::get('/tags/items/datatable', [TagController::class, 'datatableItems'])->name('tags.items.datatable');
 });
