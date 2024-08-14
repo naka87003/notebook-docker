@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Head } from '@inertiajs/vue3';
+import { Head, router } from '@inertiajs/vue3';
 import { type Ref, ref } from 'vue';
 import { watchDebounced } from '@vueuse/core'
 import axios from 'axios';
@@ -101,6 +101,13 @@ const deleteTag = async () => {
       console.log(error);
     });
 };
+
+const showTaggedNotes = (item: Tag, status: number) => {
+  router.get('dashboard', {
+    tag: item.id,
+    status
+  });
+};
 </script>
 <template>
 
@@ -113,7 +120,7 @@ const deleteTag = async () => {
       <v-text-field v-model="searchText" density="compact" label="Search" prepend-inner-icon="mdi-magnify"
         variant="solo-filled" flat hide-details single-line></v-text-field>
       <v-spacer></v-spacer>
-      <v-btn icon="mdi-tag-plus" variant="flat" @click="dialog.create = true" />
+      <v-btn icon="mdi-tag-plus-outline" variant="flat" @click="dialog.create = true" />
     </template>
     <v-container>
       <v-data-table-server v-model:items-per-page="itemsPerPage" :headers :items :items-length="totalItems"
@@ -123,16 +130,20 @@ const deleteTag = async () => {
           {{ item.name }}
         </template>
         <template v-slot:item.normal_count="{ item }">
-          <v-btn v-if="item.normal_count !== null" variant="plain" color="primary">{{ item.normal_count }}</v-btn>
+          <v-btn v-if="item.normal_count !== null" variant="plain" color="primary" @click="showTaggedNotes(item, 1)">
+            {{ item.normal_count }}
+          </v-btn>
           <v-btn v-else variant="plain" disabled>0</v-btn>
         </template>
         <template v-slot:item.archived_count="{ item }">
-          <v-btn v-if="item.archived_count !== null" variant="plain" color="primary">{{ item.archived_count }}</v-btn>
+          <v-btn v-if="item.archived_count !== null" variant="plain" color="primary" @click="showTaggedNotes(item, 2)">
+            {{ item.archived_count }}
+          </v-btn>
           <v-btn v-else variant="plain" disabled>0</v-btn>
         </template>
         <template v-slot:item.actions="{ item }">
-          <v-icon icon="mdi-pencil" class="me-3" size="small" @click="editItem(item)" />
-          <v-icon icon="mdi-delete" size="small" @click="showDeleteConfirmDialog(item)" />
+          <v-icon icon="mdi-pencil-outline" class="me-3" size="small" @click="editItem(item)" />
+          <v-icon icon="mdi-delete-outline" size="small" @click="showDeleteConfirmDialog(item)" />
         </template>
       </v-data-table-server>
     </v-container>

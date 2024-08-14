@@ -12,6 +12,13 @@ import NoteSortMenu from '@/Components/NoteSortMenu.vue';
 import NoteFilterMenu from '@/Components/NoteFilterMenu.vue';
 import type { Note as NoteType, Sort, Filter } from '@/interfaces';
 
+const props = defineProps<{
+  tag?: number;
+  status?: number;
+}>();
+
+console.log(props)
+
 const search = ref('');
 const notes: Ref<NoteType[]> = ref([]);
 const dialog = ref({
@@ -36,7 +43,7 @@ const sort: Ref<Sort> = ref({
 const filter: Ref<Filter> = ref({
   category: [1, 2, 3],
   tag: [],
-  status: 1
+  status: props.status ?? 1
 });
 
 const targetNote = ref();
@@ -63,6 +70,9 @@ watchDebounced(search,
 );
 
 onMounted(async () => {
+  if (props.tag !== undefined) {
+    filter.value.tag.push(props.tag);
+  }
   // 最下部までスクロールしたらさらに読み込むイベントを登録
   if (bottomElement.value) {
     observer = new IntersectionObserver(
@@ -208,7 +218,8 @@ const filterApply = async (newFilter: Filter): Promise<void> => {
       <v-spacer></v-spacer>
       <v-btn icon="mdi-plus" variant="flat" @click="dialog.create = true" />
       <v-btn :icon="sortIcon" variant="flat" :class="{ 'text-red': sortChanged }" @click="dialog.sortMenu = true" />
-      <v-btn icon="mdi-filter-menu-outline" variant="flat" :class="{ 'text-red': filterChanged }" @click="dialog.filterMenu = true" />
+      <v-btn icon="mdi-filter-menu-outline" variant="flat" :class="{ 'text-red': filterChanged }"
+        @click="dialog.filterMenu = true" />
     </template>
     <v-container>
       <v-alert v-if="notes.length === 0" variant="text" class="text-center" text="No data available" />
