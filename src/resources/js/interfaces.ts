@@ -7,6 +7,9 @@ export type Note = {
   ends_at?: string;
   content?: string;
   public: boolean;
+  category_id: number;
+  tag_id?: number;
+  status_id: number;
   status: {
     name: string;
   };
