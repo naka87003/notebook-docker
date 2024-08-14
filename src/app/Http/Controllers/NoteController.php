@@ -15,7 +15,9 @@ class NoteController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Note::where('user_id', Auth::id());
+        $query = Note::where('user_id', Auth::id())
+            ->whereIn('category_id', $request->category)
+            ->where('status_id', $request->status);
         if ($request->search) {
             $query->where(function (Builder $query) use ($request) {
                 $query->whereLike('title', "%{$request->search}%")
@@ -27,6 +29,9 @@ class NoteController extends Controller
         }
         if ($request->key === 'starts_at') {
             $query->where('category_id', 3);
+        }
+        if ($request->tag) {
+            $query->whereIn('tag_id', $request->tag);
         }
         if (is_numeric($request->offset)) {
             $query->offset($request->offset);

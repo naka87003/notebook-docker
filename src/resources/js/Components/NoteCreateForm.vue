@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { useForm, usePage } from '@inertiajs/vue3';
-import axios from 'axios';
 import dayjs from 'dayjs';
 import TagCreateForm from './TagCreateForm.vue';
+import { getTagSelectItems } from '@/common';
+import type { Category, Tag } from '@/interfaces';
 
 const emit = defineEmits<{
   close: []
@@ -28,8 +29,8 @@ const dialog = ref({
 const allDay = ref(false);
 
 const items = ref({
-  category: page.props.categoryItems as { 'id': string, 'name': number, 'mdi_name': string }[],
-  tag: [] as { 'id': string, 'name': number, 'hex_color': string }[],
+  category: page.props.categoryItems as Category[],
+  tag: [] as Tag[],
 });
 
 const startsDate = computed({
@@ -51,18 +52,8 @@ const endsDate = computed({
 });
 
 onMounted(async () => {
-  await getTagSelectItems();
+  items.value.tag = await getTagSelectItems();
 });
-
-const getTagSelectItems = async (): Promise<void> => {
-  await axios.get(route('tags.selectItems'))
-    .then(response => {
-      items.value.tag = response.data;
-    })
-    .catch(error => {
-      console.log(error);
-    });
-};
 
 const toAllDayRange = () => {
   form.starts = dayjs(form.starts).format('YYYY-MM-DD 00:00');
@@ -70,7 +61,7 @@ const toAllDayRange = () => {
 };
 
 const tagCreated = async () => {
-  await getTagSelectItems();
+  items.value.tag = await getTagSelectItems();
   form.tag = items.value.tag[0].id;
   dialog.value.tagCreate = false;
 };

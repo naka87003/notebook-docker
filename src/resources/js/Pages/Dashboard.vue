@@ -9,7 +9,8 @@ import NoteCreateForm from '@/Components/NoteCreateForm.vue';
 import NoteEditForm from '@/Components/NoteEditForm.vue';
 import ConfirmCard from '@/Components/ConfirmCard.vue';
 import NoteSortMenu from '@/Components/NoteSortMenu.vue';
-import type { Note as NoteType } from '@/interfaces';
+import NoteFilterMenu from '@/Components/NoteFilterMenu.vue';
+import type { Note as NoteType, Sort, Filter } from '@/interfaces';
 
 const search = ref('');
 const notes: Ref<NoteType[]> = ref([]);
@@ -19,17 +20,25 @@ const dialog = ref({
   archiveConfirm: false,
   retrieveConfirm: false,
   deleteConfirm: false,
-  sortMenu: false
+  sortMenu: false,
+  filterMenu: false
 });
 const snackbar = ref({
   display: false,
   message: ''
 });
 
-const sort = ref({
+const sort: Ref<Sort> = ref({
   key: 'updated_at',
   order: 'desc'
-})
+});
+
+const filter: Ref<Filter> = ref({
+  category: [1, 2, 3],
+  tag: [],
+  status: 1
+});
+
 const targetId = ref(0);
 
 const bottomElement: Ref<HTMLElement | null> = ref();
@@ -45,6 +54,8 @@ const sortIcon = computed((): string => {
     return sort.value.order === 'asc' ? 'mdi-sort-clock-ascending-outline' : 'mdi-sort-clock-descending-outline';
   }
 });
+
+const filterChanged = computed((): boolean => (filter.value.category.length !== 3 || filter.value.status !== 1 || filter.value.tag.length !== 0));
 
 watchDebounced(search,
   () => refreshDisplay(),
@@ -75,7 +86,8 @@ const loadNotes = async (): Promise<void> => {
     params: {
       offset: notes.value.length,
       search: search.value,
-      ...sort.value
+      ...sort.value,
+      ...filter.value
     }
   })
     .then(response => {
@@ -167,13 +179,18 @@ const refreshDisplay = async (): Promise<void> => {
   observer.observe(bottomElement.value);
 };
 
-const sortApply = async (newSort: {
-  key: string;
-  order: string;
-}): Promise<void> => {
+const sortApply = async (newSort: Sort): Promise<void> => {
   dialog.value.sortMenu = false;
   sort.value.key = newSort.key;
   sort.value.order = newSort.order;
+  await refreshDisplay();
+};
+
+const filterApply = async (newFilter: Filter): Promise<void> => {
+  dialog.value.filterMenu = false;
+  filter.value.category = newFilter.category;
+  filter.value.status = newFilter.status;
+  filter.value.tag = newFilter.tag;
   await refreshDisplay();
 };
 </script>
@@ -189,12 +206,12 @@ const sortApply = async (newSort: {
       <v-text-field v-model="search" density="compact" label="Search" prepend-inner-icon="mdi-magnify"
         variant="solo-filled" flat hide-details single-line></v-text-field>
       <v-spacer></v-spacer>
-      <v-btn icon="mdi-plus" variant="flat" @click="dialog.create = true"></v-btn>
-      <v-btn :icon="sortIcon" variant="flat" :class="{ 'text-red': sortChanged }"
-        @click="dialog.sortMenu = true"></v-btn>
-      <v-btn icon="mdi-filter-menu-outline" variant="flat"></v-btn>
+      <v-btn icon="mdi-plus" variant="flat" @click="dialog.create = true" />
+      <v-btn :icon="sortIcon" variant="flat" :class="{ 'text-red': sortChanged }" @click="dialog.sortMenu = true" />
+      <v-btn icon="mdi-filter-menu-outline" variant="flat" :class="{ 'text-red': filterChanged }" @click="dialog.filterMenu = true" />
     </template>
     <v-container>
+      <v-alert v-if="notes.length === 0" variant="text" class="text-center" text="No data available" />
       <v-row>
         <v-col v-for="note in notes" cols="12">
           <Note :note>
@@ -233,6 +250,9 @@ const sortApply = async (newSort: {
     </v-dialog>
     <v-dialog v-model="dialog.sortMenu" max-width="600">
       <NoteSortMenu :sort @close="dialog.sortMenu = false" @apply="sortApply" />
+    </v-dialog>
+    <v-dialog v-model="dialog.filterMenu" max-width="600">
+      <NoteFilterMenu :filter @close="dialog.filterMenu = false" @apply="filterApply" />
     </v-dialog>
   </AuthenticatedLayout>
   <div ref="bottomElement"></div>
