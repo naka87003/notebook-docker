@@ -1,24 +1,8 @@
 <script setup lang="ts">
 import dayjs from 'dayjs';
-defineProps<{
-  note: {
-    title?: string;
-    updated_at: string;
-    starts_at?: string;
-    ends_at?: string;
-    description?: string;
-    public: boolean;
-    tag?: {
-      name?: string;
-      hex_color?: string;
-    };
-    category: {
-      id: number;
-      vuetify_theme_color_name?: string;
-      mdi_name?: string;
-    }
-  }
-}>();
+import type { Note } from '@/interfaces';
+
+defineProps<{ note: Note }>();
 
 const simplifyDateTime = (str: string): string => dayjs(str).format('YYYY/MM/DD HH:mm');
 const splitByNewline = (text: string): string[] => text.split(/\r?\n/);
@@ -51,12 +35,13 @@ const splitByNewline = (text: string): string[] => text.split(/\r?\n/);
               <v-icon :color="note.tag?.hex_color" size="small" class="me-1" icon="mdi-tag"></v-icon>
               <span class="me-5 text-caption">{{ note.tag?.name }}</span>
             </template>
+            <v-icon v-if="note.status.name === 'archived'" size="small" class="me-5" icon="mdi-archive-outline" />
             <v-icon v-if="note.public === false" size="small" class="me-5" icon="mdi-lock-outline"></v-icon>
           </div>
         </template>
         <template v-slot:append>
           <div class="justify-self-end">
-            <slot name="actions"/>
+            <slot name="actions" />
           </div>
         </template>
       </v-list-item>
