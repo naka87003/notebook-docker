@@ -40,6 +40,24 @@ class TagController extends Controller
         return back();
     }
 
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, Tag $tag)
+    {
+        $request->validate([
+            'name' => 'required|max:20',
+            'color' => 'nullable|string',
+        ]);
+
+        $tag->update([
+            'name' => $request->name,
+            'hex_color' => $request->color,
+        ]);
+
+        return back();
+    }
+
     public function selectItems()
     {
         $items = Tag::where('user_id', Auth::id())->orderBy('created_at', 'desc')->get();

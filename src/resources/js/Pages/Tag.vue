@@ -5,11 +5,13 @@ import { watchDebounced } from '@vueuse/core'
 import axios from 'axios';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import TagCreateForm from '@/Components/TagCreateForm.vue';
+import TagEditForm from '@/Components/TagEditForm.vue';
 
 const searchText = ref('');
 
 const dialog = ref({
   create: false,
+  edit: false
 });
 
 const snackbar = ref({
@@ -29,6 +31,8 @@ const headers = ref([
 const items = ref([]);
 const loading = ref(true);
 const totalItems = ref(0);
+
+const targetTag = ref();
 
 watchDebounced(
   searchText,
@@ -52,7 +56,8 @@ const loadItems = async ({ page, itemsPerPage, sortBy }) => {
 };
 
 const editItem = (item) => {
-
+  targetTag.value = item;
+  dialog.value.edit = true;
 };
 
 const deleteItem = (item) => {
@@ -64,12 +69,16 @@ const tagCreated = async () => {
   dialog.value.create = false;
   showSnackBar('Created Successfully.');
 };
+const tagUpdated = async () => {
+  search.value = String(Date.now());
+  dialog.value.edit = false;
+  showSnackBar('Updated Successfully.');
+};
 
 const showSnackBar = (msg: string): void => {
   snackbar.value.message = msg;
   snackbar.value.display = true;
 };
-
 </script>
 <template>
 
@@ -111,6 +120,9 @@ const showSnackBar = (msg: string): void => {
     </v-container>
     <v-dialog v-model="dialog.create" max-width="600">
       <TagCreateForm @close="dialog.create = false" @tagCreated="tagCreated" />
+    </v-dialog>
+    <v-dialog v-model="dialog.edit" max-width="600">
+      <TagEditForm :targetTag @close="dialog.edit = false" @tagUpdated="tagUpdated" />
     </v-dialog>
   </AuthenticatedLayout>
 </template>
