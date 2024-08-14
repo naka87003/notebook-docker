@@ -1,13 +1,20 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { Head } from '@inertiajs/vue3';
+import { ref } from 'vue';
 import { watchDebounced } from '@vueuse/core'
 import axios from 'axios';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import TagCreateForm from '@/Components/TagCreateForm.vue';
 
 const searchText = ref('');
 
 const dialog = ref({
-  create: false
+  create: false,
+});
+
+const snackbar = ref({
+  display: false,
+  message: ''
 });
 
 const search = ref('');
@@ -51,8 +58,25 @@ const editItem = (item) => {
 const deleteItem = (item) => {
 
 };
+
+const tagCreated = async () => {
+  search.value = String(Date.now());
+  dialog.value.create = false;
+  showSnackBar('Created Successfully.');
+};
+
+const showSnackBar = (msg: string): void => {
+  snackbar.value.message = msg;
+  snackbar.value.display = true;
+};
+
 </script>
 <template>
+
+  <Head title="Tag" />
+  <v-snackbar v-model="snackbar.display" location="top right" color="success" timeout="3000">
+    <v-icon class="me-3" style="margin-bottom: 2px;">mdi-check-circle</v-icon>{{ snackbar.message }}
+  </v-snackbar>
   <AuthenticatedLayout>
     <template #action>
       <v-text-field v-model="searchText" density="compact" label="Search" prepend-inner-icon="mdi-magnify"
@@ -85,5 +109,8 @@ const deleteItem = (item) => {
         </template>
       </v-data-table-server>
     </v-container>
+    <v-dialog v-model="dialog.create" max-width="600">
+      <TagCreateForm @close="dialog.create = false" @tagCreated="tagCreated" />
+    </v-dialog>
   </AuthenticatedLayout>
 </template>
