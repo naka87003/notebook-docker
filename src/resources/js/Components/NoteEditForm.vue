@@ -4,9 +4,10 @@ import { useForm, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import TagCreateForm from './TagCreateForm.vue';
+import type { Note, Category, Tag } from '@/interfaces';
 
 const props = defineProps<{
-  targetId: number;
+  targetNote: Note;
 }>();
 
 const emit = defineEmits<{
@@ -16,12 +17,12 @@ const emit = defineEmits<{
 
 const page = usePage();
 const form = useForm({
-  id: props.targetId,
-  title: '',
-  content: '',
-  public: true,
-  category: 1,
-  tag: null,
+  id: props.targetNote.id,
+  title: props.targetNote.title,
+  content: props.targetNote.content,
+  public: props.targetNote.public,
+  category: props.targetNote.category_id,
+  tag: props.targetNote.tag_id,
   starts: dayjs().add(1, 'hour').format('YYYY-MM-DDTHH:00'),
   ends: dayjs().add(2, 'hour').format('YYYY-MM-DDTHH:00')
 });
@@ -33,8 +34,8 @@ const dialog = ref({
 const allDay = ref(false);
 
 const items = ref({
-  category: page.props.categoryItems as { 'id': string, 'name': number, 'mdi_name': string }[],
-  tag: [] as { 'id': string, 'name': number, 'hex_color': string }[],
+  category: page.props.categoryItems as Category[],
+  tag: [] as Tag[],
 });
 
 const startsDate = computed({
@@ -56,21 +57,10 @@ const endsDate = computed({
 });
 
 onMounted(async () => {
-  await axios.get(route('notes.edit', props.targetId))
-    .then(response => {
-      form.title = response.data.title;
-      form.content = response.data.content;
-      form.public = response.data.public;
-      form.category = response.data.category_id;
-      form.tag = response.data.tag_id;
-      if (response.data.starts_at !== null && response.data.ends_at !== null) {
-        form.starts = dayjs(response.data.starts_at).format('YYYY-MM-DDTHH:mm');
-        form.ends = dayjs(response.data.ends_at).format('YYYY-MM-DDTHH:mm');
-      }
-    })
-    .catch(error => {
-      console.log(error);
-    });
+  if (props.targetNote.starts_at !== null && props.targetNote.ends_at !== null) {
+    form.starts = dayjs(props.targetNote.starts_at).format('YYYY-MM-DDTHH:mm');
+    form.ends = dayjs(props.targetNote.ends_at).format('YYYY-MM-DDTHH:mm');
+  }
   await getTagSelectItems();
 });
 
@@ -96,7 +86,7 @@ const tagCreated = async () => {
 };
 
 const submit = () => {
-  form.put(route('notes.update', props.targetId), {
+  form.put(route('notes.update', props.targetNote.id), {
     onSuccess: () => {
       emit('noteUpdated')
     },

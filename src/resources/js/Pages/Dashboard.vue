@@ -39,7 +39,7 @@ const filter: Ref<Filter> = ref({
   status: 1
 });
 
-const targetId = ref(0);
+const targetNote = ref();
 
 const bottomElement: Ref<HTMLElement | null> = ref();
 
@@ -110,29 +110,29 @@ const noteUpdated = async () => {
   showSnackBar('Updated Successfully.');
 };
 
-const showEditDialog = (id: number): void => {
-  targetId.value = id;
+const showEditDialog = (item: NoteType): void => {
+  targetNote.value = item;
   dialog.value.edit = true;
 };
 
-const showArchiveConfirmDialog = (id: number): void => {
-  targetId.value = id;
+const showArchiveConfirmDialog = (item: NoteType): void => {
+  targetNote.value = item;
   dialog.value.archiveConfirm = true;
 };
 
-const showRetrieveConfirmDialog = (id: number): void => {
-  targetId.value = id;
+const showRetrieveConfirmDialog = (item: NoteType): void => {
+  targetNote.value = item;
   dialog.value.retrieveConfirm = true;
 };
 
-const showDeleteConfirmDialog = (id: number): void => {
-  targetId.value = id;
+const showDeleteConfirmDialog = (item: NoteType): void => {
+  targetNote.value = item;
   dialog.value.deleteConfirm = true;
 };
 
 const archiveNote = async (): Promise<void> => {
   dialog.value.archiveConfirm = false;
-  await axios.put(route('notes.archive', targetId.value))
+  await axios.put(route('notes.archive', targetNote.value.id))
     .then(async () => {
       await refreshDisplay();
       showSnackBar('Archived Successfully.');
@@ -144,7 +144,7 @@ const archiveNote = async (): Promise<void> => {
 
 const retrieveNote = async (): Promise<void> => {
   dialog.value.retrieveConfirm = false;
-  await axios.put(route('notes.retrieve', targetId.value))
+  await axios.put(route('notes.retrieve', targetNote.value.id))
     .then(async () => {
       await refreshDisplay();
       showSnackBar('Retrieved Successfully.');
@@ -156,7 +156,7 @@ const retrieveNote = async (): Promise<void> => {
 
 const deleteNote = async (): Promise<void> => {
   dialog.value.deleteConfirm = false;
-  await axios.delete(route('notes.destroy', targetId.value))
+  await axios.delete(route('notes.destroy', targetNote.value.id))
     .then(async () => {
       await refreshDisplay();
       showSnackBar('Deleted Successfully.');
@@ -173,7 +173,7 @@ const showSnackBar = (msg: string): void => {
 
 const refreshDisplay = async (): Promise<void> => {
   observer?.disconnect();
-  targetId.value = 0;
+  targetNote.value = null;
   notes.value.splice(0);
   await loadNotes();
   observer.observe(bottomElement.value);
@@ -216,12 +216,12 @@ const filterApply = async (newFilter: Filter): Promise<void> => {
         <v-col v-for="note in notes" cols="12">
           <Note :note>
             <template #actions>
-              <v-icon size="small" class="ms-5" icon="mdi-pencil-outline" @click="showEditDialog(note.id)" />
+              <v-icon size="small" class="ms-5" icon="mdi-pencil-outline" @click="showEditDialog(note)" />
               <v-icon v-if="note.status.name === 'archived'" size="small" class="ms-5" icon="mdi-keyboard-return"
-                @click="showRetrieveConfirmDialog(note.id)" />
+                @click="showRetrieveConfirmDialog(note)" />
               <v-icon v-else size="small" class="ms-5" icon="mdi-archive-plus-outline"
-                @click="showArchiveConfirmDialog(note.id)" />
-              <v-icon size="small" class="ms-5" icon="mdi-delete-outline" @click="showDeleteConfirmDialog(note.id)" />
+                @click="showArchiveConfirmDialog(note)" />
+              <v-icon size="small" class="ms-5" icon="mdi-delete-outline" @click="showDeleteConfirmDialog(note)" />
             </template>
           </Note>
         </v-col>
@@ -231,7 +231,7 @@ const filterApply = async (newFilter: Filter): Promise<void> => {
       <NoteCreateForm @noteCreated="noteCreated" @close="dialog.create = false" />
     </v-dialog>
     <v-dialog v-model="dialog.edit" fullscreen scrollable>
-      <NoteEditForm :targetId @noteUpdated="noteUpdated" @close="dialog.edit = false" />
+      <NoteEditForm :targetNote @noteUpdated="noteUpdated" @close="dialog.edit = false" />
     </v-dialog>
     <v-dialog v-model="dialog.archiveConfirm" max-width="600">
       <ConfirmCard title="Archive Note" message="Are you sure you want to archive this note?"
