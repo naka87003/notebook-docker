@@ -5,7 +5,7 @@ export type Note = {
   updated_at: string;
   starts_at?: string;
   ends_at?: string;
-  description?: string;
+  content?: string;
   public: boolean;
   status: {
     name: string;

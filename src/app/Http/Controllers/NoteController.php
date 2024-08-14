@@ -21,7 +21,7 @@ class NoteController extends Controller
         if ($request->search) {
             $query->where(function (Builder $query) use ($request) {
                 $query->whereLike('title', "%{$request->search}%")
-                    ->orWhereLike('description', "%{$request->search}%")
+                    ->orWhereLike('content', "%{$request->search}%")
                     ->orWhereHas('tag', function (Builder $query) use ($request) {
                         $query->whereLike('name', "%{$request->search}%");
                     });
@@ -54,7 +54,7 @@ class NoteController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'description' => 'required_unless:category,3|max:500',
+            'content' => 'required_unless:category,3|max:500',
             'title' => 'required_if:category,3|max:50',
             'public' => 'required|boolean',
             'category' => 'required|numeric',
@@ -65,7 +65,7 @@ class NoteController extends Controller
 
         Note::create([
             'title' => $request->title,
-            'description' => $request->description,
+            'content' => $request->content,
             'public' => $request->public,
             'category_id' => $request->category,
             'tag_id' => $request->tag,
@@ -101,7 +101,7 @@ class NoteController extends Controller
     public function update(Request $request, Note $note)
     {
         $request->validate([
-            'description' => 'required_unless:category,3|max:500',
+            'content' => 'required_unless:category,3|max:500',
             'title' => 'required_if:category,3|max:50',
             'public' => 'required|boolean',
             'category' => 'required|numeric',
@@ -112,7 +112,7 @@ class NoteController extends Controller
 
         $note->update([
             'title' => $request->title,
-            'description' => $request->description,
+            'content' => $request->content,
             'public' => $request->public,
             'category_id' => $request->category,
             'tag_id' => $request->tag,

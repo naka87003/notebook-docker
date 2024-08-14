@@ -18,7 +18,7 @@ const page = usePage();
 const form = useForm({
   id: props.targetId,
   title: '',
-  description: '',
+  content: '',
   public: true,
   category: 1,
   tag: null,
@@ -59,7 +59,7 @@ onMounted(async () => {
   await axios.get(route('notes.edit', props.targetId))
     .then(response => {
       form.title = response.data.title;
-      form.description = response.data.description;
+      form.content = response.data.content;
       form.public = response.data.public;
       form.category = response.data.category_id;
       form.tag = response.data.tag_id;
@@ -121,11 +121,11 @@ const submit = () => {
           <v-col cols=12 md="6">
             <v-row>
               <v-col cols="12">
-                <div class="text-subtitle-1 text-medium-emphasis">Description</div>
-                <v-textarea v-model="form.description" hide-details="auto" type="text" density="compact"
-                  placeholder="Enter Description" variant="outlined" :error="Boolean(form.errors.description)"
-                  :error-messages="form.errors.description" required autofocus auto-grow
-                  @input="form.errors.description = null" />
+                <div class="text-subtitle-1 text-medium-emphasis">Content</div>
+                <v-textarea v-model="form.content" hide-details="auto" type="text" density="compact"
+                  placeholder="Enter Content" variant="outlined" :error="Boolean(form.errors.content)"
+                  :error-messages="form.errors.content" required autofocus auto-grow
+                  @input="form.errors.content = null" />
               </v-col>
             </v-row>
           </v-col>

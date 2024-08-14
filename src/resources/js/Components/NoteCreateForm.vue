@@ -14,7 +14,7 @@ const emit = defineEmits<{
 const page = usePage();
 const form = useForm({
   title: '',
-  description: '',
+  content: '',
   category: 1,
   public: true,
   tag: null,
@@ -92,11 +92,11 @@ const submit = () => {
           <v-col cols="12" md="6">
             <v-row>
               <v-col cols="12">
-                <div class="text-subtitle-1 text-medium-emphasis">Description</div>
-                <v-textarea v-model="form.description" hide-details="auto" type="text" density="compact"
-                  placeholder="Enter Description" variant="outlined" :error="Boolean(form.errors.description)"
-                  :error-messages="form.errors.description" required autofocus auto-grow
-                  @input="form.errors.description = null" />
+                <div class="text-subtitle-1 text-medium-emphasis">Content</div>
+                <v-textarea v-model="form.content" hide-details="auto" type="text" density="compact"
+                  placeholder="Enter Content" variant="outlined" :error="Boolean(form.errors.content)"
+                  :error-messages="form.errors.content" required autofocus auto-grow
+                  @input="form.errors.content = null" />
               </v-col>
             </v-row>
           </v-col>

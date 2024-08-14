@@ -15,7 +15,7 @@ class NoteSeeder extends Seeder
     {
         Note::create([
             'title' => 'サウナ',
-            'description' => "8:15 集合\r\n8:30 白玉温泉\r\n11:00 肉五郎（焼肉ランチ）\r\n14:00 解散",
+            'content' => "8:15 集合\r\n8:30 白玉温泉\r\n11:00 肉五郎（焼肉ランチ）\r\n14:00 解散",
             'starts_at' => '2024-08-11 08:15:00',
             'ends_at' => '2024-08-11 14:00:00',
             'public' => true,
@@ -29,7 +29,7 @@ class NoteSeeder extends Seeder
         ]);
         Note::create([
             'title' => '',
-            'description' => '"Turns out semicolon-less style is easier and safer in TS because most gotcha edge cases are type invalid as well."',
+            'content' => '"Turns out semicolon-less style is easier and safer in TS because most gotcha edge cases are type invalid as well."',
             'starts_at' => null,
             'ends_at' => null,
             'public' => true,
@@ -43,7 +43,7 @@ class NoteSeeder extends Seeder
         ]);
         Note::create([
             'title' => '買い物',
-            'description' => "豆腐\r\nパン\r\nヨーグルト",
+            'content' => "豆腐\r\nパン\r\nヨーグルト",
             'starts_at' => null,
             'ends_at' => null,
             'public' => false,
@@ -57,7 +57,7 @@ class NoteSeeder extends Seeder
         ]);
         Note::create([
             'title' => 'toast',
-            'description' => "不可算名詞\r\nHow many slices of toast do you have for breakfast?",
+            'content' => "不可算名詞\r\nHow many slices of toast do you have for breakfast?",
             'starts_at' => null,
             'ends_at' => null,
             'public' => false,
