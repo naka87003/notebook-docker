@@ -26,6 +26,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('/notes', NoteController::class);
 
     Route::put('/notes/archive/{note}', [NoteController::class, 'archive'])->name('notes.archive');
+    Route::put('/notes/retrieve/{note}', [NoteController::class, 'retrieve'])->name('notes.retrieve');
 
     Route::get('/tags/selectItems', [TagController::class, 'selectItems'])->name('tags.selectItems');
     Route::post('/tags', [TagController::class, 'store'])->name('tags.store');

@@ -9,13 +9,15 @@ import NoteCreateForm from '@/Components/NoteCreateForm.vue';
 import NoteEditForm from '@/Components/NoteEditForm.vue';
 import ConfirmCard from '@/Components/ConfirmCard.vue';
 import NoteSortMenu from '@/Components/NoteSortMenu.vue';
+import type { Note as NoteType } from '@/interfaces';
 
 const search = ref('');
-const notes = ref([]);
+const notes: Ref<NoteType[]> = ref([]);
 const dialog = ref({
   create: false,
   edit: false,
   archiveConfirm: false,
+  retrieveConfirm: false,
   deleteConfirm: false,
   sortMenu: false
 });
@@ -106,6 +108,11 @@ const showArchiveConfirmDialog = (id: number): void => {
   dialog.value.archiveConfirm = true;
 };
 
+const showRetrieveConfirmDialog = (id: number): void => {
+  targetId.value = id;
+  dialog.value.retrieveConfirm = true;
+};
+
 const showDeleteConfirmDialog = (id: number): void => {
   targetId.value = id;
   dialog.value.deleteConfirm = true;
@@ -117,6 +124,18 @@ const archiveNote = async (): Promise<void> => {
     .then(async () => {
       await refreshDisplay();
       showSnackBar('Archived Successfully.');
+    })
+    .catch(error => {
+      console.log(error);
+    });
+};
+
+const retrieveNote = async (): Promise<void> => {
+  dialog.value.retrieveConfirm = false;
+  await axios.put(route('notes.retrieve', targetId.value))
+    .then(async () => {
+      await refreshDisplay();
+      showSnackBar('Retrieved Successfully.');
     })
     .catch(error => {
       console.log(error);
@@ -181,7 +200,10 @@ const sortApply = async (newSort: {
           <Note :note>
             <template #actions>
               <v-icon size="small" class="ms-5" icon="mdi-pencil-outline" @click="showEditDialog(note.id)" />
-              <v-icon size="small" class="ms-5" icon="mdi-archive-outline" @click="showArchiveConfirmDialog(note.id)" />
+              <v-icon v-if="note.status.name === 'archived'" size="small" class="ms-5" icon="mdi-keyboard-return"
+                @click="showRetrieveConfirmDialog(note.id)" />
+              <v-icon v-else size="small" class="ms-5" icon="mdi-archive-plus-outline"
+                @click="showArchiveConfirmDialog(note.id)" />
               <v-icon size="small" class="ms-5" icon="mdi-delete-outline" @click="showDeleteConfirmDialog(note.id)" />
             </template>
           </Note>
@@ -195,8 +217,14 @@ const sortApply = async (newSort: {
       <NoteEditForm :targetId @noteUpdated="noteUpdated" @close="dialog.edit = false" />
     </v-dialog>
     <v-dialog v-model="dialog.archiveConfirm" max-width="600">
-      <ConfirmCard title="Archive Note" message="Are you sure you want to archive this note?" icon="mdi-archive-outline"
-        confirmBtnName="Archive" @confirmed="archiveNote" @close="dialog.archiveConfirm = false" />
+      <ConfirmCard title="Archive Note" message="Are you sure you want to archive this note?"
+        icon="mdi-archive-plus-outline" confirmBtnName="Archive" @confirmed="archiveNote"
+        @close="dialog.archiveConfirm = false" />
+    </v-dialog>
+    <v-dialog v-model="dialog.retrieveConfirm" max-width="600">
+      <ConfirmCard title="Retrieve" message="Are you sure you want to retrieve this note from the archive?"
+        icon="mdi-keyboard-return" confirmBtnName="Retrieve" @confirmed="retrieveNote"
+        @close="dialog.retrieveConfirm = false" />
     </v-dialog>
     <v-dialog v-model="dialog.deleteConfirm" max-width="600">
       <ConfirmCard icon="mdi-delete-outline" title="Delete Note" message="Are you sure you want to delete this note?"

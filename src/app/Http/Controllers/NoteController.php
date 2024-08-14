@@ -15,7 +15,7 @@ class NoteController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Note::where('status_id', 1)->where('user_id', Auth::id());
+        $query = Note::where('user_id', Auth::id());
         if ($request->search) {
             $query->where(function (Builder $query) use ($request) {
                 $query->whereLike('title', "%{$request->search}%")
@@ -133,6 +133,16 @@ class NoteController extends Controller
     public function archive(Note $note)
     {
         $note->status_id = 2;
+        $note->save();
+        return response()->json();
+    }
+
+    /**
+     * change status to `active`
+     */
+    public function retrieve(Note $note)
+    {
+        $note->status_id = 1;
         $note->save();
         return response()->json();
     }
