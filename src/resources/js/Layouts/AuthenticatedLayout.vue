@@ -44,7 +44,7 @@ const logout = () => {
           <v-tab value="calendar" :href="route('calendar')">Calendar</v-tab>
         </v-tabs>
         <v-spacer />
-        <v-btn icon="mdi-tag-outline" class="hidden-sm-and-down" :active="currentPageName === 'tags.index'"
+        <v-btn icon="mdi-tag-multiple-outline" class="hidden-sm-and-down" :active="currentPageName === 'tags.index'"
           :href="route('tags.index')" />
         <v-btn :icon="isDark ? 'mdi-weather-night' : 'mdi-weather-sunny'" class="hidden-sm-and-down ms-3"
           @click="isDark = !isDark" />
