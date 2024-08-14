@@ -248,10 +248,10 @@ const filterApply = async (newFilter: Filter): Promise<void> => {
         description="Once the note is deleted, it will be permanently deleted." confirmBtnName="Delete"
         confirmBtnColor="error" @confirmed="deleteNote" @close="dialog.deleteConfirm = false" />
     </v-dialog>
-    <v-dialog v-model="dialog.sortMenu" max-width="600">
+    <v-dialog v-model="dialog.sortMenu" max-width="600" scrollable>
       <NoteSortMenu :sort @close="dialog.sortMenu = false" @apply="sortApply" />
     </v-dialog>
-    <v-dialog v-model="dialog.filterMenu" max-width="600">
+    <v-dialog v-model="dialog.filterMenu" max-width="600" scrollable>
       <NoteFilterMenu :filter @close="dialog.filterMenu = false" @apply="filterApply" />
     </v-dialog>
   </AuthenticatedLayout>

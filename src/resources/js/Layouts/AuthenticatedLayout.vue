@@ -74,7 +74,7 @@ const logout = () => {
     </v-app-bar>
     <v-main>
       <v-container class="hidden-md-and-up">
-        <v-dialog v-model="dialog.humburgerMenu">
+        <v-dialog v-model="dialog.humburgerMenu" scrollable>
           <HumburgerMenu :currentPageName v-model:isDark="isDark" @logout="logout"
             @close="dialog.humburgerMenu = false" />
         </v-dialog>
