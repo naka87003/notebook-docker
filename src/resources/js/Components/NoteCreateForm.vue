@@ -155,17 +155,17 @@ const submit = () => {
                 <div class="text-subtitle-1 text-medium-emphasis">Tag</div>
                 <v-autocomplete v-model="form.tag" hide-details="auto" :items="items.tag" density="compact"
                   placeholder="Select Tag" variant="outlined" :error="Boolean(form.errors.tag)"
-                  append-icon="mdi-tag-plus" :error-messages="form.errors.tag" required item-title="name"
+                  append-icon="mdi-tag-plus-outline" :error-messages="form.errors.tag" required item-title="name"
                   item-value="id" clearable @input="form.errors.tag = null" @click:append="dialog.tagCreate = true">
                   <template v-slot:item="{ props, item }">
-                    <v-list-item v-bind="props" prepend-icon="mdi-tag" :title="item.raw.name">
+                    <v-list-item v-bind="props" :title="item.raw.name">
                       <template v-slot:prepend>
                         <v-icon icon="mdi-tag" :color="item.raw.hex_color" />
                       </template>
                     </v-list-item>
                   </template>
                   <template v-slot:selection="{ item }">
-                    <v-list-item prepend-icon="mdi-tag" :title="item.raw.name">
+                    <v-list-item :title="item.raw.name">
                       <template v-slot:prepend>
                         <v-icon icon="mdi-tag" :color="item.raw.hex_color" />
                       </template>
