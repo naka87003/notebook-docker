@@ -23,13 +23,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('Calendar');
     })->name('calendar');
 
-    Route::resource('/notes', NoteController::class);
-
+    Route::resource('/notes', NoteController::class)->except(['create']);
     Route::put('/notes/archive/{note}', [NoteController::class, 'archive'])->name('notes.archive');
     Route::put('/notes/retrieve/{note}', [NoteController::class, 'retrieve'])->name('notes.retrieve');
-
-    Route::get('/tags/selectItems', [TagController::class, 'selectItems'])->name('tags.selectItems');
-    Route::post('/tags', [TagController::class, 'store'])->name('tags.store');
+    
+    Route::resource('/tags', TagController::class)->except(['create', 'show']);
+    Route::get('/tags/items/select', [TagController::class, 'selectItems'])->name('tags.items.select');
+    Route::get('/tags/items/datatable', [TagController::class, 'datatableItems'])->name('tags.items.datatable');
 });
 
 Route::middleware('auth')->group(function () {
@@ -37,7 +37,5 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
-
-
 
 require __DIR__ . '/auth.php';

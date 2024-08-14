@@ -20,13 +20,13 @@ const isDark = defineModel('isDark');
       </template>
     </v-toolbar>
     <v-divider />
-    <v-card-text  class="pa-0">
+    <v-card-text class="pa-0">
       <v-list lines="two">
         <v-list-subheader>Page</v-list-subheader>
         <v-list-item title="Note" density="compact" :active="currentPageName === 'dashboard'"
           :href="route('dashboard')">
           <template v-slot:prepend>
-            <v-avatar color="info" density="compact">
+            <v-avatar density="compact">
               <v-icon>mdi-book-open-outline</v-icon>
             </v-avatar>
           </template>
@@ -34,11 +34,20 @@ const isDark = defineModel('isDark');
         <v-list-item title="Calendar" density="compact" :active="currentPageName === 'calendar'"
           :href="route('calendar')">
           <template v-slot:prepend>
-            <v-avatar color="warning" density="compact">
+            <v-avatar density="compact">
               <v-icon>mdi-calendar-multiselect-outline</v-icon>
             </v-avatar>
           </template>
-        </v-list-item><v-divider></v-divider>
+        </v-list-item>
+        <v-list-item title="Tag" density="compact" :active="currentPageName === 'tags.index'"
+          :href="route('tags.index')">
+          <template v-slot:prepend>
+            <v-avatar density="compact">
+              <v-icon>mdi-tag-outline</v-icon>
+            </v-avatar>
+          </template>
+        </v-list-item>
+        <v-divider />
         <v-list-subheader>Theme</v-list-subheader>
         <v-list-item density="compact" class="mb-n3">
           <v-radio-group v-model="isDark">
@@ -68,7 +77,7 @@ const isDark = defineModel('isDark');
         </v-list-item>
         <v-list-item title="Logout" @click="$emit('logout')">
           <template v-slot:prepend>
-            <v-avatar color="secondary" density="compact">
+            <v-avatar density="compact">
               <v-icon>mdi-logout</v-icon>
             </v-avatar>
           </template>

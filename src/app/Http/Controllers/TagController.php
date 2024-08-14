@@ -2,18 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Note;
 use App\Models\Tag;
+use Illuminate\Database\Query\JoinClause;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 
 class TagController extends Controller
 {
-    public function selectItems()
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
     {
-        $items = Tag::where('user_id', Auth::id())->orderBy('created_at', 'desc')->get();
-
-        return $items;
+        return Inertia::render('Tag');
     }
 
     /**
@@ -33,5 +38,41 @@ class TagController extends Controller
         ]);
 
         return back();
+    }
+
+    public function selectItems()
+    {
+        $items = Tag::where('user_id', Auth::id())->orderBy('created_at', 'desc')->get();
+
+        return $items;
+    }
+
+    public function datatableItems(Request $request)
+    {
+        $normal = Note::select('tag_id', DB::raw('count(*) AS normal_count'))->where('user_id', Auth::id())->where('status_id', 1)->groupBy('tag_id');
+        $archived = Note::select('tag_id', DB::raw('count(*) AS archived_count'))->where('user_id', Auth::id())->where('status_id', 2)->groupBy('tag_id');
+
+        $query = Tag::where('user_id', Auth::id())
+            ->leftJoinSub($normal, 'normal', function (JoinClause $join) {
+                $join->on('tags.id', '=', 'normal.tag_id');
+            })
+            ->leftJoinSub($archived, 'archived', function (JoinClause $join) {
+                $join->on('tags.id', '=', 'archived.tag_id');
+            });
+
+        if ($request->search) {
+            $query->whereLike('name', "%{$request->search}%");
+        }
+
+        if ($request->sortBy) {
+            $query->orderBy($request->sortBy[0]['key'], $request->sortBy[0]['order']);
+        } else {
+            $query->orderBy('updated_at', 'desc');
+        }
+
+        $count = $query->count();
+        $items = $query->limit($request->itemsPerPage)->offset(($request->page - 1) * $request->itemsPerPage)->get();
+
+        return response()->json(compact('items', 'count'));
     }
 }

@@ -1,0 +1,89 @@
+<script setup lang="ts">
+import { ref, watch } from 'vue';
+import { watchDebounced } from '@vueuse/core'
+import axios from 'axios';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+
+const searchText = ref('');
+
+const dialog = ref({
+  create: false
+});
+
+const search = ref('');
+const itemsPerPage = ref(10);
+const headers = ref([
+  { title: 'Tag', key: 'name' },
+  { title: 'Normal', key: 'normal_count' },
+  { title: 'Archived', key: 'archived_count' },
+  { title: 'Actions', key: 'actions', sortable: false },
+]) as any;
+
+const items = ref([]);
+const loading = ref(true);
+const totalItems = ref(0);
+
+watchDebounced(
+  searchText,
+  () => search.value = String(Date.now()),
+  { debounce: 500, maxWait: 1000 },
+)
+
+const loadItems = async ({ page, itemsPerPage, sortBy }) => {
+  loading.value = true
+  await axios.get(route('tags.items.datatable'), {
+    params: { page, itemsPerPage, sortBy, search: searchText.value, }
+  })
+    .then(response => {
+      items.value = response.data.items;
+      totalItems.value = response.data.count;
+    })
+    .catch(error => {
+      console.log(error);
+    });
+  loading.value = false
+};
+
+const editItem = (item) => {
+
+};
+
+const deleteItem = (item) => {
+
+};
+</script>
+<template>
+  <AuthenticatedLayout>
+    <template #action>
+      <v-text-field v-model="searchText" density="compact" label="Search" prepend-inner-icon="mdi-magnify"
+        variant="solo-filled" flat hide-details single-line></v-text-field>
+      <v-spacer></v-spacer>
+      <v-btn icon="mdi-tag-plus" variant="flat" @click="dialog.create = true" />
+    </template>
+    <v-container>
+      <v-data-table-server v-model:items-per-page="itemsPerPage" :headers :items :items-length="totalItems"
+        :loading="loading" :search item-value="name" @update:options="loadItems">
+        <template v-slot:item.name="{ item }">
+          <v-icon class="me-3" size="small" :color="item.hex_color" icon="mdi-tag" />
+          {{ item.name }}
+        </template>
+        <template v-slot:item.normal_count="{ item }">
+          <v-btn v-if="item.normal_count !== null" variant="plain" color="primary">{{ item.normal_count }}</v-btn>
+          <v-btn v-else variant="plain" disabled>0</v-btn>
+        </template>
+        <template v-slot:item.archived_count="{ item }">
+          <v-btn v-if="item.archived_count !== null" variant="plain" color="primary">{{ item.archived_count }}</v-btn>
+          <v-btn v-else variant="plain" disabled>0</v-btn>
+        </template>
+        <template v-slot:item.actions="{ item }">
+          <v-icon class="me-3" size="small" @click="editItem(item)">
+            mdi-pencil
+          </v-icon>
+          <v-icon size="small" @click="deleteItem(item)">
+            mdi-delete
+          </v-icon>
+        </template>
+      </v-data-table-server>
+    </v-container>
+  </AuthenticatedLayout>
+</template>

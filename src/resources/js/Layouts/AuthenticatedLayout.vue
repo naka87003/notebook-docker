@@ -44,15 +44,18 @@ const logout = () => {
           <v-tab value="calendar" :href="route('calendar')">Calendar</v-tab>
         </v-tabs>
         <v-spacer />
-        <v-divider vertical class="hidden-sm-and-down" />
-        <v-btn :icon="isDark ? 'mdi-weather-night' : 'mdi-weather-sunny'" class="hidden-sm-and-down mx-3"
+        <v-btn icon="mdi-tag-outline" class="hidden-sm-and-down" :active="currentPageName === 'tags.index'"
+          :href="route('tags.index')" />
+        <v-btn :icon="isDark ? 'mdi-weather-night' : 'mdi-weather-sunny'" class="hidden-sm-and-down ms-3"
           @click="isDark = !isDark" />
-        <v-divider vertical class="hidden-xs" />
+        <v-divider vertical class="hidden-xs ms-3" />
         <v-menu class="hidden-sm-and-down">
           <template v-slot:activator="{ props }">
             <v-list-item v-bind="props" :title="$page.props.auth.user.name" class="hidden-sm-and-down">
               <template v-slot:prepend>
-                <v-avatar color="surface-light"> <v-icon>mdi-account</v-icon></v-avatar>
+                <v-avatar color="surface-light">
+                  <v-icon>mdi-account</v-icon>
+                </v-avatar>
               </template>
               <template v-slot:append>
                 <v-icon>mdi-chevron-down</v-icon>

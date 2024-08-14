@@ -75,7 +75,7 @@ onMounted(async () => {
 });
 
 const getTagSelectItems = async (): Promise<void> => {
-  await axios.get(route('tags.selectItems'))
+  await axios.get(route('tags.items.select'))
     .then(response => {
       items.value.tag = response.data;
     })
