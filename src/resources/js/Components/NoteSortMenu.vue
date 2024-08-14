@@ -1,29 +1,31 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import type { Sort } from '@/interfaces';
 
 const emit = defineEmits<{
   close: [];
-  apply: [newSort: { key: string; order: string }];
+  apply: [newSort: Sort];
 }>()
 
-const props = defineProps<{
-  sort: {
-    key: string;
-    order: string;
-  }
-}>();
+const props = defineProps<{ sort: Sort }>();
 
 const newSort = ref({
   key: props.sort.key,
   order: props.sort.order
 });
+
+const resetSort = () => {
+  newSort.value.key = 'updated_at';
+  newSort.value.order = 'desc';
+  emit('apply', newSort.value);
+};
 </script>
 <template>
   <v-card>
     <v-toolbar density="comfortable" color="transparent">
       <v-toolbar-title class="text-h6" text="Sort Menu"></v-toolbar-title>
       <template v-slot:prepend>
-        <v-icon class="ms-3" icon="mdi-sort"/>
+        <v-icon class="ms-3" icon="mdi-sort" />
       </template>
       <template v-slot:append>
         <v-btn icon="mdi-close" @click="$emit('close')"></v-btn>
@@ -41,7 +43,7 @@ const newSort = ref({
           </v-radio-group>
         </v-col>
       </v-row>
-      <v-divider class="my-5"/>
+      <v-divider class="my-5" />
       <v-row>
         <v-col cols="12">
           <div class="text-subtitle-1 text-medium-emphasis">Order</div>
@@ -54,6 +56,7 @@ const newSort = ref({
     </v-card-text>
     <v-divider />
     <template v-slot:actions>
+      <v-btn variant="plain" @click="resetSort">Reset</v-btn>
       <v-spacer></v-spacer>
       <v-btn variant="plain" @click="$emit('close')">Close</v-btn>
       <v-btn color="primary" variant="tonal" @click="$emit('apply', newSort)">Apply</v-btn>
