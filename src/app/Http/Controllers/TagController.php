@@ -58,6 +58,19 @@ class TagController extends Controller
         return back();
     }
 
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Tag $tag)
+    {
+        DB::transaction(function () use ($tag) {
+            $tag->notes()->update(['tag_id' => null]);
+            $tag->delete();
+        });
+
+        return response()->json();
+    }
+
     public function selectItems()
     {
         $items = Tag::where('user_id', Auth::id())->orderBy('created_at', 'desc')->get();

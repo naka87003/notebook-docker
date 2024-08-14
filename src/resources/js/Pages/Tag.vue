@@ -1,18 +1,23 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { type Ref, ref } from 'vue';
 import { watchDebounced } from '@vueuse/core'
 import axios from 'axios';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import TagCreateForm from '@/Components/TagCreateForm.vue';
 import TagEditForm from '@/Components/TagEditForm.vue';
+import type { Tag, TagCount } from '@/interfaces';
+import ConfirmCard from '@/Components/ConfirmCard.vue';
 
 const searchText = ref('');
 
 const dialog = ref({
   create: false,
-  edit: false
+  edit: false,
+  deleteConfirm: false
 });
+
+const deleteConfirmDescription = ref('');
 
 const snackbar = ref({
   display: false,
@@ -28,10 +33,9 @@ const headers = ref([
   { title: 'Actions', key: 'actions', sortable: false },
 ]) as any;
 
-const items = ref([]);
+const items: Ref<(Tag & TagCount)[]> = ref([]);
 const loading = ref(true);
 const totalItems = ref(0);
-
 const targetTag = ref();
 
 watchDebounced(
@@ -55,13 +59,9 @@ const loadItems = async ({ page, itemsPerPage, sortBy }) => {
   loading.value = false
 };
 
-const editItem = (item) => {
+const editItem = (item: Tag) => {
   targetTag.value = item;
   dialog.value.edit = true;
-};
-
-const deleteItem = (item) => {
-
 };
 
 const tagCreated = async () => {
@@ -78,6 +78,28 @@ const tagUpdated = async () => {
 const showSnackBar = (msg: string): void => {
   snackbar.value.message = msg;
   snackbar.value.display = true;
+};
+
+const showDeleteConfirmDialog = (item: Tag & TagCount): void => {
+  targetTag.value = item;
+  if (item.normal_count + item.archived_count) {
+    deleteConfirmDescription.value = 'Deleting a tag will also remove the associated tag information from any linked notes.';
+  } else {
+    deleteConfirmDescription.value = '';
+  }
+  dialog.value.deleteConfirm = true;
+};
+
+const deleteTag = async () => {
+  dialog.value.deleteConfirm = false;
+  await axios.delete(route('tags.destroy', targetTag.value.id))
+    .then(async () => {
+      search.value = String(Date.now());
+      showSnackBar('Deleted Successfully.');
+    })
+    .catch(error => {
+      console.log(error);
+    });
 };
 </script>
 <template>
@@ -109,12 +131,8 @@ const showSnackBar = (msg: string): void => {
           <v-btn v-else variant="plain" disabled>0</v-btn>
         </template>
         <template v-slot:item.actions="{ item }">
-          <v-icon class="me-3" size="small" @click="editItem(item)">
-            mdi-pencil
-          </v-icon>
-          <v-icon size="small" @click="deleteItem(item)">
-            mdi-delete
-          </v-icon>
+          <v-icon icon="mdi-pencil" class="me-3" size="small" @click="editItem(item)" />
+          <v-icon icon="mdi-delete" size="small" @click="showDeleteConfirmDialog(item)" />
         </template>
       </v-data-table-server>
     </v-container>
@@ -123,6 +141,11 @@ const showSnackBar = (msg: string): void => {
     </v-dialog>
     <v-dialog v-model="dialog.edit" max-width="600">
       <TagEditForm :targetTag @close="dialog.edit = false" @tagUpdated="tagUpdated" />
+    </v-dialog>
+    <v-dialog v-model="dialog.deleteConfirm" max-width="600">
+      <ConfirmCard icon="mdi-delete-outline" title="Delete Tag" message="Are you sure you want to delete this tag?"
+        :description="deleteConfirmDescription" confirmBtnName="Delete" confirmBtnColor="error" @confirmed="deleteTag"
+        @close="dialog.deleteConfirm = false" />
     </v-dialog>
   </AuthenticatedLayout>
 </template>
