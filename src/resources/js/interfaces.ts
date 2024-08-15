@@ -1,3 +1,11 @@
+export type User = {
+  id: number;
+  name: string;
+  email: string;
+  email_verified_at?: string;
+  image_path?: string;
+};
+
 export type Note = {
   id: number;
   title?: string;
