@@ -7,9 +7,11 @@
     import EventNote from '@/Components/EventNote.vue';
     import ConfirmCard from '@/Components/ConfirmCard.vue';
     import NoteEditForm from '@/Components/NoteEditForm.vue';
+import NoteCreateForm from '@/Components/NoteCreateForm.vue';
 
     const dialog = ref({
       eventNote: false,
+      create: false,
       edit: false,
       archiveConfirm: false,
       retrieveConfirm: false,
@@ -76,6 +78,13 @@
       dialog.value.eventNote = true;
     };
 
+    const noteCreated = async () => {
+      dialog.value.create = false;
+      await getSchedule();
+      dialog.value.eventNote = false;
+      showSnackBar('Updated Successfully.');
+    };
+
     const noteUpdated = async () => {
       dialog.value.edit = false;
       await getSchedule();
@@ -132,6 +141,7 @@
         </template>
       </v-select>
       <v-spacer></v-spacer>
+      <v-btn icon="mdi-plus" variant="flat" @click="dialog.create = true" />
     </template>
     <v-container>
       <v-sheet>
@@ -155,12 +165,15 @@
         </template>
       </EventNote>
     </v-dialog>
+    <v-dialog v-model="dialog.create" fullscreen scrollable>
+      <NoteCreateForm variant="event" @noteCreated="noteCreated" @close="dialog.create = false" />
+    </v-dialog>
     <v-dialog v-model="dialog.edit" fullscreen scrollable>
-      <NoteEditForm :targetNote @noteUpdated="noteUpdated" @close="dialog.edit = false" />
+      <NoteEditForm :targetNote variant="event" @noteUpdated="noteUpdated" @close="dialog.edit = false" />
     </v-dialog>
     <v-dialog v-model="dialog.deleteConfirm" max-width="600">
-      <ConfirmCard icon="mdi-delete-outline" title="Delete Note" message="Are you sure you want to delete this note?"
-        description="Once the note is deleted, it will be permanently deleted." confirmBtnName="Delete"
+      <ConfirmCard icon="mdi-delete-outline" title="Delete Event" message="Are you sure you want to delete this event?"
+        description="Once the event is deleted, it will be permanently deleted." confirmBtnName="Delete"
         confirmBtnColor="error" @confirmed="deleteNote" @close="dialog.deleteConfirm = false" />
     </v-dialog>
   </AuthenticatedLayout>
