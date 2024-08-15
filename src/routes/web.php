@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\NoteController;
@@ -19,9 +20,9 @@ Route::get('/', function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/calendar', function () {
-        return Inertia::render('Calendar');
-    })->name('calendar');
+
+    Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar');
+    Route::get('/calendar/schedule', [CalendarController::class, 'schedule'])->name('calendar.schedule');
 
     Route::resource('/notes', NoteController::class)->except(['create', 'edit', 'show']);
     Route::put('/notes/archive/{note}', [NoteController::class, 'archive'])->name('notes.archive');

@@ -1,79 +1,167 @@
-    <script >
-    import { useDate } from 'vuetify'
+    <script setup lang="ts">
+    import { Head } from '@inertiajs/vue3';
+    import axios from 'axios';
     import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+    import { type Ref, ref, onMounted } from 'vue';
+    import { Note as NoteType } from '@/interfaces';
+    import EventNote from '@/Components/EventNote.vue';
+    import ConfirmCard from '@/Components/ConfirmCard.vue';
+    import NoteEditForm from '@/Components/NoteEditForm.vue';
 
-    export default {
-      data: () => ({
-        type: 'month',
-        types: ['month', 'week', 'day'],
-        weekday: [0, 1, 2, 3, 4, 5, 6],
-        weekdays: [
-          { title: 'Sun - Sat', value: [0, 1, 2, 3, 4, 5, 6] },
-          { title: 'Mon - Sun', value: [1, 2, 3, 4, 5, 6, 0] },
-          { title: 'Mon - Fri', value: [1, 2, 3, 4, 5] },
-          { title: 'Mon, Wed, Fri', value: [1, 3, 5] },
-        ],
-        value: [new Date()],
-        events: [],
-        colors: ['blue', 'indigo', 'deep-purple', 'cyan', 'green', 'orange', 'grey darken-1'],
-        titles: ['Meeting', 'Holiday', 'PTO', 'Travel', 'Event', 'Birthday', 'Conference', 'Party'],
-      }),
-      components: {
-        AuthenticatedLayout
-      },
-      mounted() {
-        const adapter = useDate()
-        this.getEvents({ start: adapter.startOfDay(adapter.startOfMonth(new Date())), end: adapter.endOfDay(adapter.endOfMonth(new Date())) })
-      },
-      methods: {
-        getEvents({ start, end }) {
-          const events = []
+    const dialog = ref({
+      eventNote: false,
+      edit: false,
+      archiveConfirm: false,
+      retrieveConfirm: false,
+      deleteConfirm: false,
+    });
 
-          const min = start
-          const max = end
-          const days = (max.getTime() - min.getTime()) / 86400000
-          const eventCount = this.rnd(days, days + 20)
+    const snackbar = ref({
+      display: false,
+      message: ''
+    });
 
-          for (let i = 0; i < eventCount; i++) {
-            const allDay = this.rnd(0, 3) === 0
-            const firstTimestamp = this.rnd(min.getTime(), max.getTime())
-            const first = new Date(firstTimestamp - (firstTimestamp % 900000))
-            const secondTimestamp = this.rnd(2, allDay ? 288 : 8) * 900000
-            const second = new Date(first.getTime() + secondTimestamp)
+    const type: Ref<'month' | 'day' | 'week'> = ref('month');
 
-            events.push({
-              title: this.titles[this.rnd(0, this.titles.length - 1)],
-              start: first,
-              end: second,
-              color: this.colors[this.rnd(0, this.colors.length - 1)],
-              allDay: !allDay,
-            })
-          }
+    const schedule: Ref<NoteType[]> = ref([]);
+    const targetNote: Ref<NoteType> = ref();
 
-          this.events = events
-        },
-        getEventColor(event) {
-          return event.color
-        },
-        rnd(a, b) {
-          return Math.floor((b - a + 1) * Math.random()) + a
-        },
-      },
-    }
+    const items = {
+      types: [
+        { value: 'month', mdi_name: 'mdi-calendar-month-outline' },
+        { value: 'week', mdi_name: 'mdi-calendar-week-outline' },
+        { value: 'day', mdi_name: 'mdi-calendar-today-outline' }
+      ]
+    };
+
+    const weekday = ref([0, 1, 2, 3, 4, 5, 6]);
+
+    const value = ref();
+
+    const events = ref([]);
+
+    onMounted(async () => {
+      getSchedule();
+    });
+
+    const getSchedule = async () => {
+      await axios.get(route('calendar.schedule'), {
+        params: {
+        }
+      })
+        .then(response => {
+          schedule.value = response.data;
+          events.value = response.data.map((item: NoteType) => {
+            return {
+              id: item.id,
+              title: item.title,
+              start: new Date(item.starts_at),
+              end: new Date(item.ends_at),
+              color: item.tag?.hex_color
+            }
+          });
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    };
+
+    const showSnackBar = (msg: string): void => {
+      snackbar.value.message = msg;
+      snackbar.value.display = true;
+    };
+
+    const showEvent = (id): void => {
+      targetNote.value = schedule.value.find((item) => item.id === id);
+      dialog.value.eventNote = true;
+    };
+
+    const noteUpdated = async () => {
+      dialog.value.edit = false;
+      await getSchedule();
+      dialog.value.eventNote = false;
+      showSnackBar('Updated Successfully.');
+    };
+
+    const showEditDialog = (item: NoteType): void => {
+      targetNote.value = item;
+      dialog.value.edit = true;
+    };
+
+    const showDeleteConfirmDialog = (item: NoteType): void => {
+      targetNote.value = item;
+      dialog.value.deleteConfirm = true;
+    };
+
+    const deleteNote = async (): Promise<void> => {
+      dialog.value.deleteConfirm = false;
+      await axios.delete(route('notes.destroy', targetNote.value.id))
+        .then(async () => {
+          await getSchedule();
+          dialog.value.eventNote = false;
+          showSnackBar('Deleted Successfully.');
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    };
 </script>
     
 <template>
+
+  <Head title="Calendar" />
+  <v-snackbar v-model="snackbar.display" location="top right" color="success" timeout="3000">
+    <v-icon class="me-3" style="margin-bottom: 2px;">mdi-check-circle</v-icon>{{ snackbar.message }}
+  </v-snackbar>
   <AuthenticatedLayout>
+    <template #action>
+      <v-select v-model="type" :items="items.types" density="compact" variant="solo-filled" hide-details>
+        <template v-slot:item="{ props, item }">
+          <v-list-item v-bind="props" :title="item.raw.value" density="compact">
+            <template v-slot:prepend>
+              <v-icon :icon="item.raw.mdi_name" />
+            </template>
+          </v-list-item>
+        </template>
+        <template v-slot:selection="{ item }">
+          <v-list-item :title="item.raw.value" density="compact">
+            <template v-slot:prepend>
+              <v-icon :icon="item.raw.mdi_name" />
+            </template>
+          </v-list-item>
+        </template>
+      </v-select>
+      <v-spacer></v-spacer>
+    </template>
     <v-container>
-      <v-sheet class="d-flex" height="54" tile>
-        <v-select v-model="type" :items="types" class="ma-2" label="View Mode" variant="outlined" dense
-          hide-details></v-select>
-        <v-select v-model="weekday" :items="weekdays" class="ma-2" label="weekdays" variant="outlined" dense
-          hide-details></v-select>
-      </v-sheet>
       <v-sheet>
-        <v-calendar ref="calendar" v-model="value" :events="events" :view-mode="type" :weekdays="weekday"></v-calendar>
+        <v-calendar ref="calendar" v-model="value" :events :view-mode="type" :weekdays="weekday">
+          <template v-slot:event="{ event }">
+            <v-btn size="small" variant="tonal" @click="showEvent(event.id)">
+              <template #prepend>
+                <v-icon icon="mdi-account" :color="String(event.color)"></v-icon>
+              </template>
+              {{ event.title }}
+            </v-btn>
+          </template>
+        </v-calendar>
       </v-sheet>
     </v-container>
+    <v-dialog v-model="dialog.eventNote" max-width="1000">
+      <EventNote :targetNote>
+        <template #actions="{ targetNote }">
+          <v-icon size="small" class="ms-5" icon="mdi-pencil-outline" @click="showEditDialog(targetNote)" />
+          <v-icon size="small" class="ms-5" icon="mdi-delete-outline" @click="showDeleteConfirmDialog(targetNote)" />
+        </template>
+      </EventNote>
+    </v-dialog>
+    <v-dialog v-model="dialog.edit" fullscreen scrollable>
+      <NoteEditForm :targetNote @noteUpdated="noteUpdated" @close="dialog.edit = false" />
+    </v-dialog>
+    <v-dialog v-model="dialog.deleteConfirm" max-width="600">
+      <ConfirmCard icon="mdi-delete-outline" title="Delete Note" message="Are you sure you want to delete this note?"
+        description="Once the note is deleted, it will be permanently deleted." confirmBtnName="Delete"
+        confirmBtnColor="error" @confirmed="deleteNote" @close="dialog.deleteConfirm = false" />
+    </v-dialog>
   </AuthenticatedLayout>
 </template>
