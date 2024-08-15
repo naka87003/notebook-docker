@@ -6,9 +6,13 @@ import TagCreateForm from './TagCreateForm.vue';
 import { getTagSelectItems } from '@/common';
 import type { Category, Tag } from '@/interfaces';
 
+const props = defineProps<{
+  variant?: string;
+}>();
+
 const emit = defineEmits<{
   close: []
-  noteCreated: []
+  noteCreated: [],
 }>();
 
 const page = usePage();
@@ -33,6 +37,8 @@ const items = ref({
   tag: [] as Tag[],
 });
 
+const eventMode = computed((): boolean => props.variant === 'event');
+
 const startsDate = computed({
   get() {
     return dayjs(form.starts).format('YYYY-MM-DD');
@@ -52,6 +58,9 @@ const endsDate = computed({
 });
 
 onMounted(async () => {
+  if (eventMode.value) {
+    form.category = 3;
+  }
   items.value.tag = await getTagSelectItems();
 });
 
@@ -77,7 +86,10 @@ const submit = () => {
 <template>
   <v-card>
     <v-toolbar density="comfortable" color="transparent">
-      <v-toolbar-title class="text-h6" text="Create New Note"></v-toolbar-title>
+      <v-toolbar-title class="text-h6">
+        <template v-if="eventMode">Create New Event</template>
+        <template v-else>Create New Note</template>
+      </v-toolbar-title>
       <template v-slot:prepend>
         <v-icon class="ms-3" icon="mdi-plus" />
       </template>
@@ -108,7 +120,7 @@ const submit = () => {
                   placeholder="Enter Title" variant="outlined" :error="Boolean(form.errors.title)"
                   :error-messages="form.errors.title" required maxLength="20" @input="form.errors.title = null" />
               </v-col>
-              <v-col cols="12">
+              <v-col v-if="!eventMode" cols="12">
                 <div class="text-subtitle-1 text-medium-emphasis">Category</div>
                 <v-autocomplete v-model="form.category" hide-details="auto" :items="items.category" density="compact"
                   placeholder="Select Category" variant="outlined" :error="Boolean(form.errors.category)"

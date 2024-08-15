@@ -8,6 +8,7 @@ import type { Note, Category, Tag } from '@/interfaces';
 
 const props = defineProps<{
   targetNote: Note;
+  variant?: string;
 }>();
 
 const emit = defineEmits<{
@@ -32,6 +33,8 @@ const dialog = ref({
 });
 
 const allDay = ref(false);
+
+const eventMode = computed((): boolean => props.variant === 'event');
 
 const items = ref({
   category: page.props.categoryItems as Category[],
@@ -96,7 +99,10 @@ const submit = () => {
 <template>
   <v-card>
     <v-toolbar density="comfortable" color="transparent">
-      <v-toolbar-title class="text-h6" text="Edit Note"></v-toolbar-title>
+      <v-toolbar-title class="text-h6">
+        <template v-if="eventMode">Edit Event</template>
+        <template v-else>Edit Note</template>
+      </v-toolbar-title>
       <template v-slot:prepend>
         <v-icon class="ms-3" icon="mdi-pencil-outline" />
       </template>
@@ -127,7 +133,7 @@ const submit = () => {
                   placeholder="Enter Title" variant="outlined" :error="Boolean(form.errors.title)"
                   :error-messages="form.errors.title" required maxLength="20" @input="form.errors.title = null" />
               </v-col>
-              <v-col cols="12">
+              <v-col v-if="!eventMode" cols="12">
                 <div class="text-subtitle-1 text-medium-emphasis">Category</div>
                 <v-autocomplete v-model="form.category" hide-details="auto" :items="items.category" density="compact"
                   placeholder="Select Category" variant="outlined" :error="Boolean(form.errors.category)"
