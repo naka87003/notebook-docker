@@ -66,7 +66,7 @@ const verificationSend = () => {
 			<template v-slot:actions>
 				<v-spacer />
 				<v-btn color="primary" size="large" variant="tonal" :class="{ 'text-disabled': form.processing }"
-					:disabled="form.processing" @click="form.patch(route('profile.update'))">
+					:disabled="form.processing" @click="form.patch(route('profile.update'), { preserveScroll: true })">
 					Save
 				</v-btn>
 			</template>
