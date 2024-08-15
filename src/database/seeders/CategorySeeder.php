@@ -24,7 +24,7 @@ class CategorySeeder extends Seeder
             'mdi_name' => 'mdi-format-list-checks'
         ]);
         Category::create([
-            'name' => 'Schedule',
+            'name' => 'Event',
             'vuetify_theme_color_name' => 'secondary',
             'mdi_name' => 'mdi-calendar-clock'
         ]);

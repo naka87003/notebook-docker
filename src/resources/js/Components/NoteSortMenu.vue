@@ -39,7 +39,7 @@ const resetSort = () => {
           <v-radio-group v-model="newSort.key" column hide-details="auto">
             <v-radio label="Updated (default)" value="updated_at" />
             <v-radio label="Created" value="created_at" />
-            <v-radio label="Starts (Schedule Category Only)" value="starts_at" />
+            <v-radio label="Starts (Event Category Only)" value="starts_at" />
           </v-radio-group>
         </v-col>
       </v-row>
