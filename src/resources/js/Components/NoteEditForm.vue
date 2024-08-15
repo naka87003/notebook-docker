@@ -134,14 +134,14 @@ const submit = () => {
                   :error-messages="form.errors.category" required item-title="name" item-value="id"
                   @input="form.errors.category = null">
                   <template v-slot:item="{ props, item }">
-                    <v-list-item v-bind="props" prepend-icon="mdi-tag" :title="item.raw.name">
+                    <v-list-item v-bind="props" :title="item.raw.name">
                       <template v-slot:prepend>
                         <v-icon :icon="item.raw.mdi_name" />
                       </template>
                     </v-list-item>
                   </template>
                   <template v-slot:selection="{ item }">
-                    <v-list-item prepend-icon="mdi-tag" :title="item.raw.name">
+                    <v-list-item :title="item.raw.name">
                       <template v-slot:prepend>
                         <v-icon :icon="item.raw.mdi_name" />
                       </template>

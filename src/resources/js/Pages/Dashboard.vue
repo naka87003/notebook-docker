@@ -17,8 +17,6 @@ const props = defineProps<{
   status?: number;
 }>();
 
-console.log(props)
-
 const search = ref('');
 const notes: Ref<NoteType[]> = ref([]);
 const dialog = ref({
