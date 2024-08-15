@@ -25,7 +25,7 @@ const splitByNewline = (text: string): string[] => text.split(/\r?\n/);
         <p class="text-body-2">from {{ simplifyDateTime(note.starts_at) }}</p>
         <p class="text-body-2">to {{ simplifyDateTime(note.ends_at) }}</p>
       </v-alert>
-      <p v-for="paragraph in splitByNewline(note.content)" class="note-paragraph">{{ paragraph }}</p>
+      <p v-for="paragraph in splitByNewline(note.content ?? '')" class="note-paragraph">{{ paragraph }}</p>
     </v-card-text>
     <v-card-actions>
       <v-list-item class="w-100">
