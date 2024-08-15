@@ -24,24 +24,26 @@ const verificationSend = () => {
 
 <template>
 	<section>
-		<v-card title="Profile Information" class="mx-auto pa-6" elevation="8" rounded="lg">
-			<v-card class="mb-6" color="surface-variant" variant="tonal">
-				<v-card-text class="text-medium-emphasis text-caption">
-					<p>Update your account's profile information and email address.</p>
-				</v-card-text>
-			</v-card>
-			<form @submit.prevent="form.patch(route('profile.update'))" class="mt-6 space-y-6">
-				<div class="text-subtitle-1 text-medium-emphasis">Name</div>
-				<v-text-field v-model="form.name" type="text" density="compact" placeholder="Enter your new name"
-					prepend-inner-icon="mdi-account-outline" variant="outlined" :error="Boolean(form.errors.name)"
-					:error-messages="form.errors.name" required autofocus autocomplete="name" max-width="600"
-					@input="form.errors.name = null" />
-				<div class="text-subtitle-1 text-medium-emphasis">Email</div>
-				<v-text-field v-model="form.email" type="email" density="compact" placeholder="Enter your new email address"
-					prepend-inner-icon="mdi-email-outline" variant="outlined" :error="Boolean(form.errors.email)"
-					:error-messages="form.errors.email" required autofocus autocomplete="username" max-width="600"
-					@input="form.errors.email = null" />
-
+		<v-card title="Profile Information">
+			<v-divider />
+			<v-card-text>
+				<v-card class="mb-6" color="surface-variant" variant="tonal">
+					<v-card-text class="text-medium-emphasis text-caption">
+						<p>Update your account's profile information and email address.</p>
+					</v-card-text>
+				</v-card>
+				<form @submit.prevent="form.patch(route('profile.update'))">
+					<div class="text-subtitle-1 text-medium-emphasis">Name</div>
+					<v-text-field v-model="form.name" type="text" density="compact" placeholder="Enter your new name"
+						prepend-inner-icon="mdi-account-outline" variant="outlined" :error="Boolean(form.errors.name)"
+						:error-messages="form.errors.name" required autofocus autocomplete="name" max-width="600"
+						@input="form.errors.name = null" />
+					<div class="text-subtitle-1 text-medium-emphasis">Email</div>
+					<v-text-field v-model="form.email" type="email" density="compact" placeholder="Enter your new email address"
+						prepend-inner-icon="mdi-email-outline" variant="outlined" :error="Boolean(form.errors.email)"
+						:error-messages="form.errors.email" required autofocus autocomplete="username" max-width="600"
+						@input="form.errors.email = null" />
+				</form>
 				<div v-if="mustVerifyEmail && user.email_verified_at === null">
 					<v-card class="mb-6" color="surface-variant" variant="tonal">
 						<v-card-text class="text-medium-emphasis text-caption">
@@ -56,14 +58,18 @@ const verificationSend = () => {
 				</div>
 				<Transition>
 					<div v-if="form.recentlySuccessful">
-						<v-alert text="Saved." class="mt-6 mb-6 " type="success" variant="tonal" closable />
+						<v-alert text="Saved." type="success" variant="tonal" closable />
 					</div>
 				</Transition>
+			</v-card-text>
+			<v-divider />
+			<template v-slot:actions>
+				<v-spacer />
 				<v-btn color="primary" size="large" variant="tonal" :class="{ 'text-disabled': form.processing }"
 					:disabled="form.processing" @click="form.patch(route('profile.update'))">
 					Save
 				</v-btn>
-			</form>
+			</template>
 		</v-card>
 	</section>
 </template>
