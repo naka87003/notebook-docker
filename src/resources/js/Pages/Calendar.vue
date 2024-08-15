@@ -7,7 +7,7 @@
     import EventNote from '@/Components/EventNote.vue';
     import ConfirmCard from '@/Components/ConfirmCard.vue';
     import NoteEditForm from '@/Components/NoteEditForm.vue';
-import NoteCreateForm from '@/Components/NoteCreateForm.vue';
+    import NoteCreateForm from '@/Components/NoteCreateForm.vue';
 
     const dialog = ref({
       eventNote: false,
@@ -158,7 +158,7 @@ import NoteCreateForm from '@/Components/NoteCreateForm.vue';
       </v-sheet>
     </v-container>
     <v-dialog v-model="dialog.eventNote" max-width="1000">
-      <EventNote :targetNote>
+      <EventNote :targetNote @close="dialog.eventNote = false">
         <template #actions="{ targetNote }">
           <v-icon size="small" class="ms-5" icon="mdi-pencil-outline" @click="showEditDialog(targetNote)" />
           <v-icon size="small" class="ms-5" icon="mdi-delete-outline" @click="showDeleteConfirmDialog(targetNote)" />

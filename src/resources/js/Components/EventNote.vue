@@ -4,20 +4,25 @@ import type { Note } from '@/interfaces';
 
 defineProps<{ targetNote: Note }>();
 
+const emit = defineEmits<{
+  close: []
+}>();
+
 const simplifyDateTime = (str: string): string => dayjs(str).format('YYYY/MM/DD HH:mm');
 const splitByNewline = (text: string): string[] => text.split(/\r?\n/);
 </script>
 
 <template>
-  <v-card :prepend-icon="targetNote.category.mdi_name" :title="targetNote.title" rounded="0">
-    <template v-slot:prepend>
-      <v-icon size="large"></v-icon>
+  <v-card rounded="0">
+    <v-toolbar density="comfortable" color="transparent">
+      <v-toolbar-title class="text-h6">{{ targetNote.title }}</v-toolbar-title>
+      <template v-slot:prepend>
+      <v-icon :icon="targetNote.category.mdi_name" size="large" class="ms-3"></v-icon>
     </template>
-    <template v-slot:append>
-      <p class="text-caption">
-        {{ simplifyDateTime(targetNote.updated_at) }}
-      </p>
-    </template>
+      <template v-slot:append>
+        <v-btn icon="mdi-close" @click="$emit('close')"></v-btn>
+      </template>
+    </v-toolbar>
     <v-divider class="border-opacity-25 mx-1" />
     <v-card-text class="text-h6 py-2">
       <v-alert v-if="targetNote.category.id === 3" type="info" variant="tonal" class="mb-3">
@@ -40,10 +45,19 @@ const splitByNewline = (text: string): string[] => text.split(/\r?\n/);
         </template>
         <template v-slot:append>
           <div class="justify-self-end">
-            <slot name="actions" :targetNote/>
+            <slot name="actions" :targetNote />
           </div>
         </template>
       </v-list-item>
     </v-card-actions>
   </v-card>
 </template>
+
+<style>
+.note-paragraph {
+  background-image: linear-gradient(180deg, rgba(204, 204, 204, 0) 0%, rgba(204, 204, 204, 0) 98.5%, rgba(100, 100, 100, 100) 100%);
+  background-repeat: repeat-y;
+  background-size: 100% 1.7em;
+  line-height: 1.7;
+}
+</style>
