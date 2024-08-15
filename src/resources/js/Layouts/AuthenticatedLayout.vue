@@ -1,12 +1,17 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
-import { router } from '@inertiajs/vue3';
+import { ref, computed, watch, provide } from 'vue';
+import { router, usePage } from '@inertiajs/vue3';
 import { useTheme } from 'vuetify'
 import { useDark } from '@vueuse/core';
+import { User } from '@/interfaces';
 import HumburgerMenu from '@/Components/HumburgerMenu.vue';
+
+const user: User = usePage().props.auth.user;
 
 const theme = useTheme();
 const isDark = useDark();
+
+const avatarImagePath = ref('storage/' + user.image_path);
 
 const dialog = ref({
   humburgerMenu: false
@@ -26,6 +31,17 @@ const currentPageName = computed({
 const logout = () => {
   router.post('logout');
 };
+
+const updateAvatarImage = (path: string) => {
+  avatarImagePath.value = path;
+};
+
+const pageTransition = (name: string) => {
+  router.visit(route(name));
+};
+
+// Avatar画像更新用の関数をProvide
+provide('updateAvatarImage', updateAvatarImage);
 </script>
 
 <template>
@@ -40,12 +56,12 @@ const logout = () => {
         <v-img class="mx-auto my-6" max-width="60"
           src="https://cdn.vuetifyjs.com/docs/images/brand-kit/v-logo.svg"></v-img>
         <v-tabs v-model="currentPageName" class="hidden-xs">
-          <v-tab value="dashboard" :href="route('dashboard')">Notebook</v-tab>
-          <v-tab value="calendar" :href="route('calendar')">Calendar</v-tab>
+          <v-tab value="dashboard" @click="pageTransition('dashboard')">Notebook</v-tab>
+          <v-tab value="calendar" @click="pageTransition('calendar')">Calendar</v-tab>
         </v-tabs>
         <v-spacer />
         <v-btn icon="mdi-tag-multiple-outline" class="hidden-sm-and-down" :active="currentPageName === 'tags.index'"
-          :href="route('tags.index')" />
+          @click="pageTransition('tags.index')" />
         <v-btn :icon="isDark ? 'mdi-weather-night' : 'mdi-weather-sunny'" class="hidden-sm-and-down ms-3"
           @click="isDark = !isDark" />
         <v-divider vertical class="hidden-xs ms-3" />
@@ -54,7 +70,13 @@ const logout = () => {
             <v-list-item v-bind="props" :title="$page.props.auth.user.name" class="hidden-sm-and-down">
               <template v-slot:prepend>
                 <v-avatar color="surface-light">
-                  <v-icon>mdi-account</v-icon>
+                  <v-img :src="avatarImagePath">
+                    <template v-slot:error>
+                      <v-avatar>
+                        <v-icon icon="mdi-account"></v-icon>
+                      </v-avatar>
+                    </template>
+                  </v-img>
                 </v-avatar>
               </template>
               <template v-slot:append>
@@ -63,7 +85,7 @@ const logout = () => {
             </v-list-item>
           </template>
           <v-list>
-            <v-list-item :href="route('profile.edit')" :active="route().current() === 'profile.edit'">
+            <v-list-item @click="pageTransition('profile.edit')" :active="route().current() === 'profile.edit'">
               <v-list-item-title>Profile</v-list-item-title>
             </v-list-item>
             <v-list-item @click="logout">

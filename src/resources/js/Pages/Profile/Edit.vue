@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import UpdateAvatarImageForm from './Partials/UpdateAvatarImageForm.vue';
 import DeleteUserForm from './Partials/DeleteUserForm.vue';
 import UpdatePasswordForm from './Partials/UpdatePasswordForm.vue';
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm.vue';
@@ -17,6 +18,9 @@ defineProps<{
   <AuthenticatedLayout>
     <v-container>
       <v-row>
+        <v-col cols="12" >
+          <UpdateAvatarImageForm/>
+        </v-col>
         <v-col cols="12" >
           <UpdateProfileInformationForm :must-verify-email="mustVerifyEmail" :status />
         </v-col>

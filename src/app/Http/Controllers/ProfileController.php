@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
@@ -36,6 +37,32 @@ class ProfileController extends Controller
         }
 
         $request->user()->save();
+
+        return Redirect::route('profile.edit');
+    }
+
+    /**
+     * Update the user's profile information.
+     */
+    public function upload(Request $request): RedirectResponse
+    {
+        $user = $request->user();
+
+        $request->validate([
+            'image' => 'image'
+        ]);
+
+        // 画像ファイルインスタンス取得
+        $image = $request->file('image');
+
+        // 画像ファイルの保存場所指定
+        if (isset($image)) {
+            if ($user->image_path) {
+                Storage::disk('public')->delete($user->image_path);
+            }
+            $user->image_path = $image->store('images/user', 'public');
+        }
+        $user->save();
 
         return Redirect::route('profile.edit');
     }
