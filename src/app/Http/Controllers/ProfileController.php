@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 
 class ProfileController extends Controller
 {
@@ -49,7 +51,7 @@ class ProfileController extends Controller
         $user = $request->user();
 
         $request->validate([
-            'image' => 'image'
+            'image' => 'image|max:2048'
         ]);
 
         // 画像ファイルインスタンス取得
@@ -61,6 +63,12 @@ class ProfileController extends Controller
                 Storage::disk('public')->delete($user->image_path);
             }
             $user->image_path = $image->store('images/user', 'public');
+            // 画像のサイズを調整
+            $manager = new ImageManager(Driver::class);
+            $imgPath = storage_path('app/public/' . $user->image_path);
+            $image = $manager->read($imgPath);
+            $image->scaleDown(width: 100);
+            $image->save(storage_path('app/public/' . $user->image_path));
         }
         $user->save();
 
