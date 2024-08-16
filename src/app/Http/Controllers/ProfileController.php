@@ -42,7 +42,7 @@ class ProfileController extends Controller
     }
 
     /**
-     * Update the user's profile information.
+     * Upload the user's profile image.
      */
     public function upload(Request $request): RedirectResponse
     {
@@ -62,6 +62,23 @@ class ProfileController extends Controller
             }
             $user->image_path = $image->store('images/user', 'public');
         }
+        $user->save();
+
+        return Redirect::route('profile.edit');
+    }
+
+    /**
+     * Delete the user's profile image.
+     */
+    public function deleteImage(Request $request): RedirectResponse
+    {
+        $user = $request->user();
+
+        if ($user->image_path) {
+            Storage::disk('public')->delete($user->image_path);
+        }
+        $user->image_path = null;
+
         $user->save();
 
         return Redirect::route('profile.edit');
