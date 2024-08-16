@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch, provide, onBeforeMount } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { router, usePage } from '@inertiajs/vue3';
 import { useTheme } from 'vuetify'
 import { useDark } from '@vueuse/core';
@@ -10,8 +10,6 @@ const user: User = usePage().props.auth.user;
 
 const theme = useTheme();
 const isDark = useDark();
-
-const avatarImagePath = ref();
 
 const dialog = ref({
   humburgerMenu: false
@@ -28,28 +26,17 @@ const currentPageName = computed({
   set() { }
 });
 
-onBeforeMount(() => {
-  setAvatarImagePath();
-})
+const userImagePath = computed((): string | null => usePage().props.auth.user.image_path);
 
-const setAvatarImagePath = () => {
-  avatarImagePath.value = user.image_path ? 'storage/' + user.image_path : null;
-};
+const avatarImagePath = computed(() => userImagePath.value ? 'storage/' + userImagePath.value : null);
 
 const logout = () => {
   router.post('logout');
 };
 
-const updateAvatarImage = (path: string) => {
-  avatarImagePath.value = path;
-};
-
 const pageTransition = (name: string) => {
   router.visit(route(name));
 };
-
-// Avatar画像更新用の関数をProvide
-provide('updateAvatarImage', updateAvatarImage);
 </script>
 
 <template>
