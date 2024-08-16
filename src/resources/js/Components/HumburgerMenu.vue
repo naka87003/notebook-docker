@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
+
 defineProps<{
   currentPageName: string;
 }>();
@@ -9,6 +12,10 @@ defineEmits<{
 }>();
 
 const isDark = defineModel('isDark');
+
+const userImagePath = computed((): string | null => usePage().props.auth.user.image_path);
+
+const avatarImagePath = computed(() => userImagePath.value ? 'storage/' + userImagePath.value : null);
 </script>
 
 <template>
@@ -71,7 +78,8 @@ const isDark = defineModel('isDark');
           :active="currentPageName === 'profile.edit'" :href="route('profile.edit')">
           <template v-slot:prepend>
             <v-avatar color="surface-light" density="compact">
-              <v-icon>mdi-account</v-icon>
+              <v-img v-if="avatarImagePath" :src="avatarImagePath" />
+              <v-icon v-else icon="mdi-account" />
             </v-avatar>
           </template>
         </v-list-item>
