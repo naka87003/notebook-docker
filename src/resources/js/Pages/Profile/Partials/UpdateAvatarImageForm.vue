@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useForm, usePage } from '@inertiajs/vue3';
-import { ref, inject } from 'vue';
+import { ref, inject, onBeforeMount } from 'vue';
 import type { User } from '@/interfaces';
 
 const updateAvatarImage = inject<(url: string) => void>('updateAvatarImage');
@@ -13,14 +13,21 @@ const form = useForm({
 
 const preview = ref();
 
-const avatarImagePath = ref('storage/' + user.image_path);
+const avatarImagePath = ref();
+
+onBeforeMount(() => {
+  setAvatarImagePath();
+});
+
+const setAvatarImagePath = () => {
+  avatarImagePath.value = user.image_path ? 'storage/' + user.image_path : null;
+};
 
 const previewImage = () => {
   if (form.image) {
     avatarImagePath.value = URL.createObjectURL(preview.value.files[0]);
   } else {
-    const user = usePage().props.auth.user as User;
-    avatarImagePath.value = 'storage/' + user.image_path;
+    setAvatarImagePath();
   }
 };
 
@@ -47,13 +54,8 @@ const uploadImage = () => {
         <v-list-item class="mb-5">
           <template v-slot:prepend>
             <v-avatar color="surface-light">
-              <v-img :src="avatarImagePath">
-                <template v-slot:error>
-                  <v-avatar>
-                    <v-icon icon="mdi-account"></v-icon>
-                  </v-avatar>
-                </template>
-              </v-img>
+              <v-img v-if="avatarImagePath" :src="avatarImagePath"/>
+              <v-icon v-else icon="mdi-account" />
             </v-avatar>
           </template>
           <v-list-item-title>{{ $page.props.auth.user.name }}</v-list-item-title>

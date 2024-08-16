@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch, provide } from 'vue';
+import { ref, computed, watch, provide, onBeforeMount } from 'vue';
 import { router, usePage } from '@inertiajs/vue3';
 import { useTheme } from 'vuetify'
 import { useDark } from '@vueuse/core';
@@ -11,7 +11,7 @@ const user: User = usePage().props.auth.user;
 const theme = useTheme();
 const isDark = useDark();
 
-const avatarImagePath = ref('storage/' + user.image_path);
+const avatarImagePath = ref();
 
 const dialog = ref({
   humburgerMenu: false
@@ -27,6 +27,14 @@ const currentPageName = computed({
   },
   set() { }
 });
+
+onBeforeMount(() => {
+  setAvatarImagePath();
+})
+
+const setAvatarImagePath = () => {
+  avatarImagePath.value = user.image_path ? 'storage/' + user.image_path : null;
+};
 
 const logout = () => {
   router.post('logout');
@@ -70,13 +78,8 @@ provide('updateAvatarImage', updateAvatarImage);
             <v-list-item v-bind="props" :title="$page.props.auth.user.name" class="hidden-sm-and-down">
               <template v-slot:prepend>
                 <v-avatar color="surface-light">
-                  <v-img :src="avatarImagePath">
-                    <template v-slot:error>
-                      <v-avatar>
-                        <v-icon icon="mdi-account"></v-icon>
-                      </v-avatar>
-                    </template>
-                  </v-img>
+                  <v-img v-if="avatarImagePath" :src="avatarImagePath" />
+                  <v-icon v-else icon="mdi-account" />
                 </v-avatar>
               </template>
               <template v-slot:append>
