@@ -50,6 +50,8 @@ const bottomElement: Ref<HTMLElement | null> = ref();
 
 let observer: IntersectionObserver | null = null;
 
+const searchEntered = computed((): boolean => Boolean(search.value));
+
 const sortChanged = computed((): boolean => (sort.value.key !== 'updated_at' || sort.value.order !== 'desc'));
 
 const sortIcon = computed((): string => {
@@ -211,8 +213,12 @@ const filterApply = async (newFilter: Filter): Promise<void> => {
   </v-snackbar>
   <AuthenticatedLayout>
     <template #action>
-      <v-text-field v-model="search" density="compact" label="Search" prepend-inner-icon="mdi-magnify"
-        variant="solo-filled" flat hide-details single-line></v-text-field>
+      <v-text-field v-model="search" density="compact" label="Search" variant="solo-filled" flat hide-details
+        single-line clearable>
+        <template #prepend-inner>
+          <v-icon icon="mdi-magnify" :class="{ 'text-red': searchEntered }" />
+        </template>
+      </v-text-field>
       <v-spacer></v-spacer>
       <v-btn icon="mdi-plus" variant="flat" @click="dialog.create = true" />
       <v-btn :icon="sortIcon" variant="flat" :class="{ 'text-red': sortChanged }" @click="dialog.sortMenu = true" />
