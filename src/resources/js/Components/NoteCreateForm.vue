@@ -82,6 +82,16 @@ const submit = () => {
     },
   });
 };
+
+const copyDateToEnd = () => {
+  if (form.starts >= form.ends) {
+    if (allDay.value) {
+      form.ends = dayjs(form.starts).format('YYYY-MM-DDT23:59');
+    } else {
+      form.ends = dayjs(form.starts).add(1, 'hour').format('YYYY-MM-DDTHH:00');
+    }
+  }
+};
 </script>
 <template>
   <v-card>
@@ -149,7 +159,8 @@ const submit = () => {
                 <template v-if="allDay === false">
                   <v-text-field v-model="form.starts" class="mt-3" label="Starts" hide-details="auto"
                     type="datetime-local" density="compact" variant="outlined" :error="Boolean(form.errors.starts)"
-                    :error-messages="form.errors.starts" required @input="form.errors.starts = null" />
+                    :error-messages="form.errors.starts" required @input="form.errors.starts = null"
+                    @update:model-value="copyDateToEnd" />
                   <v-text-field v-model="form.ends" class="mt-3" label="Ends" hide-details="auto" type="datetime-local"
                     density="compact" variant="outlined" :error="Boolean(form.errors.ends)"
                     :error-messages="form.errors.ends" required @input="form.errors.ends = null" />
@@ -157,7 +168,8 @@ const submit = () => {
                 <template v-else>
                   <v-text-field v-model="startsDate" class="mt-3" label="Starts" hide-details="auto" type="date"
                     density="compact" variant="outlined" :error="Boolean(form.errors.starts)"
-                    :error-messages="form.errors.starts" required @input="form.errors.starts = null" />
+                    :error-messages="form.errors.starts" required @input="form.errors.starts = null"
+                    @update:model-value="copyDateToEnd" />
                   <v-text-field v-model="endsDate" class="mt-3" label="Ends" hide-details="auto" type="date"
                     density="compact" variant="outlined" :error="Boolean(form.errors.ends)"
                     :error-messages="form.errors.ends" required @input="form.errors.ends = null" />
