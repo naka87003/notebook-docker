@@ -13,8 +13,21 @@ watch(isDark, (value) => {
 </script>
 
 <template>
-  <div>
+  <div class="bg">
     <ApplicationLogo />
     <slot />
   </div>
 </template>
+
+<style scoped>
+.bg {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: url("notebook.jpeg")
+    no-repeat center center;
+  background-size: cover;
+}
+</style>
