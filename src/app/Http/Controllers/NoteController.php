@@ -65,9 +65,7 @@ class NoteController extends Controller
         $image = $request->file('image');
 
         if (isset($image)) {
-            // アップロードされたファイル名を取得
-            $fileName = $request->file('image')->getClientOriginalName();
-            $newImagePath = $image->storeAs('images/notes', $fileName, 'public');
+            $newImagePath = $image->store('images/notes', 'public');
             // 画像のサイズを調整
             $manager = new ImageManager(Driver::class);
             $imgPath = storage_path('app/public/' . $newImagePath);
@@ -126,9 +124,7 @@ class NoteController extends Controller
             if ($note->image_path) {
                 Storage::disk('public')->delete($note->image_path);
             }
-            // アップロードされたファイル名を取得
-            $fileName = $request->file('image')->getClientOriginalName();
-            $newImagePath = $image->storeAs('images/notes', $fileName, 'public');
+            $newImagePath = $image->store('images/notes', 'public');
             // 画像のサイズを調整
             $manager = new ImageManager(Driver::class);
             $imgPath = storage_path('app/public/' . $newImagePath);

@@ -63,9 +63,7 @@ class ProfileController extends Controller
             if ($user->image_path) {
                 Storage::disk('public')->delete($user->image_path);
             }
-            // アップロードされたファイル名を取得
-            $fileName = $request->file('image')->getClientOriginalName();
-            $user->image_path = $image->storeAs('images/user', $fileName, 'public');
+            $user->image_path = $image->store('images/user', 'public');
             // 画像のサイズを調整
             $manager = new ImageManager(Driver::class);
             $imgPath = storage_path('app/public/' . $user->image_path);
