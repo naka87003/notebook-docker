@@ -65,7 +65,6 @@ const endsDate = computed({
 
 const previewImagePath = computed(() => {
   if (form.image) {
-    console.log(preview.value.files[0]);
     return URL.createObjectURL(preview.value.files[0]);
   } else {
     return props.targetNote.image_path ? 'storage/' + props.targetNote.image_path : null;

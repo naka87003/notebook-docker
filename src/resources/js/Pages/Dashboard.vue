@@ -183,7 +183,6 @@ const showSnackBar = (msg: string): void => {
 
 const refreshDisplay = async (): Promise<void> => {
   observer?.disconnect();
-  targetNote.value = null;
   notes.value.splice(0);
   await loadNotes();
   observer.observe(bottomElement.value);
