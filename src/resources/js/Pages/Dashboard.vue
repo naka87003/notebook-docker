@@ -219,9 +219,9 @@ const filterApply = async (newFilter: Filter): Promise<void> => {
         </template>
       </v-text-field>
       <v-spacer></v-spacer>
-      <v-btn icon="mdi-plus" variant="flat" @click="dialog.create = true" />
-      <v-btn :icon="sortIcon" variant="flat" :class="{ 'text-red': sortChanged }" @click="dialog.sortMenu = true" />
-      <v-btn icon="mdi-filter-menu-outline" variant="flat" :class="{ 'text-red': filterChanged }"
+      <v-btn icon="mdi-plus" @click="dialog.create = true" />
+      <v-btn :icon="sortIcon" :class="{ 'text-red': sortChanged }" @click="dialog.sortMenu = true" />
+      <v-btn icon="mdi-filter-menu-outline" :class="{ 'text-red': filterChanged }"
         @click="dialog.filterMenu = true" />
     </template>
     <v-container>

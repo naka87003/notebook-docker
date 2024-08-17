@@ -48,8 +48,6 @@ const pageTransition = (name: string) => {
         </v-container>
       </template>
       <v-container class="mx-auto d-flex align-center justify-center">
-        <v-img class="mx-auto my-6" max-width="60"
-          src="https://cdn.vuetifyjs.com/docs/images/brand-kit/v-logo.svg"></v-img>
         <v-tabs v-model="currentPageName" class="hidden-xs">
           <v-tab value="dashboard" @click="pageTransition('dashboard')">Notebook</v-tab>
           <v-tab value="calendar" @click="pageTransition('calendar')">Calendar</v-tab>

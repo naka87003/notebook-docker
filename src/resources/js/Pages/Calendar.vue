@@ -124,7 +124,7 @@
   </v-snackbar>
   <AuthenticatedLayout>
     <template #action>
-      <v-select v-model="type" :items="items.types" density="compact" variant="solo-filled" hide-details>
+      <v-select v-model="type" :items="items.types" density="compact" variant="solo-filled" flat hide-details>
         <template v-slot:item="{ props, item }">
           <v-list-item v-bind="props" :title="item.raw.value" density="compact">
             <template v-slot:prepend>
@@ -141,7 +141,7 @@
         </template>
       </v-select>
       <v-spacer></v-spacer>
-      <v-btn icon="mdi-plus" variant="flat" @click="dialog.create = true" />
+      <v-btn icon="mdi-plus" @click="dialog.create = true" />
     </template>
     <v-container>
       <v-sheet class="overflow-auto">
