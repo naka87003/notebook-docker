@@ -1,8 +1,13 @@
 <script setup lang="ts">
 import dayjs from 'dayjs';
 import type { Note } from '@/interfaces';
+import { computed } from 'vue';
 
-defineProps<{ targetNote: Note }>();
+const props = defineProps<{ targetNote: Note }>();
+
+const previewImagePath = computed(() => {
+  return props.targetNote.image_path ? 'storage/' + props.targetNote.image_path : null;
+});
 
 const emit = defineEmits<{
   close: []
@@ -30,6 +35,7 @@ const splitByNewline = (text: string): string[] => text.split(/\r?\n/);
         <p class="text-body-2">to {{ simplifyDateTime(targetNote.ends_at) }}</p>
       </v-alert>
       <p v-for="paragraph in splitByNewline(targetNote.content ?? '')" class="note-paragraph">{{ paragraph }}</p>
+      <v-img v-if="previewImagePath" :src="previewImagePath" width="300" class="mt-3"/>
     </v-card-text>
     <v-card-actions>
       <v-list-item class="w-100">

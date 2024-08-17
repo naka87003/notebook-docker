@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 
 class NoteController extends Controller
 {
@@ -47,6 +50,7 @@ class NoteController extends Controller
     {
         $request->validate([
             'content' => 'required_unless:category,3|max:500',
+            'image' => 'nullable|image|max:2048',
             'title' => 'required_if:category,3|max:50',
             'public' => 'required|boolean',
             'category' => 'required|numeric',
@@ -55,13 +59,30 @@ class NoteController extends Controller
             'ends' => 'exclude_unless:category,3|date|after:starts'
         ]);
 
+        $newImagePath = null;
+
+        // 画像ファイルインスタンス取得
+        $image = $request->file('image');
+
+        if (isset($image)) {
+            // アップロードされたファイル名を取得
+            $fileName = $request->file('image')->getClientOriginalName();
+            $newImagePath = $image->storeAs('images/notes', $fileName, 'public');
+            // 画像のサイズを調整
+            $manager = new ImageManager(Driver::class);
+            $imgPath = storage_path('app/public/' . $newImagePath);
+            $image = $manager->read($imgPath);
+            $image->scaleDown(width: 300);
+            $image->save(storage_path('app/public/' . $newImagePath));
+        }
+
         Note::create([
             'title' => $request->title,
             'content' => $request->content,
             'public' => $request->public,
+            'image_path' => $newImagePath,
             'category_id' => $request->category,
             'tag_id' => $request->tag,
-            'has_image' => false,
             'user_id' => Auth::id(),
             'starts_at' => $request->starts,
             'ends_at' => $request->ends,
@@ -78,6 +99,7 @@ class NoteController extends Controller
     {
         $request->validate([
             'content' => 'required_unless:category,3|max:500',
+            'image' => 'nullable|image|max:2048',
             'title' => 'required_if:category,3|max:50',
             'public' => 'required|boolean',
             'category' => 'required|numeric',
@@ -86,15 +108,38 @@ class NoteController extends Controller
             'ends' => 'exclude_unless:category,3|date|after:starts'
         ]);
 
-        $note->update([
+        // 更新対象
+        $attributes = [
             'title' => $request->title,
             'content' => $request->content,
             'public' => $request->public,
             'category_id' => $request->category,
             'tag_id' => $request->tag,
             'starts_at' => $request->starts,
-            'ends_at' => $request->ends,
-        ]);
+            'ends_at' => $request->ends
+        ];
+
+        // 画像ファイルインスタンス取得
+        $image = $request->file('image');
+
+        if (isset($image)) {
+            if ($note->image_path) {
+                Storage::disk('public')->delete($note->image_path);
+            }
+            // アップロードされたファイル名を取得
+            $fileName = $request->file('image')->getClientOriginalName();
+            $newImagePath = $image->storeAs('images/notes', $fileName, 'public');
+            // 画像のサイズを調整
+            $manager = new ImageManager(Driver::class);
+            $imgPath = storage_path('app/public/' . $newImagePath);
+            $image = $manager->read($imgPath);
+            $image->scaleDown(width: 300);
+            $image->save(storage_path('app/public/' . $newImagePath));
+            // 新規画像Pathを更新対象にセット
+            $attributes['image_path'] = $newImagePath;
+        }
+
+        $note->update($attributes);
 
         return back();
     }

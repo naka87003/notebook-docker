@@ -25,7 +25,9 @@ const form = useForm({
   category: props.targetNote.category_id,
   tag: props.targetNote.tag_id,
   starts: dayjs().add(1, 'hour').format('YYYY-MM-DDTHH:00'),
-  ends: dayjs().add(2, 'hour').format('YYYY-MM-DDTHH:00')
+  ends: dayjs().add(2, 'hour').format('YYYY-MM-DDTHH:00'),
+  image: null,
+  _method: 'put',
 });
 
 const dialog = ref({
@@ -33,6 +35,8 @@ const dialog = ref({
 });
 
 const allDay = ref(false);
+
+const preview = ref();
 
 const eventMode = computed((): boolean => props.variant === 'event');
 
@@ -58,6 +62,16 @@ const endsDate = computed({
     form.ends = dayjs(newValue).format('YYYY-MM-DD 23:59');
   }
 });
+
+const previewImagePath = computed(() => {
+  if (form.image) {
+    console.log(preview.value.files[0]);
+    return URL.createObjectURL(preview.value.files[0]);
+  } else {
+    return props.targetNote.image_path ? 'storage/' + props.targetNote.image_path : null;
+  }
+});
+
 
 onMounted(async () => {
   if (props.targetNote.starts_at !== null && props.targetNote.ends_at !== null) {
@@ -89,7 +103,7 @@ const tagCreated = async () => {
 };
 
 const submit = () => {
-  form.put(route('notes.update', props.targetNote.id), {
+  form.post(route('notes.update', props.targetNote.id), {
     onSuccess: () => {
       emit('noteUpdated')
     },
@@ -122,7 +136,7 @@ const copyDateToEnd = () => {
     </v-toolbar>
     <v-divider />
     <v-card-text>
-      <form @submit.prevent="submit">
+      <form @submit.prevent="submit" enctype="multipart/form-data" s>
         <v-row>
           <v-col cols=12 md="6">
             <v-row>
@@ -133,6 +147,13 @@ const copyDateToEnd = () => {
                   :error-messages="form.errors.content" required autofocus auto-grow
                   @input="form.errors.content = null" />
               </v-col>
+              <v-col cols="12">
+                <v-img v-if="previewImagePath" :src="previewImagePath" width="300" />
+                <div class="text-subtitle-1 text-medium-emphasis">Image Upload</div>
+                <v-file-input ref="preview" v-model="form.image" density="compact" label="New image file input"
+                  variant="outlined" :error="Boolean(form.errors.image)" :error-messages="form.errors.image" required
+                  max-width="600" accept="image/png, image/jpeg" @update:modelValue="form.errors.image = null" />
+              </v-col>
             </v-row>
           </v-col>
           <v-col cols=12 md="6">
@@ -141,7 +162,7 @@ const copyDateToEnd = () => {
                 <div class="text-subtitle-1 text-medium-emphasis">Title</div>
                 <v-text-field v-model="form.title" hide-details="auto" type="text" density="compact"
                   placeholder="Enter Title" variant="outlined" :error="Boolean(form.errors.title)"
-                  :error-messages="form.errors.title" required maxLength="20" @input="form.errors.title = null" />
+                  :error-messages="form.errors.title" required maxLength="10" @input="form.errors.title = null" />
               </v-col>
               <v-col v-if="!eventMode" cols="12">
                 <div class="text-subtitle-1 text-medium-emphasis">Category</div>

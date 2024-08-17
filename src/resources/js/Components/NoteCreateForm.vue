@@ -23,8 +23,11 @@ const form = useForm({
   public: true,
   tag: null,
   starts: dayjs().add(1, 'hour').format('YYYY-MM-DDTHH:00'),
-  ends: dayjs().add(2, 'hour').format('YYYY-MM-DDTHH:00')
+  ends: dayjs().add(2, 'hour').format('YYYY-MM-DDTHH:00'),
+  image: null
 });
+
+const preview = ref();
 
 const dialog = ref({
   tagCreate: false
@@ -54,6 +57,14 @@ const endsDate = computed({
   },
   set(newValue) {
     form.ends = dayjs(newValue).format('YYYY-MM-DD 23:59');
+  }
+});
+
+const previewImagePath = computed(() => {
+  if (form.image) {
+    return URL.createObjectURL(preview.value.files[0]);
+  } else {
+    return null;
   }
 });
 
@@ -109,7 +120,7 @@ const copyDateToEnd = () => {
     </v-toolbar>
     <v-divider />
     <v-card-text>
-      <form @submit.prevent="submit">
+      <form @submit.prevent="submit" enctype="multipart/form-data">
         <v-row>
           <v-col cols="12" md="6">
             <v-row>
@@ -120,6 +131,14 @@ const copyDateToEnd = () => {
                   :error-messages="form.errors.content" required autofocus auto-grow
                   @input="form.errors.content = null" />
               </v-col>
+              <v-col cols="12">
+                <v-img v-if="previewImagePath" :src="previewImagePath" width="300"/>
+                <div class="text-subtitle-1 text-medium-emphasis">Image Upload</div>
+                <v-file-input ref="preview" v-model="form.image" density="compact" label="New image file input"
+                  variant="outlined" :error="Boolean(form.errors.image)" :error-messages="form.errors.image" required
+                  autofocus max-width="600" accept="image/png, image/jpeg"
+                  @update:modelValue="form.errors.image = null" />
+              </v-col>
             </v-row>
           </v-col>
           <v-col cols="12" md="6">
@@ -128,7 +147,7 @@ const copyDateToEnd = () => {
                 <div class="text-subtitle-1 text-medium-emphasis">Title</div>
                 <v-text-field v-model="form.title" hide-details="auto" type="text" density="compact"
                   placeholder="Enter Title" variant="outlined" :error="Boolean(form.errors.title)"
-                  :error-messages="form.errors.title" required maxLength="20" @input="form.errors.title = null" />
+                  :error-messages="form.errors.title" required maxLength="10" @input="form.errors.title = null" />
               </v-col>
               <v-col v-if="!eventMode" cols="12">
                 <div class="text-subtitle-1 text-medium-emphasis">Category</div>
