@@ -57,12 +57,15 @@ class ProfileController extends Controller
         // 画像ファイルインスタンス取得
         $image = $request->file('image');
 
+
         // 画像ファイルの保存場所指定
         if (isset($image)) {
             if ($user->image_path) {
                 Storage::disk('public')->delete($user->image_path);
             }
-            $user->image_path = $image->store('images/user', 'public');
+            // アップロードされたファイル名を取得
+            $fileName = $request->file('image')->getClientOriginalName();
+            $user->image_path = $image->storeAs('images/user', $fileName, 'public');
             // 画像のサイズを調整
             $manager = new ImageManager(Driver::class);
             $imgPath = storage_path('app/public/' . $user->image_path);
