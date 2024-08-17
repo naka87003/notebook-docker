@@ -15,6 +15,7 @@ export type Note = {
   ends_at?: string;
   content?: string;
   public: boolean;
+  image_path?: string;
   category_id: number;
   tag_id?: number;
   status_id: number;
