@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import GuestLayout from '@/Layouts/GuestLayout.vue';
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, router, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
 const form = useForm({
@@ -16,6 +16,10 @@ const submit = () => {
 	form.post(route('register'), {
 		onFinish: () => form.reset('password', 'password_confirmation'),
 	});
+};
+
+const pageTransition = (name: string) => {
+	router.visit(route(name));
 };
 </script>
 
@@ -59,7 +63,8 @@ const submit = () => {
 					Register
 				</v-btn>
 				<v-card-text class="text-center">
-					<a class="text-primary text-decoration-none" :href="route('login')" rel="noopener noreferrer">
+					<a class="text-primary text-decoration-none" href="#" rel="noopener noreferrer"
+						@click.prevent="pageTransition('login')">
 						Already registered? <v-icon icon="mdi-chevron-right" />
 					</a>
 				</v-card-text>
