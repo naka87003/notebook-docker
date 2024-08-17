@@ -144,7 +144,7 @@
       <v-btn icon="mdi-plus" variant="flat" @click="dialog.create = true" />
     </template>
     <v-container>
-      <v-sheet>
+      <v-sheet class="overflow-auto">
         <v-calendar ref="calendar" v-model="value" :events :view-mode="type" :weekdays="weekday">
           <template v-slot:event="{ event }">
             <v-btn size="small" variant="tonal" rounded="0" class="hidden-md-and-down" @click="showEvent(event.id)">
