@@ -1,17 +1,22 @@
 <script setup lang="ts">
 import dayjs from 'dayjs';
 import type { Note } from '@/interfaces';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 
 const props = defineProps<{ targetNote: Note }>();
+
+const emit = defineEmits<{
+  close: []
+}>();
+
+const dialog = ref({
+  enlargedImage: false
+})
 
 const previewImagePath = computed(() => {
   return props.targetNote.image_path ? 'storage/' + props.targetNote.image_path : null;
 });
 
-const emit = defineEmits<{
-  close: []
-}>();
 
 const simplifyDateTime = (str: string): string => dayjs(str).format('YYYY/MM/DD HH:mm');
 const splitByNewline = (text: string): string[] => text.split(/\r?\n/);
@@ -22,8 +27,8 @@ const splitByNewline = (text: string): string[] => text.split(/\r?\n/);
     <v-toolbar density="comfortable" color="transparent">
       <v-toolbar-title class="text-h6">{{ targetNote.title }}</v-toolbar-title>
       <template v-slot:prepend>
-      <v-icon :icon="targetNote.category.mdi_name" size="large" class="ms-3"></v-icon>
-    </template>
+        <v-icon :icon="targetNote.category.mdi_name" size="large" class="ms-3"></v-icon>
+      </template>
       <template v-slot:append>
         <v-btn icon="mdi-close" @click="$emit('close')"></v-btn>
       </template>
@@ -35,7 +40,8 @@ const splitByNewline = (text: string): string[] => text.split(/\r?\n/);
         <p class="text-body-2">to {{ simplifyDateTime(targetNote.ends_at) }}</p>
       </v-alert>
       <p v-for="paragraph in splitByNewline(targetNote.content ?? '')" class="note-paragraph">{{ paragraph }}</p>
-      <v-img v-if="previewImagePath" :src="previewImagePath" width="300" class="mt-3"/>
+      <v-img v-if="previewImagePath" :src="previewImagePath" width="300" class="mt-3 cursor-pointer"
+        @click="dialog.enlargedImage = true" />
     </v-card-text>
     <v-card-actions>
       <v-list-item class="w-100">
@@ -57,6 +63,9 @@ const splitByNewline = (text: string): string[] => text.split(/\r?\n/);
       </v-list-item>
     </v-card-actions>
   </v-card>
+  <v-dialog v-model="dialog.enlargedImage" close-on-content-click maxWidth="1000px">
+    <v-img :src="previewImagePath" height="90vh"/>
+  </v-dialog>
 </template>
 
 <style>
