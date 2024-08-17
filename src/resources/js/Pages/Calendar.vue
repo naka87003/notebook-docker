@@ -147,12 +147,15 @@
       <v-sheet>
         <v-calendar ref="calendar" v-model="value" :events :view-mode="type" :weekdays="weekday">
           <template v-slot:event="{ event }">
-            <v-btn size="small" variant="tonal" @click="showEvent(event.id)">
+            <v-btn size="small" variant="tonal" rounded="0" class="hidden-md-and-down" @click="showEvent(event.id)">
               <template #prepend>
-                <v-icon icon="mdi-account" :color="String(event.color)"></v-icon>
+                <v-icon size="x-small" icon="mdi-circle" :color="String(event.color)"></v-icon>
               </template>
               {{ event.title }}
             </v-btn>
+            <div class="text-center hidden-lg-and-up">
+              <v-icon size="x-small" icon="mdi-circle" :color="String(event.color)" @click="showEvent(event.id)" />
+            </div>
           </template>
         </v-calendar>
       </v-sheet>
