@@ -30,11 +30,11 @@ const avatarImagePath = computed(() => userImagePath.value ? 'storage/' + userIm
     <v-card-text class="pa-0">
       <v-list lines="two">
         <v-list-subheader>Page</v-list-subheader>
-        <v-list-item title="Note" density="compact" :active="currentPageName === 'dashboard'"
+        <v-list-item title="Notes" density="compact" :active="currentPageName === 'dashboard'"
           :href="route('dashboard')">
           <template v-slot:prepend>
             <v-avatar density="compact">
-              <v-icon>mdi-book-open-outline</v-icon>
+              <v-icon>mdi-note-multiple-outline</v-icon>
             </v-avatar>
           </template>
         </v-list-item>
@@ -42,15 +42,15 @@ const avatarImagePath = computed(() => userImagePath.value ? 'storage/' + userIm
           :href="route('calendar')">
           <template v-slot:prepend>
             <v-avatar density="compact">
-              <v-icon>mdi-calendar-multiselect-outline</v-icon>
+              <v-icon>mdi-calendar-outline</v-icon>
             </v-avatar>
           </template>
         </v-list-item>
-        <v-list-item title="Tag" density="compact" :active="currentPageName === 'tags.index'"
+        <v-list-item title="Tags" density="compact" :active="currentPageName === 'tags.index'"
           :href="route('tags.index')">
           <template v-slot:prepend>
             <v-avatar density="compact">
-              <v-icon>mdi-tag-outline</v-icon>
+              <v-icon>mdi-tag-multiple-outline</v-icon>
             </v-avatar>
           </template>
         </v-list-item>
