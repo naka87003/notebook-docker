@@ -26,7 +26,7 @@ watch(isDark, (value) => {
   position: absolute;
   top: 0;
   left: 0;
-  background: url("notebook.jpeg");
+  background: url("$image/notebook.jpeg");
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
