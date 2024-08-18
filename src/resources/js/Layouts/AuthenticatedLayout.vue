@@ -3,10 +3,7 @@ import { ref, computed, watch } from 'vue';
 import { router, usePage } from '@inertiajs/vue3';
 import { useTheme } from 'vuetify'
 import { useDark } from '@vueuse/core';
-import { User } from '@/interfaces';
 import HumburgerMenu from '@/Components/HumburgerMenu.vue';
-
-const user: User = usePage().props.auth.user;
 
 const theme = useTheme();
 const isDark = useDark();
