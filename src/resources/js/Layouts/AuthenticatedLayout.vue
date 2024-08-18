@@ -48,6 +48,7 @@ const pageTransition = (name: string) => {
         <v-tabs v-model="currentPageName" class="hidden-xs">
           <v-tab value="dashboard" prepend-icon="mdi-note-multiple-outline" @click="pageTransition('dashboard')">Notes</v-tab>
           <v-tab value="calendar" prepend-icon="mdi-calendar-outline" @click="pageTransition('calendar')">Calendar</v-tab>
+          <v-tab value="timeline" prepend-icon="mdi-timeline-outline" @click="pageTransition('timeline')">Timeline</v-tab>
         </v-tabs>
         <v-spacer />
         <v-btn icon="mdi-tag-multiple-outline" class="hidden-sm-and-down" :active="currentPageName === 'tags.index'"

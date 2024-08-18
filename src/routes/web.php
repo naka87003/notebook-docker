@@ -5,10 +5,16 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\TagController;
+use App\Http\Controllers\TimelineController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+
+    Route::get('/timeline', [TimelineController::class, 'index'])->name('timeline');
+    Route::get('/timeline/posts', [TimelineController::class, 'posts'])->name('timeline.posts');
+    Route::post('/timeline/like', [TimelineController::class, 'like'])->name('timeline.like');
+    Route::post('/timeline/unlike', [TimelineController::class, 'unlike'])->name('timeline.unlike');
 
     Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar');
     Route::get('/calendar/schedule', [CalendarController::class, 'schedule'])->name('calendar.schedule');

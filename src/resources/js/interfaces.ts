@@ -30,7 +30,15 @@ export type Note = {
     id: number;
     vuetify_theme_color_name?: string;
     mdi_name?: string;
-  }
+  };
+  user: {
+    name: string;
+    image_path?: string;
+  };
+  likes: {
+    user_id: number,
+    note_id: number
+  }[];
 };
 
 export type Sort = {
