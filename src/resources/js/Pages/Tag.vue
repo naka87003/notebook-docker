@@ -103,7 +103,7 @@ const deleteTag = async () => {
 };
 
 const showTaggedNotes = (item: Tag, status: number) => {
-  router.get('dashboard', {
+  router.get(route('dashboard'), {
     tag: item.id,
     status
   });
