@@ -45,20 +45,23 @@ class TimelineController extends Controller
         return response()->json($notes);
     }
 
-    public function like(Request $request) 
+    public function like(Request $request)
     {
-        Like::create([
-            'user_id' => Auth::id(),
-            'note_id' => $request->note_id
-        ]);
+        if (Note::find($request->note_id)) {
+            Like::create([
+                'user_id' => Auth::id(),
+                'note_id' => $request->note_id
+            ]);
+        }
 
         return response()->json();
     }
 
-    public function unlike(Request $request) 
+    public function unlike(Request $request)
     {
-        Like::where('note_id', $request->note_id)->where('user_id', Auth::id())->delete();
-
+        if (Note::find($request->note_id)) {
+            Like::where('note_id', $request->note_id)->where('user_id', Auth::id())->delete();
+        }
         return response()->json();
     }
 }
