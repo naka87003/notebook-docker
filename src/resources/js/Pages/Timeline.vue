@@ -5,13 +5,8 @@ import { watchDebounced } from '@vueuse/core'
 import axios from 'axios';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Post from '@/Components/Post.vue';
-import type { Note as NoteType, PostsFilter } from '@/interfaces';
+import type { Note as NoteType, PostsFilter, User } from '@/interfaces';
 import PostFilterMenu from '@/Components/PostFilterMenu.vue';
-
-const props = defineProps<{
-  tag?: number;
-  status?: number;
-}>();
 
 const dialog = ref({
   filterMenu: false
@@ -26,8 +21,10 @@ const snackbar = ref({
 
 const filter: Ref<PostsFilter> = ref({
   onlyMyLiked: false,
-  users: []
+  user: null
 });
+
+const userItems: Ref<User[]> = ref([]);
 
 const bottomElement: Ref<HTMLElement | null> = ref();
 
@@ -35,7 +32,7 @@ let observer: IntersectionObserver | null = null;
 
 const searchEntered = computed((): boolean => Boolean(search.value));
 
-const filterChanged = computed((): boolean => (filter.value.onlyMyLiked === true || filter.value.users.length > 0));
+const filterChanged = computed((): boolean => (filter.value.onlyMyLiked === true || filter.value.user !== null));
 
 watchDebounced(search,
   () => refreshDisplay(),
@@ -87,7 +84,7 @@ const refreshDisplay = async (): Promise<void> => {
 const filterApply = async (newFilter: PostsFilter): Promise<void> => {
   dialog.value.filterMenu = false;
   filter.value.onlyMyLiked = newFilter.onlyMyLiked;
-  filter.value.users = newFilter.users;
+  filter.value.user = newFilter.user;
   await refreshDisplay();
 };
 </script>
@@ -118,7 +115,7 @@ const filterApply = async (newFilter: PostsFilter): Promise<void> => {
       </v-row>
     </v-container>
     <v-dialog v-model="dialog.filterMenu" max-width="600" scrollable>
-      <PostFilterMenu :filter @close="dialog.filterMenu = false" @apply="filterApply" />
+      <PostFilterMenu v-model:userItems="userItems" :filter @close="dialog.filterMenu = false" @apply="filterApply" />
     </v-dialog>
   </AuthenticatedLayout>
   <div ref="bottomElement"></div>
