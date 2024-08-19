@@ -30,6 +30,9 @@ class NoteController extends Controller
                     });
             });
         }
+        if ($request->onlyLiked === 'true') {
+            $query->whereHas('likes');
+        }
         if ($request->key === 'starts_at') {
             $query->where('category_id', 3);
         }

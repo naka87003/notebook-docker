@@ -1,17 +1,17 @@
 <script setup lang="ts">
 import { ref, onMounted, type Ref } from 'vue';
 import { usePage } from '@inertiajs/vue3';
-import type { Filter, Category, Tag } from '@/interfaces';
+import type { NotesFilter, Category, Tag } from '@/interfaces';
 import { getTagSelectItems } from '@/common';
 
 const emit = defineEmits<{
   close: [];
-  apply: [newFilter: Filter];
+  apply: [newFilter: NotesFilter];
 }>();
 
 const page = usePage();
 
-const props = defineProps<{ filter: Filter }>();
+const props = defineProps<{ filter: NotesFilter }>();
 
 const items = ref({
   category: page.props.categoryItems as Category[],
@@ -22,10 +22,11 @@ const items = ref({
   tag: [] as Tag[]
 });
 
-const newFilter: Ref<Filter> = ref({
+const newFilter: Ref<NotesFilter> = ref({
   category: props.filter.category,
   tag: props.filter.tag,
-  status: props.filter.status
+  status: props.filter.status,
+  onlyLiked: props.filter.onlyLiked
 });
 
 onMounted(async () => {
@@ -36,6 +37,7 @@ const resetFilter = () => {
   newFilter.value.category = [1, 2, 3];
   newFilter.value.status = 1;
   newFilter.value.tag = [];
+  newFilter.value.onlyLiked = false;
   emit('apply', newFilter.value);
 };
 </script>
@@ -92,6 +94,15 @@ const resetFilter = () => {
               </v-chip>
             </template>
           </v-autocomplete>
+        </v-col>
+        <v-col cols="12">
+          <div class="text-subtitle-1 text-medium-emphasis">Like</div>
+          <v-checkbox v-model="newFilter.onlyLiked" class="mb-n10">
+            <template #label>
+              <v-icon icon="mdi-heart" class="mx-3"></v-icon>
+              Show only liked notes
+            </template>
+          </v-checkbox>
         </v-col>
       </v-row>
     </v-card-text>

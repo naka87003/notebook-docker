@@ -10,7 +10,7 @@ import NoteEditForm from '@/Components/NoteEditForm.vue';
 import ConfirmCard from '@/Components/ConfirmCard.vue';
 import NoteSortMenu from '@/Components/NoteSortMenu.vue';
 import NoteFilterMenu from '@/Components/NoteFilterMenu.vue';
-import type { Note as NoteType, Sort, Filter } from '@/interfaces';
+import type { Note as NoteType, Sort, NotesFilter } from '@/interfaces';
 
 const props = defineProps<{
   tag?: number;
@@ -38,10 +38,11 @@ const sort: Ref<Sort> = ref({
   order: 'desc'
 });
 
-const filter: Ref<Filter> = ref({
+const filter: Ref<NotesFilter> = ref({
   category: [1, 2, 3],
   tag: [],
-  status: props.status ?? 1
+  status: props.status ?? 1,
+  onlyLiked: false
 });
 
 const targetNote = ref();
@@ -62,7 +63,12 @@ const sortIcon = computed((): string => {
   }
 });
 
-const filterChanged = computed((): boolean => (filter.value.category.length !== 3 || filter.value.status !== 1 || filter.value.tag.length !== 0));
+const filterChanged = computed((): boolean => (
+  filter.value.category.length !== 3 ||
+  filter.value.status !== 1 ||
+  filter.value.tag.length !== 0 ||
+  filter.value.onlyLiked === true
+));
 
 watchDebounced(search,
   () => refreshDisplay(),
@@ -195,11 +201,12 @@ const sortApply = async (newSort: Sort): Promise<void> => {
   await refreshDisplay();
 };
 
-const filterApply = async (newFilter: Filter): Promise<void> => {
+const filterApply = async (newFilter: NotesFilter): Promise<void> => {
   dialog.value.filterMenu = false;
   filter.value.category = newFilter.category;
   filter.value.status = newFilter.status;
   filter.value.tag = newFilter.tag;
+  filter.value.onlyLiked = newFilter.onlyLiked;
   await refreshDisplay();
 };
 </script>
@@ -221,8 +228,7 @@ const filterApply = async (newFilter: Filter): Promise<void> => {
       <v-spacer></v-spacer>
       <v-btn icon="mdi-plus" @click="dialog.create = true" />
       <v-btn :icon="sortIcon" :class="{ 'text-red': sortChanged }" @click="dialog.sortMenu = true" />
-      <v-btn icon="mdi-filter-menu-outline" :class="{ 'text-red': filterChanged }"
-        @click="dialog.filterMenu = true" />
+      <v-btn icon="mdi-filter-menu-outline" :class="{ 'text-red': filterChanged }" @click="dialog.filterMenu = true" />
     </template>
     <v-container>
       <v-alert v-if="notes.length === 0" variant="text" class="text-center" text="No data available" />

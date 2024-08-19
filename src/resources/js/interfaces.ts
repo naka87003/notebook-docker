@@ -46,10 +46,11 @@ export type Sort = {
   order: string;
 };
 
-export type Filter = {
+export type NotesFilter = {
   category: number[],
   tag: number[],
-  status: number
+  status: number,
+  onlyLiked: boolean
 };
 
 export type PostsFilter = {
