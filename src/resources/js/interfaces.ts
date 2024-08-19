@@ -52,6 +52,11 @@ export type Filter = {
   status: number
 };
 
+export type PostsFilter = {
+  onlyMyLiked: boolean,
+  users: number[],
+};
+
 export type Category = {
   id: number,
   name: string,

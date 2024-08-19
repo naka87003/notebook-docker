@@ -26,6 +26,8 @@ class TimelineController extends Controller
     {
         $query = Note::where('category_id', 1)->where('public', true);
 
+
+
         if ($request->search) {
             $query->where(function (Builder $query) use ($request) {
                 $query->whereLike('title', "%{$request->search}%")
@@ -38,10 +40,15 @@ class TimelineController extends Controller
                     });
             });
         }
+        if ($request->onlyMyLiked === 'true') {
+            $query->whereHas('likes', function (Builder $query) {
+                $query->where('user_id', Auth::id());
+            });
+        }
         if (is_numeric($request->offset)) {
             $query->offset($request->offset);
         }
-        $notes = $query->with(['user', 'category', 'status', 'tag', 'likes'])->orderBy($request->key, $request->order)->limit(20)->get();
+        $notes = $query->with(['user', 'category', 'status', 'tag', 'likes'])->orderBy('updated_at', 'DESC')->limit(20)->get();
         return response()->json($notes);
     }
 

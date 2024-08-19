@@ -5,12 +5,17 @@ import { watchDebounced } from '@vueuse/core'
 import axios from 'axios';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Post from '@/Components/Post.vue';
-import type { Note as NoteType, Sort, Filter } from '@/interfaces';
+import type { Note as NoteType, PostsFilter } from '@/interfaces';
+import PostFilterMenu from '@/Components/PostFilterMenu.vue';
 
 const props = defineProps<{
   tag?: number;
   status?: number;
 }>();
+
+const dialog = ref({
+  filterMenu: false
+});
 
 const search = ref('');
 const notes: Ref<NoteType[]> = ref([]);
@@ -19,15 +24,9 @@ const snackbar = ref({
   message: ''
 });
 
-const sort: Ref<Sort> = ref({
-  key: 'updated_at',
-  order: 'desc'
-});
-
-const filter: Ref<Filter> = ref({
-  category: [1, 2, 3],
-  tag: [],
-  status: props.status ?? 1
+const filter: Ref<PostsFilter> = ref({
+  onlyMyLiked: false,
+  users: []
 });
 
 const bottomElement: Ref<HTMLElement | null> = ref();
@@ -36,15 +35,14 @@ let observer: IntersectionObserver | null = null;
 
 const searchEntered = computed((): boolean => Boolean(search.value));
 
+const filterChanged = computed((): boolean => (filter.value.onlyMyLiked === true || filter.value.users.length > 0));
+
 watchDebounced(search,
   () => refreshDisplay(),
   { debounce: 500, maxWait: 1000 },
 );
 
 onMounted(async () => {
-  if (props.tag !== undefined) {
-    filter.value.tag.push(props.tag);
-  }
   // 最下部までスクロールしたらさらに読み込むイベントを登録
   if (bottomElement.value) {
     observer = new IntersectionObserver(
@@ -68,7 +66,6 @@ const loadNotes = async (): Promise<void> => {
     params: {
       offset: notes.value.length,
       search: search.value,
-      ...sort.value,
       ...filter.value
     }
   })
@@ -87,6 +84,12 @@ const refreshDisplay = async (): Promise<void> => {
   observer.observe(bottomElement.value);
 };
 
+const filterApply = async (newFilter: PostsFilter): Promise<void> => {
+  dialog.value.filterMenu = false;
+  filter.value.onlyMyLiked = newFilter.onlyMyLiked;
+  filter.value.users = newFilter.users;
+  await refreshDisplay();
+};
 </script>
 
 <template>
@@ -104,6 +107,7 @@ const refreshDisplay = async (): Promise<void> => {
         </template>
       </v-text-field>
       <v-spacer></v-spacer>
+      <v-btn icon="mdi-filter-menu-outline" :class="{ 'text-red': filterChanged }" @click="dialog.filterMenu = true" />
     </template>
     <v-container>
       <v-alert v-if="notes.length === 0" variant="text" class="text-center" text="No data available" />
@@ -113,6 +117,9 @@ const refreshDisplay = async (): Promise<void> => {
         </v-col>
       </v-row>
     </v-container>
+    <v-dialog v-model="dialog.filterMenu" max-width="600" scrollable>
+      <PostFilterMenu :filter @close="dialog.filterMenu = false" @apply="filterApply" />
+    </v-dialog>
   </AuthenticatedLayout>
   <div ref="bottomElement"></div>
 </template>
