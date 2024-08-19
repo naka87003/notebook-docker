@@ -26,7 +26,8 @@ const dialog = ref({
   retrieveConfirm: false,
   deleteConfirm: false,
   sortMenu: false,
-  filterMenu: false
+  filterMenu: false,
+  enlargedImage: false
 });
 const snackbar = ref({
   display: false,
@@ -46,6 +47,8 @@ const filter: Ref<NotesFilter> = ref({
 });
 
 const targetNote = ref();
+
+const previewImagePath = ref('');
 
 const bottomElement: Ref<HTMLElement | null> = ref();
 
@@ -209,6 +212,11 @@ const filterApply = async (newFilter: NotesFilter): Promise<void> => {
   filter.value.onlyLiked = newFilter.onlyLiked;
   await refreshDisplay();
 };
+
+const showEnlargedImage = (src: string) => {
+  dialog.value.enlargedImage = true;
+  previewImagePath.value = src;
+};
 </script>
 
 <template>
@@ -234,7 +242,7 @@ const filterApply = async (newFilter: NotesFilter): Promise<void> => {
       <v-alert v-if="notes.length === 0" variant="text" class="text-center" text="No data available" />
       <v-row>
         <v-col v-for="note in notes" cols="12">
-          <Note :note>
+          <Note :note @showEnlargedImage="showEnlargedImage">
             <template #actions>
               <v-icon size="small" class="ms-5" icon="mdi-pencil-outline" @click="showEditDialog(note)" />
               <v-icon v-if="note.status.name === 'archived'" size="small" class="ms-5" icon="mdi-keyboard-return"
@@ -247,34 +255,37 @@ const filterApply = async (newFilter: NotesFilter): Promise<void> => {
         </v-col>
       </v-row>
     </v-container>
-    <v-dialog v-model="dialog.create" fullscreen scrollable>
-      <NoteCreateForm @noteCreated="noteCreated" @close="dialog.create = false" />
-    </v-dialog>
-    <v-dialog v-model="dialog.edit" fullscreen scrollable>
-      <NoteEditForm :targetNote @noteUpdated="noteUpdated" @close="dialog.edit = false" />
-    </v-dialog>
-    <v-dialog v-model="dialog.archiveConfirm" max-width="600">
-      <ConfirmCard title="Archive Note" message="Are you sure you want to archive this note?"
-        icon="mdi-archive-plus-outline" confirmBtnName="Archive" @confirmed="archiveNote"
-        @close="dialog.archiveConfirm = false" />
-    </v-dialog>
-    <v-dialog v-model="dialog.retrieveConfirm" max-width="600">
-      <ConfirmCard title="Retrieve" message="Are you sure you want to retrieve this note from the archive?"
-        icon="mdi-keyboard-return" confirmBtnName="Retrieve" @confirmed="retrieveNote"
-        @close="dialog.retrieveConfirm = false" />
-    </v-dialog>
-    <v-dialog v-model="dialog.deleteConfirm" max-width="600">
-      <ConfirmCard icon="mdi-delete-outline" title="Delete Note" message="Are you sure you want to delete this note?"
-        description="Once the note is deleted, it will be permanently deleted." confirmBtnName="Delete"
-        confirmBtnColor="error" @confirmed="deleteNote" @close="dialog.deleteConfirm = false" />
-    </v-dialog>
-    <v-dialog v-model="dialog.sortMenu" max-width="600" scrollable>
-      <NoteSortMenu :sort @close="dialog.sortMenu = false" @apply="sortApply" />
-    </v-dialog>
-    <v-dialog v-model="dialog.filterMenu" max-width="600" scrollable>
-      <NoteFilterMenu :filter @close="dialog.filterMenu = false" @apply="filterApply" />
-    </v-dialog>
   </AuthenticatedLayout>
+  <v-dialog v-model="dialog.create" fullscreen scrollable>
+    <NoteCreateForm @noteCreated="noteCreated" @close="dialog.create = false" />
+  </v-dialog>
+  <v-dialog v-model="dialog.edit" fullscreen scrollable>
+    <NoteEditForm :targetNote @noteUpdated="noteUpdated" @close="dialog.edit = false" />
+  </v-dialog>
+  <v-dialog v-model="dialog.archiveConfirm" max-width="600">
+    <ConfirmCard title="Archive Note" message="Are you sure you want to archive this note?"
+      icon="mdi-archive-plus-outline" confirmBtnName="Archive" @confirmed="archiveNote"
+      @close="dialog.archiveConfirm = false" />
+  </v-dialog>
+  <v-dialog v-model="dialog.retrieveConfirm" max-width="600">
+    <ConfirmCard title="Retrieve" message="Are you sure you want to retrieve this note from the archive?"
+      icon="mdi-keyboard-return" confirmBtnName="Retrieve" @confirmed="retrieveNote"
+      @close="dialog.retrieveConfirm = false" />
+  </v-dialog>
+  <v-dialog v-model="dialog.deleteConfirm" max-width="600">
+    <ConfirmCard icon="mdi-delete-outline" title="Delete Note" message="Are you sure you want to delete this note?"
+      description="Once the note is deleted, it will be permanently deleted." confirmBtnName="Delete"
+      confirmBtnColor="error" @confirmed="deleteNote" @close="dialog.deleteConfirm = false" />
+  </v-dialog>
+  <v-dialog v-model="dialog.sortMenu" max-width="600" scrollable>
+    <NoteSortMenu :sort @close="dialog.sortMenu = false" @apply="sortApply" />
+  </v-dialog>
+  <v-dialog v-model="dialog.filterMenu" max-width="600" scrollable>
+    <NoteFilterMenu :filter @close="dialog.filterMenu = false" @apply="filterApply" />
+  </v-dialog>
+  <v-dialog v-model="dialog.enlargedImage" close-on-content-click maxWidth="1000px">
+    <v-img :src="previewImagePath" height="90vh" />
+  </v-dialog>
   <div ref="bottomElement"></div>
 </template>
 

@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import dayjs from 'dayjs';
 import type { Note } from '@/interfaces';
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 
 const props = defineProps<{ note: Note }>();
 
-const dialog = ref({
-  enlargedImage: false
-})
+defineEmits<{
+  showEnlargedImage: [src: string];
+}>();
 
 const previewImagePath = computed(() => {
   return props.note.image_path ? 'storage/' + props.note.image_path : null;
@@ -36,7 +36,7 @@ const splitByNewline = (text: string): string[] => text.split(/\r?\n/);
       </v-alert>
       <p v-for="paragraph in splitByNewline(note.content ?? '')" class="note-paragraph">{{ paragraph }}</p>
       <v-img v-if="previewImagePath" :src="previewImagePath" width="300" class="mt-3 cursor-pointer"
-        @click="dialog.enlargedImage = true" />
+        @click="$emit('showEnlargedImage', previewImagePath)" />
     </v-card-text>
     <v-card-actions>
       <v-list-item class="w-100">
@@ -61,7 +61,5 @@ const splitByNewline = (text: string): string[] => text.split(/\r?\n/);
       </v-list-item>
     </v-card-actions>
   </v-card>
-  <v-dialog v-model="dialog.enlargedImage" close-on-content-click maxWidth="1000px">
-    <v-img :src="previewImagePath" height="90vh" />
-  </v-dialog>
+
 </template>

@@ -9,11 +9,16 @@ import type { Note as NoteType, PostsFilter, User } from '@/interfaces';
 import PostFilterMenu from '@/Components/PostFilterMenu.vue';
 
 const dialog = ref({
-  filterMenu: false
+  filterMenu: false,
+  enlargedImage: false
 });
 
 const search = ref('');
+
+const previewImagePath = ref('');
+
 const notes: Ref<NoteType[]> = ref([]);
+
 const snackbar = ref({
   display: false,
   message: ''
@@ -87,6 +92,11 @@ const filterApply = async (newFilter: PostsFilter): Promise<void> => {
   filter.value.user = newFilter.user;
   await refreshDisplay();
 };
+
+const showEnlargedImage = (src: string) => {
+  dialog.value.enlargedImage = true;
+  previewImagePath.value = src;
+};
 </script>
 
 <template>
@@ -110,12 +120,15 @@ const filterApply = async (newFilter: PostsFilter): Promise<void> => {
       <v-alert v-if="notes.length === 0" variant="text" class="text-center" text="No data available" />
       <v-row>
         <v-col v-for="note in notes" cols="12">
-          <Post :note />
+          <Post :note @showEnlargedImage="showEnlargedImage" />
         </v-col>
       </v-row>
     </v-container>
     <v-dialog v-model="dialog.filterMenu" max-width="600" scrollable>
       <PostFilterMenu v-model:userItems="userItems" :filter @close="dialog.filterMenu = false" @apply="filterApply" />
+    </v-dialog>
+    <v-dialog v-model="dialog.enlargedImage" close-on-content-click maxWidth="1000px">
+      <v-img :src="previewImagePath" height="90vh" />
     </v-dialog>
   </AuthenticatedLayout>
   <div ref="bottomElement"></div>

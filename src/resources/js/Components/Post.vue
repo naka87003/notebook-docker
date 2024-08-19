@@ -7,11 +7,11 @@ import axios from 'axios';
 
 const props = defineProps<{ note: Note }>();
 
-const likeCount = ref(props.note.likes.length);
+defineEmits<{
+  showEnlargedImage: [src: string];
+}>();
 
-const dialog = ref({
-  enlargedImage: false
-});
+const likeCount = ref(props.note.likes.length);
 
 const isLiked = ref(props.note.likes.some((like) => like.user_id === usePage().props.auth.user.id));
 
@@ -23,7 +23,6 @@ const simplifyDateTime = (str: string): string => dayjs(str).format('YYYY/MM/DD 
 const splitByNewline = (text: string): string[] => text.split(/\r?\n/);
 
 const like = async () => {
-
   if (isLiked.value === false) {
     await axios.post(route('timeline.like'), {
       note_id: props.note.id
@@ -69,7 +68,7 @@ const like = async () => {
       </v-alert>
       <p v-for="paragraph in splitByNewline(note.content ?? '')" class="note-paragraph">{{ paragraph }}</p>
       <v-img v-if="previewImagePath" :src="previewImagePath" width="300" class="mt-3 cursor-pointer"
-        @click="dialog.enlargedImage = true" />
+        @click="$emit('showEnlargedImage', previewImagePath)" />
     </v-card-text>
     <v-card-actions>
       <v-list-item class="w-100">
@@ -90,7 +89,4 @@ const like = async () => {
       </v-list-item>
     </v-card-actions>
   </v-card>
-  <v-dialog v-model="dialog.enlargedImage" close-on-content-click maxWidth="1000px">
-    <v-img :src="previewImagePath" height="90vh" />
-  </v-dialog>
 </template>
