@@ -24,8 +24,7 @@ const splitByNewline = (text: string): string[] => text.split(/\r?\n/);
 
 <template>
   <v-card rounded="0">
-    <v-toolbar density="comfortable" color="transparent">
-      <v-toolbar-title class="text-h6">{{ targetNote.title }}</v-toolbar-title>
+    <v-toolbar density="comfortable" color="transparent" :title="targetNote.title">
       <template v-slot:prepend>
         <v-icon :icon="targetNote.category.mdi_name" size="large" class="ms-3"></v-icon>
       </template>
@@ -46,25 +45,27 @@ const splitByNewline = (text: string): string[] => text.split(/\r?\n/);
     <v-card-actions>
       <v-list-item class="w-100">
         <template v-slot:prepend>
-          <div class="justify-self-end">
-            <template v-if="targetNote.tag">
-              <v-icon :color="targetNote.tag?.hex_color" size="small" class="me-1" icon="mdi-tag"></v-icon>
-              <span class="me-5 text-caption">{{ targetNote.tag?.name }}</span>
-            </template>
-            <v-icon v-if="targetNote.status.name === 'archived'" size="small" class="me-5" icon="mdi-archive-outline" />
-            <v-icon v-if="targetNote.public === false" size="small" class="me-5" icon="mdi-lock-outline"></v-icon>
-          </div>
+          <template v-if="targetNote.tag">
+            <v-icon :color="targetNote.tag?.hex_color" size="small" class="me-1 hidden-xs" icon="mdi-tag" />
+            <span class="me-5 text-caption hidden-xs">{{ targetNote.tag?.name }}</span>
+            <v-tooltip :text="targetNote.tag?.name" location="top">
+              <template v-slot:activator="{ props }">
+                <v-icon icon="mdi-tag" size="small" class="me-5 hidden-sm-and-up" :color="targetNote.tag?.hex_color"
+                  v-bind="props" open-on-click />
+              </template>
+            </v-tooltip>
+          </template>
+          <v-icon v-if="targetNote.status.name === 'archived'" size="small" class="me-5" icon="mdi-archive-outline" />
+          <v-icon v-if="targetNote.public === false" size="small" class="me-5" icon="mdi-lock-outline"></v-icon>
         </template>
         <template v-slot:append>
-          <div class="justify-self-end">
-            <slot name="actions" :targetNote />
-          </div>
+          <slot name="actions" :targetNote />
         </template>
       </v-list-item>
     </v-card-actions>
   </v-card>
   <v-dialog v-model="dialog.enlargedImage" close-on-content-click maxWidth="1000px">
-    <v-img :src="previewImagePath" height="90vh"/>
+    <v-img :src="previewImagePath" height="90vh" />
   </v-dialog>
 </template>
 

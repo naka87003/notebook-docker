@@ -151,7 +151,7 @@
               <template #prepend>
                 <v-icon size="x-small" icon="mdi-circle" :color="String(event.color)"></v-icon>
               </template>
-              {{ event.title }}
+              <span class="text-truncate" style="max-width: 120px;">{{ event.title }}</span>
             </v-btn>
             <div class="text-center hidden-lg-and-up">
               <v-icon size="x-small" icon="mdi-circle" :color="String(event.color)" @click="showEvent(event.id)" />

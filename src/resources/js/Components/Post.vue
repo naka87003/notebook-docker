@@ -81,7 +81,7 @@ const like = async () => {
           </v-avatar>
         </template>
         <v-list-item-title>{{ note.user.name }}</v-list-item-title>
-        <v-list-item-subtitle v-if="note.tag">{{ note.tag?.name }}</v-list-item-subtitle>
+        <v-list-item-subtitle v-if="note.tag" class="text-caption">{{ note.tag?.name }}</v-list-item-subtitle>
         <template v-slot:append="note">
           <div class="justify-self-end">
             <v-btn :prepend-icon="isLiked ? 'mdi-heart' : 'mdi-heart-outline'" :class="{ 'text-pink': isLiked }"

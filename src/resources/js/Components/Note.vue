@@ -41,20 +41,22 @@ const splitByNewline = (text: string): string[] => text.split(/\r?\n/);
     <v-card-actions>
       <v-list-item class="w-100">
         <template v-slot:prepend>
-          <div class="justify-self-end">
-            <template v-if="note.tag">
-              <v-icon :color="note.tag?.hex_color" size="small" class="me-1" icon="mdi-tag"></v-icon>
-              <span class="me-5 text-caption">{{ note.tag?.name }}</span>
-            </template>
-            <v-icon v-if="note.status.name === 'archived'" size="small" class="me-5" icon="mdi-archive-outline" />
-            <v-icon v-if="note.public === false" size="small" class="me-5" icon="mdi-lock-outline"></v-icon>
-            <v-btn v-else-if="note.likes.length" class="ms-n4" prepend-icon="mdi-heart">{{ note.likes.length }}</v-btn>
-          </div>
+          <template v-if="note.tag">
+            <v-icon :color="note.tag?.hex_color" size="small" class="me-1 hidden-xs" icon="mdi-tag" />
+            <span class="me-5 text-caption hidden-xs">{{ note.tag?.name }}</span>
+            <v-tooltip :text="note.tag?.name" location="top">
+              <template v-slot:activator="{ props }">
+                <v-icon icon="mdi-tag" size="small" class="me-5 hidden-sm-and-up" :color="note.tag?.hex_color"
+                  v-bind="props" open-on-click />
+              </template>
+            </v-tooltip>
+          </template>
+          <v-icon v-if="note.status.name === 'archived'" size="small" class="me-5" icon="mdi-archive-outline" />
+          <v-icon v-if="note.public === false" size="small" class="me-5" icon="mdi-lock-outline"></v-icon>
+          <v-btn v-else-if="note.likes.length" class="ms-n4" prepend-icon="mdi-heart">{{ note.likes.length }}</v-btn>
         </template>
         <template v-slot:append>
-          <div class="justify-self-end">
-            <slot name="actions" />
-          </div>
+          <slot name="actions" />
         </template>
       </v-list-item>
     </v-card-actions>
