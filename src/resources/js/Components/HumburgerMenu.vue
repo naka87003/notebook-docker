@@ -46,6 +46,14 @@ const avatarImagePath = computed(() => userImagePath.value ? 'storage/' + userIm
             </v-avatar>
           </template>
         </v-list-item>
+        <v-list-item title="Timeline" density="compact" :active="currentPageName === 'timeline'"
+          :href="route('timeline')">
+          <template v-slot:prepend>
+            <v-avatar density="compact">
+              <v-icon>mdi-timeline-outline</v-icon>
+            </v-avatar>
+          </template>
+        </v-list-item>
         <v-list-item title="Tags" density="compact" :active="currentPageName === 'tags.index'"
           :href="route('tags.index')">
           <template v-slot:prepend>
