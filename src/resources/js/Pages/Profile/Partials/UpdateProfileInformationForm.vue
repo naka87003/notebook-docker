@@ -38,7 +38,7 @@ const verificationSend = () => {
 					<div class="text-subtitle-1 text-medium-emphasis">Name</div>
 					<v-text-field v-model="form.name" type="text" density="compact" placeholder="Enter your new name"
 						prepend-inner-icon="mdi-account-outline" variant="outlined" :error="Boolean(form.errors.name)"
-						:error-messages="form.errors.name" required autocomplete="name" max-width="600" maxLength="15"
+						:error-messages="form.errors.name" required autocomplete="name" max-width="600" maxLength="20"
 						@input="form.errors.name = null" />
 					<div class="text-subtitle-1 text-medium-emphasis">Email</div>
 					<v-text-field v-model="form.email" type="email" density="compact" placeholder="Enter your new email address"
