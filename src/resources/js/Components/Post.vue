@@ -35,7 +35,6 @@ const like = async () => {
       .catch(function (error) {
         console.log(error);
       });
-
   } else {
     await axios.post(route('timeline.unlike'), {
       note_id: props.note.id
