@@ -48,6 +48,7 @@ const splitByNewline = (text: string): string[] => text.split(/\r?\n/);
             </template>
             <v-icon v-if="note.status.name === 'archived'" size="small" class="me-5" icon="mdi-archive-outline" />
             <v-icon v-if="note.public === false" size="small" class="me-5" icon="mdi-lock-outline"></v-icon>
+            <v-btn v-else-if="note.likes.length" class="ms-n4" prepend-icon="mdi-heart">{{ note.likes.length }}</v-btn>
           </div>
         </template>
         <template v-slot:append>
@@ -58,7 +59,7 @@ const splitByNewline = (text: string): string[] => text.split(/\r?\n/);
       </v-list-item>
     </v-card-actions>
   </v-card>
-  <v-dialog v-model="dialog.enlargedImage" close-on-content-click maxWidth="1000px"> 
-    <v-img :src="previewImagePath" height="90vh"/>
+  <v-dialog v-model="dialog.enlargedImage" close-on-content-click maxWidth="1000px">
+    <v-img :src="previewImagePath" height="90vh" />
   </v-dialog>
 </template>
