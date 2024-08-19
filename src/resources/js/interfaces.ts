@@ -55,7 +55,7 @@ export type NotesFilter = {
 
 export type PostsFilter = {
   onlyMyLiked: boolean,
-  users: number[],
+  user: number,
 };
 
 export type Category = {
