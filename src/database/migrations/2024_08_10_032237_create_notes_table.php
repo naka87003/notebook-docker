@@ -19,7 +19,7 @@ return new class extends Migration
             $table->timestamp('ends_at')->nullable();
             $table->boolean('public');
             $table->text('image_path')->nullable();
-            $table->foreignId('user_id')->constrained();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('category_id')->constrained();
             $table->foreignId('status_id')->constrained();
             $table->foreignId('tag_id')->nullable()->constrained();
