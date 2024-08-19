@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Like;
 use App\Models\Note;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Database\Eloquent\Builder;
@@ -26,8 +27,6 @@ class TimelineController extends Controller
     {
         $query = Note::where('category_id', 1)->where('public', true);
 
-
-
         if ($request->search) {
             $query->where(function (Builder $query) use ($request) {
                 $query->whereLike('title', "%{$request->search}%")
@@ -44,6 +43,9 @@ class TimelineController extends Controller
             $query->whereHas('likes', function (Builder $query) {
                 $query->where('user_id', Auth::id());
             });
+        }
+        if ($request->user) {
+            $query->where('user_id', $request->user);
         }
         if (is_numeric($request->offset)) {
             $query->offset($request->offset);
@@ -70,5 +72,13 @@ class TimelineController extends Controller
             Like::where('note_id', $request->note_id)->where('user_id', Auth::id())->delete();
         }
         return response()->json();
+    }
+
+    public function users(Request $request)
+    {
+        $query =  User::whereLike('name', "%{$request->search}%");
+        $users = $query->orderBy('updated_at', 'DESC')->limit(10)->get();
+
+        return response()->json($users);
     }
 }
