@@ -39,14 +39,13 @@ const pageTransition = (name: string) => {
 					<div class="text-subtitle-1 text-medium-emphasis">Name</div>
 					<v-text-field v-model="form.name" type="text" density="compact" placeholder="Enter your name"
 						prepend-inner-icon="mdi-account-outline" variant="outlined" :error="Boolean(form.errors.name)"
-						:error-messages="form.errors.name" required autofocus autocomplete="username"
+						:error-messages="form.errors.name" required autofocus autocomplete="username" maxLength="15"
 						@input="form.errors.name = null" />
 
 					<div class="text-subtitle-1 text-medium-emphasis">Email</div>
 					<v-text-field v-model="form.email" type="email" density="compact" placeholder="Enter your email address"
 						prepend-inner-icon="mdi-email-outline" variant="outlined" :error="Boolean(form.errors.email)"
-						:error-messages="form.errors.email" required autocomplete="username"
-						@input="form.errors.email = null" />
+						:error-messages="form.errors.email" required autocomplete="username" @input="form.errors.email = null" />
 
 					<div class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between">
 						Password
