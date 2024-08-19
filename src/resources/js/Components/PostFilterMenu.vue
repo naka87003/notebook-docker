@@ -9,8 +9,6 @@ const emit = defineEmits<{
   apply: [newFilter: PostsFilter];
 }>();
 
-const page = usePage();
-
 const props = defineProps<{ filter: PostsFilter }>();
 
 const items = ref({
