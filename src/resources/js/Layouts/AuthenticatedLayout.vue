@@ -46,9 +46,12 @@ const pageTransition = (name: string) => {
       </template>
       <v-container class="mx-auto d-flex align-center justify-center">
         <v-tabs v-model="currentPageName" class="hidden-xs">
-          <v-tab value="dashboard" prepend-icon="mdi-note-multiple-outline" @click="pageTransition('dashboard')">Notes</v-tab>
-          <v-tab value="calendar" prepend-icon="mdi-calendar-outline" @click="pageTransition('calendar')">Calendar</v-tab>
-          <v-tab value="timeline" prepend-icon="mdi-timeline-outline" @click="pageTransition('timeline')">Timeline</v-tab>
+          <v-tab value="dashboard" prepend-icon="mdi-note-multiple-outline"
+            @click="pageTransition('dashboard')">Notes</v-tab>
+          <v-tab value="calendar" prepend-icon="mdi-calendar-outline"
+            @click="pageTransition('calendar')">Calendar</v-tab>
+          <v-tab value="timeline" prepend-icon="mdi-timeline-outline"
+            @click="pageTransition('timeline')">Timeline</v-tab>
         </v-tabs>
         <v-spacer />
         <v-btn icon="mdi-tag-multiple-outline" class="hidden-sm-and-down" :active="currentPageName === 'tags.index'"
@@ -58,7 +61,10 @@ const pageTransition = (name: string) => {
         <v-divider vertical class="hidden-xs ms-3" />
         <v-menu class="hidden-sm-and-down">
           <template v-slot:activator="{ props }">
-            <v-list-item v-bind="props" :title="$page.props.auth.user.name" class="hidden-sm-and-down">
+            <v-list-item v-bind="props" class="hidden-sm-and-down">
+              <v-list-item-title class="text-truncate" style="max-width: 120px">
+                {{ $page.props.auth.user.name }}
+              </v-list-item-title>
               <template v-slot:prepend>
                 <v-avatar color="surface-light">
                   <v-img v-if="avatarImagePath" :src="avatarImagePath" />
