@@ -18,7 +18,9 @@ const form = useForm({
 });
 
 const verificationSend = () => {
-	router.post('email/verification-notification');
+	router.post('email/verification-notification', {}, {
+		preserveScroll: true
+	});
 };
 </script>
 
