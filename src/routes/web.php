@@ -13,6 +13,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/timeline', [TimelineController::class, 'index'])->name('timeline');
     Route::get('/timeline/posts', [TimelineController::class, 'posts'])->name('timeline.posts');
+    Route::get('/timeline/users', [TimelineController::class, 'users'])->name('timeline.users');
     Route::post('/timeline/like', [TimelineController::class, 'like'])->name('timeline.like');
     Route::post('/timeline/unlike', [TimelineController::class, 'unlike'])->name('timeline.unlike');
 
