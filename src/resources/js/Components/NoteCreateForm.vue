@@ -132,12 +132,11 @@ const copyDateToEnd = () => {
                   @input="form.errors.content = null" />
               </v-col>
               <v-col cols="12">
-                <v-img v-if="previewImagePath" :src="previewImagePath" width="300"/>
+                <v-img v-if="previewImagePath" :src="previewImagePath" width="300" />
                 <div class="text-subtitle-1 text-medium-emphasis">Image Upload</div>
                 <v-file-input ref="preview" v-model="form.image" density="compact" label="New image file input"
                   variant="outlined" :error="Boolean(form.errors.image)" :error-messages="form.errors.image" required
-                  autofocus max-width="600" accept="image/png, image/jpeg"
-                  @update:modelValue="form.errors.image = null" />
+                  max-width="600" accept="image/png, image/jpeg" @update:modelValue="form.errors.image = null" />
               </v-col>
             </v-row>
           </v-col>

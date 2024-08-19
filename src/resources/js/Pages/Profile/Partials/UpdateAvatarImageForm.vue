@@ -67,7 +67,7 @@ const deleteImage = () => {
           <div class="text-subtitle-1 text-medium-emphasis">Image Upload</div>
           <v-file-input ref="preview" v-model="form.image" density="compact" label="New image file input"
             variant="outlined" :error="Boolean(form.errors.image)" :error-messages="form.errors.image" required
-            autofocus max-width="600" accept="image/png, image/jpeg" @update:modelValue="form.errors.image = null" />
+            max-width="600" accept="image/png, image/jpeg" @update:modelValue="form.errors.image = null" />
         </form>
         <Transition>
           <div v-if="form.recentlySuccessful">
