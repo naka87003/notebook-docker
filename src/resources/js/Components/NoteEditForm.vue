@@ -161,7 +161,7 @@ const copyDateToEnd = () => {
                 <div class="text-subtitle-1 text-medium-emphasis">Title</div>
                 <v-text-field v-model="form.title" hide-details="auto" type="text" density="compact"
                   placeholder="Enter Title" variant="outlined" :error="Boolean(form.errors.title)"
-                  :error-messages="form.errors.title" required maxLength="10" @input="form.errors.title = null" />
+                  :error-messages="form.errors.title" required maxLength="20" @input="form.errors.title = null" />
               </v-col>
               <v-col v-if="!eventMode" cols="12">
                 <div class="text-subtitle-1 text-medium-emphasis">Category</div>
