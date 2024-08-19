@@ -37,7 +37,7 @@ const pageTransition = (name: string) => {
       </v-toolbar>
       <v-divider />
       <v-card-text class="px-12">
-        <v-alert v-if="status" :text="status" type="success" variant="tonal" closable />
+        <v-alert v-if="status" :text="status" type="success" variant="tonal" class="mb-3" closable />
         <form @submit.prevent="submit" @keyup.enter="submit">
           <div class="text-subtitle-1 text-medium-emphasis">Email</div>
           <v-text-field v-model="form.email" type="email" density="compact" placeholder="Email address"
