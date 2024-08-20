@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { User } from '@/interfaces';
 import { useForm, usePage, router } from '@inertiajs/vue3';
 
 defineProps({
@@ -10,11 +11,12 @@ defineProps({
 	},
 });
 
-const user = usePage().props.auth.user;
+const user = usePage().props.auth.user as User;
 
 const form = useForm({
 	name: user.name,
 	email: user.email,
+	comment: user.comment
 });
 
 const verificationSend = () => {
@@ -45,6 +47,11 @@ const verificationSend = () => {
 						prepend-inner-icon="mdi-email-outline" variant="outlined" :error="Boolean(form.errors.email)"
 						:error-messages="form.errors.email" required autocomplete="username" max-width="600"
 						@input="form.errors.email = null" />
+					<div class="text-subtitle-1 text-medium-emphasis">Comment</div>
+					<v-textarea v-model="form.comment" type="text" density="compact" placeholder="Enter your introduction text"
+						prepend-inner-icon="mdi-comment-text-outline" variant="outlined" :error="Boolean(form.errors.comment)"
+						:error-messages="form.errors.comment" required max-width="600"
+						@input="form.errors.comment = null" counter="160" maxLength="160"/>
 				</form>
 				<div v-if="mustVerifyEmail && user.email_verified_at === null">
 					<v-card class="mb-6" color="surface-variant" variant="tonal">

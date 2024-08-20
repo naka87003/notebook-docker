@@ -44,6 +44,8 @@ const bottomElement: Ref<HTMLElement | null> = ref();
 
 let observer: IntersectionObserver | null = null;
 
+const selectedUser = computed((): User | undefined => userItems.value.find((item) => item.id === filter.value.user))
+
 const searchEntered = computed((): boolean => Boolean(search.value));
 
 const filterChanged = computed((): boolean => (filter.value.onlyMyLiked === true || filter.value.user !== null));
@@ -126,6 +128,28 @@ const showEnlargedImage = (src: string) => {
       <v-btn icon="mdi-filter-menu-outline" :class="{ 'text-red': filterChanged }" @click="dialog.filterMenu = true" />
     </template>
     <v-container>
+      <v-row>
+        <v-col v-if="selectedUser" cols="12">
+          <v-card class="mx-auto pa-1" :title="selectedUser.name" border="sm" elevation="5" rounded="xl">
+            <template v-slot:prepend>
+              <v-avatar color="surface-light">
+                <v-img v-if="selectedUser.image_path" :src="'storage/' + selectedUser.image_path" />
+                <v-icon v-else icon="mdi-account" />
+              </v-avatar>
+            </template>
+            <v-card-text class="ms-1 mt-2">
+              {{ selectedUser.comment }}
+            </v-card-text>
+            <v-divider class="mb-1" />
+            <v-card-actions>
+              <v-btn class="text-capitalize ms-1">0 Following</v-btn>
+              <v-btn class="text-capitalize">0 Followers</v-btn>
+              <v-spacer></v-spacer>
+              <v-btn color="primary" class="me-3" variant="outlined">Follow</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-col>
+      </v-row>
       <v-alert v-if="notes.length === 0" variant="text" class="text-center" text="No data available" />
       <v-row>
         <v-col v-for="note in notes" cols="12">
