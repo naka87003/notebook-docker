@@ -70,7 +70,7 @@ const like = async () => {
     <v-card-actions>
       <v-list-item class="w-100">
         <template v-slot:prepend>
-          <v-avatar color="grey-darken-3">
+          <v-avatar color="grey-darken-3" style="z-index: 1;">
             <v-img v-if="note.user.image_path" :src="'storage/' + note.user.image_path" />
             <v-icon v-else icon="mdi-account" />
           </v-avatar>
