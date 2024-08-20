@@ -4,6 +4,7 @@ export type User = {
   email: string;
   email_verified_at?: string;
   image_path?: string;
+  comment?: string;
 };
 
 export type Note = {
