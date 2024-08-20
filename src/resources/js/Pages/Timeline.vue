@@ -31,10 +31,14 @@ const snackbar = ref({
 
 const filter: Ref<PostsFilter> = ref({
   onlyMyLiked: false,
-  user: props.user
+  user: props.user ?? null
 });
 
-const userItems: Ref<User[]> = ref([props.userItem]);
+const userItems: Ref<User[]> = ref([]);
+
+if (props.userItem) {
+  userItems.value.push(props.userItem);
+}
 
 const bottomElement: Ref<HTMLElement | null> = ref();
 
