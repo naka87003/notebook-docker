@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import dayjs from 'dayjs';
 import type { Note } from '@/interfaces';
 import { computed, ref } from 'vue';
 import { usePage } from '@inertiajs/vue3';
 import axios from 'axios';
+import { simplifyDateTime, splitByNewline, relativeDateTime } from '@/common';
 
 const props = defineProps<{ note: Note }>();
 
@@ -18,9 +18,6 @@ const isLiked = ref(props.note.likes.some((like) => like.user_id === usePage().p
 const previewImagePath = computed(() => {
   return props.note.image_path ? 'storage/' + props.note.image_path : null;
 });
-
-const simplifyDateTime = (str: string): string => dayjs(str).format('YYYY/MM/DD HH:mm');
-const splitByNewline = (text: string): string[] => text.split(/\r?\n/);
 
 const like = async () => {
   if (isLiked.value === false) {
@@ -57,7 +54,7 @@ const like = async () => {
     </template>
     <template v-slot:append>
       <p class="text-caption">
-        {{ simplifyDateTime(note.updated_at) }}
+        {{ relativeDateTime(note.updated_at) }}
       </p>
     </template>
     <v-divider class="border-opacity-25 mx-1" />

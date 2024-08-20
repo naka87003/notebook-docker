@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { router } from '@inertiajs/vue3';
 import { Like } from '@/interfaces';
-import dayjs from 'dayjs';
+import { relativeDateTime } from '@/common';
 
 defineProps<{
   targetLikes: Like[];
@@ -15,8 +15,6 @@ const headers = [
   { title: 'User', align: 'start', key: 'user_id' },
   { title: 'Date', align: 'end', key: 'updated_at' },
 ] as any;
-
-const simplifyDateTime = (str: string): string => dayjs(str).format('YYYY/MM/DD HH:mm');
 
 const showSelectedUserPosts = (userId: number) => {
   router.get(route('timeline'), {
@@ -47,7 +45,7 @@ const showSelectedUserPosts = (userId: number) => {
         </v-list-item>
       </template>
       <template v-slot:item.updated_at="{ item }">
-        {{ simplifyDateTime(item.updated_at) }}
+        {{ relativeDateTime(item.updated_at) }}
       </template>
     </v-data-table-virtual>
   </v-card>

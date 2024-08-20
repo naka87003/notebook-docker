@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import dayjs from 'dayjs';
 import type { Like, Note } from '@/interfaces';
 import { computed } from 'vue';
+import { simplifyDateTime, splitByNewline, relativeDateTime } from '@/common';
 
 const props = defineProps<{ note: Note }>();
 
@@ -13,9 +13,6 @@ defineEmits<{
 const previewImagePath = computed(() => {
   return props.note.image_path ? 'storage/' + props.note.image_path : null;
 });
-
-const simplifyDateTime = (str: string): string => dayjs(str).format('YYYY/MM/DD HH:mm');
-const splitByNewline = (text: string): string[] => text.split(/\r?\n/);
 </script>
 
 <template>
@@ -26,7 +23,7 @@ const splitByNewline = (text: string): string[] => text.split(/\r?\n/);
     </template>
     <template v-slot:append>
       <p class="text-caption">
-        {{ simplifyDateTime(note.updated_at) }}
+        {{ relativeDateTime(note.updated_at) }}
       </p>
     </template>
     <v-divider class="border-opacity-25 mx-1" />
