@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import dayjs from 'dayjs';
-import type { Note } from '@/interfaces';
+import type { Like, Note } from '@/interfaces';
 import { computed } from 'vue';
 
 const props = defineProps<{ note: Note }>();
 
 defineEmits<{
   showEnlargedImage: [src: string];
+  showLikedUserList: [likes: Like[]];
 }>();
 
 const previewImagePath = computed(() => {
@@ -53,7 +54,8 @@ const splitByNewline = (text: string): string[] => text.split(/\r?\n/);
           </template>
           <v-icon v-if="note.status.name === 'archived'" size="small" class="me-5" icon="mdi-archive-outline" />
           <v-icon v-if="note.public === false" size="small" class="me-5" icon="mdi-lock-outline"></v-icon>
-          <v-btn v-else-if="note.likes.length" class="ms-n4" prepend-icon="mdi-heart">{{ note.likes.length }}</v-btn>
+          <v-btn v-else-if="note.likes.length" class="ms-n4" prepend-icon="mdi-heart"
+            @click="$emit('showLikedUserList', note.likes)">{{ note.likes.length }}</v-btn>
         </template>
         <template v-slot:append>
           <slot name="actions" />

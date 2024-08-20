@@ -10,7 +10,8 @@ import NoteEditForm from '@/Components/NoteEditForm.vue';
 import ConfirmCard from '@/Components/ConfirmCard.vue';
 import NoteSortMenu from '@/Components/NoteSortMenu.vue';
 import NoteFilterMenu from '@/Components/NoteFilterMenu.vue';
-import type { Note as NoteType, Sort, NotesFilter } from '@/interfaces';
+import type { Note as NoteType, Sort, NotesFilter, Like } from '@/interfaces';
+import LikedUserList from '@/Components/LikedUserList.vue';
 
 const props = defineProps<{
   tag?: number;
@@ -27,7 +28,8 @@ const dialog = ref({
   deleteConfirm: false,
   sortMenu: false,
   filterMenu: false,
-  enlargedImage: false
+  enlargedImage: false,
+  likedUserList: false
 });
 const snackbar = ref({
   display: false,
@@ -47,6 +49,8 @@ const filter: Ref<NotesFilter> = ref({
 });
 
 const targetNote = ref();
+
+const targetLikes: Ref<Like[]> = ref();
 
 const previewImagePath = ref('');
 
@@ -217,6 +221,11 @@ const showEnlargedImage = (src: string) => {
   dialog.value.enlargedImage = true;
   previewImagePath.value = src;
 };
+
+const showLikedUserList = (likes: Like[]) => {
+  dialog.value.likedUserList = true;
+  targetLikes.value = likes;
+}
 </script>
 
 <template>
@@ -242,7 +251,7 @@ const showEnlargedImage = (src: string) => {
       <v-alert v-if="notes.length === 0" variant="text" class="text-center" text="No data available" />
       <v-row>
         <v-col v-for="note in notes" cols="12">
-          <Note :note @showEnlargedImage="showEnlargedImage">
+          <Note :note @showEnlargedImage="showEnlargedImage" @showLikedUserList="showLikedUserList">
             <template #actions>
               <v-icon size="small" class="ms-5" icon="mdi-pencil-outline" @click="showEditDialog(note)" />
               <v-icon v-if="note.status.name === 'archived'" size="small" class="ms-5" icon="mdi-keyboard-return"
@@ -285,6 +294,9 @@ const showEnlargedImage = (src: string) => {
   </v-dialog>
   <v-dialog v-model="dialog.enlargedImage" close-on-content-click maxWidth="1000px">
     <v-img :src="previewImagePath" height="90vh" />
+  </v-dialog>
+  <v-dialog v-model="dialog.likedUserList" maxWidth="600px">
+    <LikedUserList :targetLikes @close="dialog.likedUserList = false" />
   </v-dialog>
   <div ref="bottomElement"></div>
 </template>

@@ -35,10 +35,7 @@ export type Note = {
     name: string;
     image_path?: string;
   };
-  likes: {
-    user_id: number,
-    note_id: number
-  }[];
+  likes: Like[];
 };
 
 export type Sort = {
@@ -79,3 +76,10 @@ export type Status = {
   id: number,
   name: string,
 };
+
+export type Like = {
+  id: number;
+  user_id: number;
+  user: User;
+  updated_at: string;
+}
