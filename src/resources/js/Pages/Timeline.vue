@@ -8,6 +8,11 @@ import Post from '@/Components/Post.vue';
 import type { Note as NoteType, PostsFilter, User } from '@/interfaces';
 import PostFilterMenu from '@/Components/PostFilterMenu.vue';
 
+const props = defineProps<{
+  user: number;
+  userItem: User;
+}>();
+
 const dialog = ref({
   filterMenu: false,
   enlargedImage: false
@@ -26,10 +31,10 @@ const snackbar = ref({
 
 const filter: Ref<PostsFilter> = ref({
   onlyMyLiked: false,
-  user: null
+  user: props.user
 });
 
-const userItems: Ref<User[]> = ref([]);
+const userItems: Ref<User[]> = ref([props.userItem]);
 
 const bottomElement: Ref<HTMLElement | null> = ref();
 

@@ -17,7 +17,15 @@ class TimelineController extends Controller
      */
     public function index(Request $request)
     {
-        return Inertia::render('Timeline');
+        $props = [];
+        if (isset($request->user) && is_numeric($request->user)) {
+            $user = User::find((int)$request->user);
+            if ($user) {
+                $props['user'] = (int)$request->user;
+                $props['userItem'] = User::find((int)$request->user);
+            }
+        }
+        return Inertia::render('Timeline', $props);
     }
 
     /**
