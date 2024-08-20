@@ -9,8 +9,8 @@ import type { Note as NoteType, PostsFilter, User } from '@/interfaces';
 import PostFilterMenu from '@/Components/PostFilterMenu.vue';
 
 const props = defineProps<{
-  user: number;
-  userItem: User;
+  user?: number;
+  userItem?: User;
 }>();
 
 const dialog = ref({
@@ -128,8 +128,8 @@ const showEnlargedImage = (src: string) => {
       <v-btn icon="mdi-filter-menu-outline" :class="{ 'text-red': filterChanged }" @click="dialog.filterMenu = true" />
     </template>
     <v-container>
-      <v-row>
-        <v-col v-if="selectedUser" cols="12">
+      <v-row v-if="selectedUser">
+        <v-col cols="12">
           <v-card class="mx-auto pa-1" :title="selectedUser.name" border="sm" elevation="5" rounded="xl">
             <template v-slot:prepend>
               <v-avatar color="surface-light">
