@@ -90,12 +90,10 @@ const pageTransition = (name: string) => {
       </v-container>
     </v-app-bar>
     <v-main>
-      <v-container class="hidden-md-and-up">
         <v-dialog v-model="dialog.humburgerMenu" scrollable>
           <HumburgerMenu :currentPageName v-model:isDark="isDark" @logout="logout"
             @close="dialog.humburgerMenu = false" />
         </v-dialog>
-      </v-container>
       <slot />
     </v-main>
   </v-layout>
