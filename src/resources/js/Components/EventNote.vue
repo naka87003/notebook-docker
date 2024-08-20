@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import dayjs from 'dayjs';
 import type { Note } from '@/interfaces';
 import { computed, ref } from 'vue';
+import { simplifyDateTime, splitByNewline } from '@/common';
 
 const props = defineProps<{ targetNote: Note }>();
 
@@ -16,10 +16,6 @@ const dialog = ref({
 const previewImagePath = computed(() => {
   return props.targetNote.image_path ? 'storage/' + props.targetNote.image_path : null;
 });
-
-
-const simplifyDateTime = (str: string): string => dayjs(str).format('YYYY/MM/DD HH:mm');
-const splitByNewline = (text: string): string[] => text.split(/\r?\n/);
 </script>
 
 <template>
