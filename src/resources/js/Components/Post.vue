@@ -80,11 +80,9 @@ const like = async () => {
         </template>
         <v-list-item-title>{{ note.user.name }}</v-list-item-title>
         <v-list-item-subtitle v-if="note.tag" class="text-caption">{{ note.tag?.name }}</v-list-item-subtitle>
-        <template v-slot:append="note">
-          <div class="justify-self-end">
-            <v-btn :prepend-icon="isLiked ? 'mdi-heart' : 'mdi-heart-outline'" :class="{ 'text-pink': isLiked }"
-              @click="like">{{ likeCount }}</v-btn>
-          </div>
+        <template v-slot:append>
+          <v-btn :prepend-icon="isLiked ? 'mdi-heart' : 'mdi-heart-outline'" :class="{ 'text-pink': isLiked }"
+            @click="like">{{ likeCount }}</v-btn>
         </template>
       </v-list-item>
     </v-card-actions>
