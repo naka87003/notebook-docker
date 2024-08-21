@@ -20,23 +20,11 @@ export type Note = {
   category_id: number;
   tag_id?: number;
   status_id: number;
-  status: {
-    name: string;
-  };
-  tag?: {
-    name?: string;
-    hex_color?: string;
-  };
-  category: {
-    id: number;
-    vuetify_theme_color_name?: string;
-    mdi_name?: string;
-  };
-  user: {
-    name: string;
-    image_path?: string;
-  };
-  likes: Like[];
+  status?: Status;
+  tag?: Tag;
+  category?: Category;
+  user?: User;
+  likes?: Like[];
 };
 
 export type Sort = {
@@ -57,15 +45,17 @@ export type PostsFilter = {
 };
 
 export type Category = {
-  id: number,
-  name: string,
-  mdi_name: string
+  id: number;
+  name: string;
+  vuetify_theme_color_name: string;
+  mdi_name: string;
 };
 
 export type Tag = {
-  id: number,
-  name: string,
-  hex_color?: string
+  id: number;
+  name: string;
+  hex_color?: string;
+  user_id?: number;
 };
 
 export type TagCount = {
@@ -81,6 +71,6 @@ export type Status = {
 export type Like = {
   id: number;
   user_id: number;
-  user: User;
+  user?: User;
   updated_at: string;
 }
