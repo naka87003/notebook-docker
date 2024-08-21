@@ -2,7 +2,7 @@
 import { User } from '@/interfaces';
 import { usePage } from '@inertiajs/vue3';
 import axios from 'axios';
-import { ref, onBeforeMount } from 'vue';
+import { ref, watch } from 'vue';
 import FollowButton from './FollowButton.vue';
 
 const props = defineProps<{
@@ -15,7 +15,7 @@ const followers = ref([]);
 const followeesCount = ref(0);
 const followersCount = ref(0);
 
-onBeforeMount(async () => {
+watch(() => props.selectedUser, async () => {
   await axios.get(route('timeline.user'), {
     params: {
       user_id: props.selectedUser.id
@@ -26,7 +26,7 @@ onBeforeMount(async () => {
       followers.value = response.data.followers;
       followeesCount.value = response.data.followees.length;
       followersCount.value = response.data.followers.length;
-      isFollowing.value = followees.value.some((followee) => followee.id === usePage().props.auth.user.id);
+      isFollowing.value = followers.value.some((follower) => follower.id === usePage().props.auth.user.id);
     })
     .catch(error => {
       console.log(error);
