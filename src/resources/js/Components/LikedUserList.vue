@@ -50,7 +50,7 @@ const showSelectedUserPosts = (userId: number) => {
       <template v-slot:item.user_id="{ item }">
         <v-list-item class="w-100" @click="showSelectedUserPosts(item.user.id)">
           <template v-slot:prepend>
-            <v-avatar>
+            <v-avatar color="surface-light">
               <v-img v-if="item.user.image_path" :src="'storage/' + item.user.image_path" />
               <v-icon v-else icon="mdi-account" />
             </v-avatar>
