@@ -10,7 +10,7 @@ import NoteEditForm from '@/Components/NoteEditForm.vue';
 import ConfirmCard from '@/Components/ConfirmCard.vue';
 import NoteSortMenu from '@/Components/NoteSortMenu.vue';
 import NoteFilterMenu from '@/Components/NoteFilterMenu.vue';
-import type { Note as NoteType, Sort, NotesFilter, Like } from '@/interfaces';
+import type { Note as NoteType, Sort, NotesFilter } from '@/interfaces';
 import LikedUserList from '@/Components/LikedUserList.vue';
 
 const props = defineProps<{
@@ -19,7 +19,7 @@ const props = defineProps<{
 }>();
 
 const search = ref('');
-const notes: Ref<NoteType[]> = ref([]);
+const notes: Ref<(NoteType & { likes_count: number })[]> = ref([]);
 const dialog = ref({
   create: false,
   edit: false,
@@ -49,8 +49,6 @@ const filter: Ref<NotesFilter> = ref({
 });
 
 const targetNote = ref();
-
-const targetLikes: Ref<Like[]> = ref();
 
 const previewImagePath = ref('');
 
@@ -222,9 +220,9 @@ const showEnlargedImage = (src: string) => {
   previewImagePath.value = src;
 };
 
-const showLikedUserList = (likes: Like[]) => {
+const showLikedUserList = (note: NoteType) => {
   dialog.value.likedUserList = true;
-  targetLikes.value = likes;
+  targetNote.value = note;
 }
 </script>
 
@@ -251,7 +249,7 @@ const showLikedUserList = (likes: Like[]) => {
       <v-alert v-if="notes.length === 0" variant="text" class="text-center" text="No data available" />
       <v-row>
         <v-col v-for="note in notes" cols="12">
-          <Note :note @showEnlargedImage="showEnlargedImage" @showLikedUserList="showLikedUserList">
+          <Note :note @showEnlargedImage="showEnlargedImage" @showLikedUserList="showLikedUserList(note)">
             <template #actions>
               <v-icon size="small" class="ms-5" icon="mdi-pencil-outline" @click="showEditDialog(note)" />
               <v-icon v-if="note.status.name === 'archived'" size="small" class="ms-5" icon="mdi-keyboard-return"
@@ -296,7 +294,7 @@ const showLikedUserList = (likes: Like[]) => {
     <v-img :src="previewImagePath" height="90vh" />
   </v-dialog>
   <v-dialog v-model="dialog.likedUserList" maxWidth="600px">
-    <LikedUserList :targetLikes @close="dialog.likedUserList = false" />
+    <LikedUserList :targetNote @close="dialog.likedUserList = false" />
   </v-dialog>
   <div ref="bottomElement"></div>
 </template>

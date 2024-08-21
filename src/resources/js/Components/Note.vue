@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import type { Like, Note } from '@/interfaces';
+import type { Note } from '@/interfaces';
 import { computed } from 'vue';
 import { simplifyDateTime, splitByNewline, relativeDateTime } from '@/common';
 
-const props = defineProps<{ note: Note }>();
+const props = defineProps<{ note: Note & { likes_count: number } }>();
 
 defineEmits<{
   showEnlargedImage: [src: string];
-  showLikedUserList: [likes: Like[]];
+  showLikedUserList: [];
 }>();
 
 const previewImagePath = computed(() => {
@@ -51,8 +51,10 @@ const previewImagePath = computed(() => {
           </template>
           <v-icon v-if="note.status.name === 'archived'" size="small" class="me-5" icon="mdi-archive-outline" />
           <v-icon v-if="note.public === false" size="small" class="me-5" icon="mdi-lock-outline"></v-icon>
-          <v-btn v-else-if="note.likes.length" class="ms-n4" prepend-icon="mdi-heart"
-            @click="$emit('showLikedUserList', note.likes)">{{ note.likes.length }}</v-btn>
+          <v-btn v-else-if="note.likes_count" class="ms-n4" prepend-icon="mdi-heart"
+            @click="$emit('showLikedUserList')">
+            {{ note.likes_count }}
+          </v-btn>
         </template>
         <template v-slot:append>
           <slot name="actions" />

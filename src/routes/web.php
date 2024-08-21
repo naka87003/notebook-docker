@@ -26,6 +26,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('/notes', NoteController::class)->except(['create', 'edit', 'show']);
     Route::put('/notes/archive/{note}', [NoteController::class, 'archive'])->name('notes.archive');
     Route::put('/notes/retrieve/{note}', [NoteController::class, 'retrieve'])->name('notes.retrieve');
+    Route::get('/notes/likes/{note}', [NoteController::class, 'likes'])->name('notes.likes');
 
     Route::resource('/tags', TagController::class)->except(['create', 'edit', 'show']);
     Route::get('/tags/items/select', [TagController::class, 'selectItems'])->name('tags.items.select');

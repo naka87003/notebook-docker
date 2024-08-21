@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { router } from '@inertiajs/vue3';
-import { Like } from '@/interfaces';
+import { Like, Note } from '@/interfaces';
 import { relativeDateTime } from '@/common';
+import { onBeforeMount, Ref, ref } from 'vue';
+import axios from 'axios';
 
-defineProps<{
-  targetLikes: Like[];
+const props = defineProps<{
+  targetNote: Note;
 }>();
 
 defineEmits<{
@@ -15,6 +17,18 @@ const headers = [
   { title: 'User', align: 'start', key: 'user_id' },
   { title: 'Date', align: 'end', key: 'updated_at' },
 ] as any;
+
+const items: Ref<Like[]> = ref([]);
+
+onBeforeMount(async () => {
+  await axios.get(route('notes.likes', props.targetNote.id))
+    .then(response => {
+      items.value = response.data;
+    })
+    .catch(error => {
+      console.log(error);
+    });
+});
 
 const showSelectedUserPosts = (userId: number) => {
   router.get(route('timeline'), {
@@ -32,7 +46,7 @@ const showSelectedUserPosts = (userId: number) => {
         <v-btn icon="mdi-close" @click="$emit('close')"></v-btn>
       </template>
     </v-toolbar>
-    <v-data-table-virtual :headers="headers" :items="targetLikes" item-value="id" hide-default-header height="400">
+    <v-data-table-virtual :headers="headers" :items item-value="id" hide-default-header height="400">
       <template v-slot:item.user_id="{ item }">
         <v-list-item class="w-100" @click="showSelectedUserPosts(item.user.id)">
           <template v-slot:prepend>

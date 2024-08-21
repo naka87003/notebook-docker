@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Like;
 use App\Models\Note;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
@@ -42,7 +43,7 @@ class NoteController extends Controller
         if (is_numeric($request->offset)) {
             $query->offset($request->offset);
         }
-        $notes = $query->with(['user', 'category', 'status', 'tag', 'likes.user'])->orderBy($request->key, $request->order)->limit(20)->get();
+        $notes = $query->with(['user', 'category', 'status', 'tag'])->withCount(['likes'])->orderBy($request->key, $request->order)->limit(20)->get();
         return response()->json($notes);
     }
 
@@ -170,5 +171,11 @@ class NoteController extends Controller
         $note->status_id = 1;
         $note->save();
         return response()->json();
+    }
+
+    public function likes(string $id)
+    {
+        $likes = Like::where('note_id', $id)->with('user')->get();
+        return response()->json($likes);
     }
 }
