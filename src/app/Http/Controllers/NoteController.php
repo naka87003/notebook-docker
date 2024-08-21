@@ -175,7 +175,7 @@ class NoteController extends Controller
 
     public function likes(string $id)
     {
-        $likes = Like::where('note_id', $id)->with('user')->get();
+        $likes = Like::where('note_id', $id)->with('user')->orderBy('created_at', 'DESC')->get();
         return response()->json($likes);
     }
 }
