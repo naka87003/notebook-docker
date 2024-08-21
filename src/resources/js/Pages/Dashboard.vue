@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
-import { ref, computed, onMounted, onUnmounted, type Ref } from 'vue';
+import { ref, computed, onMounted, type Ref } from 'vue';
 import { watchDebounced } from '@vueuse/core'
 import axios from 'axios';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
@@ -52,10 +52,6 @@ const targetNote = ref();
 
 const previewImagePath = ref('');
 
-const bottomElement: Ref<HTMLElement | null> = ref();
-
-let observer: IntersectionObserver | null = null;
-
 const searchEntered = computed((): boolean => Boolean(search.value));
 
 const sortChanged = computed((): boolean => (sort.value.key !== 'updated_at' || sort.value.order !== 'desc'));
@@ -84,39 +80,30 @@ onMounted(async () => {
   if (props.tag !== undefined) {
     filter.value.tag.push(props.tag);
   }
-  // 最下部までスクロールしたらさらに読み込むイベントを登録
-  if (bottomElement.value) {
-    observer = new IntersectionObserver(
-      async (entries: IntersectionObserverEntry[]) => {
-        const [entry] = entries;
-        if (entry.isIntersecting) {
-          await loadNotes();
-        }
-      },
-      { root: null, threshold: 0 });
-    observer.observe(bottomElement.value);
-  }
+  const result = await loadNotes();
+  notes.value.push(...result);
 });
 
-onUnmounted(() => {
-  observer?.disconnect();
-});
-
-const loadNotes = async (): Promise<void> => {
-  await axios.get(route('notes.index'), {
+const loadNotes = async (): Promise<(NoteType & { likes_count: number })[]> => {
+  const response = await axios.get(route('notes.index'), {
     params: {
       offset: notes.value.length,
       search: search.value,
       ...sort.value,
       ...filter.value
     }
-  })
-    .then(response => {
-      notes.value.push(...response.data);
-    })
-    .catch(error => {
-      console.log(error);
-    });
+  });
+  return response.data;
+};
+
+const load = async ({ done }): Promise<void> => {
+  const result = await loadNotes();
+  if (result.length > 0) {
+    notes.value.push(...result);
+    done('ok');
+  } else {
+    done('empty');
+  }
 };
 
 const noteCreated = async () => {
@@ -193,10 +180,9 @@ const showSnackBar = (msg: string): void => {
 };
 
 const refreshDisplay = async (): Promise<void> => {
-  observer?.disconnect();
   notes.value.splice(0);
-  await loadNotes();
-  observer.observe(bottomElement.value);
+  const result = await loadNotes();
+  notes.value.push(...result);
 };
 
 const sortApply = async (newSort: Sort): Promise<void> => {
@@ -247,20 +233,24 @@ const showLikedUserList = (note: NoteType) => {
     </template>
     <v-container>
       <v-alert v-if="notes.length === 0" variant="text" class="text-center" text="No data available" />
-      <v-row>
-        <v-col v-for="note in notes" cols="12">
-          <Note :note @showEnlargedImage="showEnlargedImage" @showLikedUserList="showLikedUserList(note)">
-            <template #actions>
-              <v-icon size="small" class="ms-5" icon="mdi-pencil-outline" @click="showEditDialog(note)" />
-              <v-icon v-if="note.status.name === 'archived'" size="small" class="ms-5" icon="mdi-keyboard-return"
-                @click="showRetrieveConfirmDialog(note)" />
-              <v-icon v-else size="small" class="ms-5" icon="mdi-archive-plus-outline"
-                @click="showArchiveConfirmDialog(note)" />
-              <v-icon size="small" class="ms-5" icon="mdi-delete-outline" @click="showDeleteConfirmDialog(note)" />
-            </template>
-          </Note>
-        </v-col>
-      </v-row>
+      <v-infinite-scroll v-else :items="notes" :onLoad="load" class="w-100 overflow-hidden" empty-text="">
+          <v-row>
+          <template v-for="(item, index) in notes" :key="item">
+            <v-col cols="12">
+              <Note :note="item" @showEnlargedImage="showEnlargedImage" @showLikedUserList="showLikedUserList(item)">
+                <template #actions>
+                  <v-icon size="small" class="ms-5" icon="mdi-pencil-outline" @click="showEditDialog(item)" />
+                  <v-icon v-if="item.status.name === 'archived'" size="small" class="ms-5" icon="mdi-keyboard-return"
+                    @click="showRetrieveConfirmDialog(item)" />
+                  <v-icon v-else size="small" class="ms-5" icon="mdi-archive-plus-outline"
+                    @click="showArchiveConfirmDialog(item)" />
+                  <v-icon size="small" class="ms-5" icon="mdi-delete-outline" @click="showDeleteConfirmDialog(item)" />
+                </template>
+              </Note>
+            </v-col>
+          </template>
+        </v-row>
+        </v-infinite-scroll>
     </v-container>
   </AuthenticatedLayout>
   <v-dialog v-model="dialog.create" fullscreen scrollable>
@@ -296,7 +286,6 @@ const showLikedUserList = (note: NoteType) => {
   <v-dialog v-model="dialog.likedUserList" maxWidth="600px">
     <LikedUserList :targetNote @close="dialog.likedUserList = false" />
   </v-dialog>
-  <div ref="bottomElement"></div>
 </template>
 
 <style>
