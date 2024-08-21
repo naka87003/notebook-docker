@@ -71,7 +71,7 @@ const unfollow = async () => {
         <v-icon v-else icon="mdi-account" />
       </v-avatar>
     </template>
-    <v-card-text class="ms-1 mt-2">
+    <v-card-text v-if="selectedUser.comment" class="ms-1 mt-2">
       {{ selectedUser.comment }}
     </v-card-text>
     <v-divider class="mb-1" />
