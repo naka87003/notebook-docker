@@ -13,9 +13,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/timeline', [TimelineController::class, 'index'])->name('timeline');
     Route::get('/timeline/posts', [TimelineController::class, 'posts'])->name('timeline.posts');
+    Route::get('/timeline/user', [TimelineController::class, 'user'])->name('timeline.user');
     Route::get('/timeline/users', [TimelineController::class, 'users'])->name('timeline.users');
     Route::post('/timeline/like', [TimelineController::class, 'like'])->name('timeline.like');
     Route::post('/timeline/unlike', [TimelineController::class, 'unlike'])->name('timeline.unlike');
+    Route::post('/timeline/follow', [TimelineController::class, 'follow'])->name('timeline.follow');
+    Route::post('/timeline/unfollow', [TimelineController::class, 'unfollow'])->name('timeline.unfollow');
 
     Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar');
     Route::get('/calendar/schedule', [CalendarController::class, 'schedule'])->name('calendar.schedule');

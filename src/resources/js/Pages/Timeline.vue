@@ -7,6 +7,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Post from '@/Components/Post.vue';
 import type { Note as NoteType, PostsFilter, User } from '@/interfaces';
 import PostFilterMenu from '@/Components/PostFilterMenu.vue';
+import SelectedUserMenu from '@/Components/SelectedUserMenu.vue';
 
 const props = defineProps<{
   user?: number;
@@ -130,24 +131,7 @@ const showEnlargedImage = (src: string) => {
     <v-container>
       <v-row v-if="selectedUser">
         <v-col cols="12">
-          <v-card class="mx-auto pa-1" :title="selectedUser.name" border="sm" elevation="5" rounded="xl">
-            <template v-slot:prepend>
-              <v-avatar color="surface-light">
-                <v-img v-if="selectedUser.image_path" :src="'storage/' + selectedUser.image_path" />
-                <v-icon v-else icon="mdi-account" />
-              </v-avatar>
-            </template>
-            <v-card-text class="ms-1 mt-2">
-              {{ selectedUser.comment }}
-            </v-card-text>
-            <v-divider class="mb-1" />
-            <v-card-actions>
-              <v-btn class="text-capitalize ms-1">0 Following</v-btn>
-              <v-btn class="text-capitalize">0 Followers</v-btn>
-              <v-spacer></v-spacer>
-              <v-btn color="primary" class="me-3" variant="outlined">Follow</v-btn>
-            </v-card-actions>
-          </v-card>
+          <SelectedUserMenu :selectedUser />
         </v-col>
       </v-row>
       <v-alert v-if="notes.length === 0" variant="text" class="text-center" text="No data available" />

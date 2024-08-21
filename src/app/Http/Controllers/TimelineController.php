@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Follow;
 use App\Models\Like;
 use App\Models\Note;
 use App\Models\User;
@@ -34,7 +35,6 @@ class TimelineController extends Controller
     public function posts(Request $request)
     {
         $query = Note::where('category_id', 1)->where('public', true);
-
         if ($request->search) {
             $query->where(function (Builder $query) use ($request) {
                 $query->whereLike('title', "%{$request->search}%")
@@ -64,21 +64,37 @@ class TimelineController extends Controller
 
     public function like(Request $request)
     {
-        if (Note::find($request->note_id)) {
+        $exists = Like::where('note_id', $request->note_id)->where('user_id', Auth::id())->exists();
+        if ($exists === false && Note::find($request->note_id)) {
             Like::create([
                 'user_id' => Auth::id(),
                 'note_id' => $request->note_id
             ]);
         }
-
         return response()->json();
     }
 
     public function unlike(Request $request)
     {
-        if (Note::find($request->note_id)) {
-            Like::where('note_id', $request->note_id)->where('user_id', Auth::id())->delete();
+        Like::where('note_id', $request->note_id)->where('user_id', Auth::id())->delete();
+        return response()->json();
+    }
+
+    public function follow(Request $request)
+    {
+        $exists = Follow::where('followee_id', $request->user_id)->where('follower_id', Auth::id())->exists();
+        if ($exists === false && User::find($request->user_id)) {
+            Follow::create([
+                'follower_id' => $request->user_id,
+                'followee_id' => Auth::id()
+            ]);
         }
+        return response()->json();
+    }
+
+    public function unfollow(Request $request)
+    {
+        Follow::where('followee_id', $request->user_id)->where('follower_id', Auth::id())->delete();
         return response()->json();
     }
 
@@ -86,7 +102,12 @@ class TimelineController extends Controller
     {
         $query =  User::whereLike('name', "%{$request->search}%");
         $users = $query->orderBy('updated_at', 'DESC')->limit(10)->get();
-
         return response()->json($users);
+    }
+
+    public function user(Request $request)
+    {
+        $user = User::with(['followees', 'followers'])->find((int)$request->user_id);
+        return response()->json($user);
     }
 }
