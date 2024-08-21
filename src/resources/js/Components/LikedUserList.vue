@@ -56,7 +56,7 @@ const showSelectedUserPosts = (userId: number) => {
       </template>
     </v-toolbar>
     <v-divider />
-    <v-card-text class="pt-0">
+    <v-card-text class="py-0">
       <v-list>
         <v-infinite-scroll v-if="items.length > 0" :onLoad="load" class="w-100 overflow-hidden" empty-text="">
           <template v-for="item in items" :key="item.id">
