@@ -85,8 +85,9 @@ class TimelineController extends Controller
         $exists = Follow::where('followee_id', $request->user_id)->where('follower_id', Auth::id())->exists();
         if ($exists === false && User::find($request->user_id)) {
             Follow::create([
-                'follower_id' => $request->user_id,
-                'followee_id' => Auth::id()
+                'follower_id' => Auth::id(),
+                'followee_id' => $request->user_id
+
             ]);
         }
         return response()->json();
