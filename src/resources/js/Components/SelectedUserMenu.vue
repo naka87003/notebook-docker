@@ -2,7 +2,7 @@
 import { User } from '@/interfaces';
 import { usePage } from '@inertiajs/vue3';
 import axios from 'axios';
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 import FollowButton from './FollowButton.vue';
 
 const props = defineProps<{
@@ -14,6 +14,8 @@ const followees = ref([]);
 const followers = ref([]);
 const followeesCount = ref(0);
 const followersCount = ref(0);
+
+const isMyself = computed(() => props.selectedUser.id === usePage().props.auth.user.id);
 
 watch(() => props.selectedUser, async () => {
   await axios.get(route('timeline.user'), {
@@ -34,16 +36,18 @@ watch(() => props.selectedUser, async () => {
 });
 
 const follow = async () => {
-  await axios.post(route('timeline.follow'), {
-    user_id: props.selectedUser.id
-  })
-    .then(function () {
-      isFollowing.value = true;
-      followersCount.value++;
+  if(isMyself.value === false) {
+    await axios.post(route('timeline.follow'), {
+      user_id: props.selectedUser.id
     })
-    .catch(function (error) {
-      console.log(error);
-    });
+      .then(function () {
+        isFollowing.value = true;
+        followersCount.value++;
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  }
 }
 const unfollow = async () => {
   await axios.post(route('timeline.unfollow'), {
@@ -75,7 +79,7 @@ const unfollow = async () => {
       <v-btn class="text-capitalize ms-1">{{ followeesCount }} Following</v-btn>
       <v-btn class="text-capitalize">{{ followersCount }} Followers</v-btn>
       <v-spacer></v-spacer>
-      <FollowButton :isFollowing @follow="follow" @unfollow="unfollow" />
+      <FollowButton v-if="isMyself === false" :isFollowing @follow="follow" @unfollow="unfollow" />
     </v-card-actions>
   </v-card>
 </template>
