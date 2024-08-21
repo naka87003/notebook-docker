@@ -154,6 +154,39 @@ class NoteController extends Controller
     }
 
     /**
+     * タイムラインに表示するNotesを取得
+     */
+    public function posts(Request $request)
+    {
+        $query = Note::where('category_id', 1)->where('public', true);
+        if ($request->search) {
+            $query->where(function (Builder $query) use ($request) {
+                $query->whereLike('title', "%{$request->search}%")
+                    ->orWhereLike('content', "%{$request->search}%")
+                    ->orWhereHas('user', function (Builder $query) use ($request) {
+                        $query->whereLike('name', "%{$request->search}%");
+                    })
+                    ->orWhereHas('tag', function (Builder $query) use ($request) {
+                        $query->whereLike('name', "%{$request->search}%");
+                    });
+            });
+        }
+        if ($request->onlyMyLiked === 'true') {
+            $query->whereHas('likes', function (Builder $query) {
+                $query->where('user_id', Auth::id());
+            });
+        }
+        if ($request->user) {
+            $query->where('user_id', $request->user);
+        }
+        if (is_numeric($request->offset)) {
+            $query->offset($request->offset);
+        }
+        $notes = $query->with(['user', 'category', 'status', 'tag', 'likes'])->orderBy('updated_at', 'DESC')->limit(20)->get();
+        return response()->json($notes);
+    }
+
+    /**
      * change status to `archived`
      */
     public function archive(Note $note)
@@ -171,6 +204,13 @@ class NoteController extends Controller
         $note->status_id = 1;
         $note->save();
         return response()->json();
+    }
+
+    public function Schedule()
+    {
+        $schedule = Note::where('user_id', Auth::id())->where('category_id', 3)->with(['user', 'category', 'status', 'tag'])->get();
+
+        return response()->json($schedule);
     }
 
     public function likes(string $id, Request $request)

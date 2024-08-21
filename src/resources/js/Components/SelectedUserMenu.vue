@@ -18,7 +18,7 @@ const followersCount = ref(0);
 const isMyself = computed(() => props.selectedUser.id === usePage().props.auth.user.id);
 
 watch(() => props.selectedUser, async () => {
-  await axios.get(route('timeline.user'), {
+  await axios.get(route('users.user'), {
     params: {
       user_id: props.selectedUser.id
     }
@@ -37,7 +37,7 @@ watch(() => props.selectedUser, async () => {
 
 const follow = async () => {
   if (isMyself.value === false) {
-    await axios.post(route('timeline.follow'), {
+    await axios.post(route('follows.follow'), {
       user_id: props.selectedUser.id
     })
       .then(function () {
@@ -50,7 +50,7 @@ const follow = async () => {
   }
 }
 const unfollow = async () => {
-  await axios.post(route('timeline.unfollow'), {
+  await axios.post(route('follows.unfollow'), {
     user_id: props.selectedUser.id
   })
     .then(function () {

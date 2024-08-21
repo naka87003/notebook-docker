@@ -6,26 +6,30 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\TimelineController;
+use App\Http\Controllers\LikeController;
+use App\Http\Controllers\FollowController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
-
-    Route::get('/timeline', [TimelineController::class, 'index'])->name('timeline');
-    Route::get('/timeline/posts', [TimelineController::class, 'posts'])->name('timeline.posts');
-    Route::get('/timeline/user', [TimelineController::class, 'user'])->name('timeline.user');
-    Route::get('/timeline/users', [TimelineController::class, 'users'])->name('timeline.users');
-    Route::post('/timeline/like', [TimelineController::class, 'like'])->name('timeline.like');
-    Route::post('/timeline/unlike', [TimelineController::class, 'unlike'])->name('timeline.unlike');
-    Route::post('/timeline/follow', [TimelineController::class, 'follow'])->name('timeline.follow');
-    Route::post('/timeline/unfollow', [TimelineController::class, 'unfollow'])->name('timeline.unfollow');
-
     Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar');
-    Route::get('/calendar/schedule', [CalendarController::class, 'schedule'])->name('calendar.schedule');
+    Route::get('/timeline', [TimelineController::class, 'index'])->name('timeline');
+  
+    Route::get('/users/user', [UserController::class, 'user'])->name('users.user');
+    Route::get('/users/users', [UserController::class, 'users'])->name('users.users');
 
+    Route::post('/likes/like', [LikeController::class, 'like'])->name('likes.like');
+    Route::post('/likes/unlike', [LikeController::class, 'unlike'])->name('likes.unlike');
+
+    Route::post('/follows/follow', [FollowController::class, 'follow'])->name('follows.follow');
+    Route::post('/follows/unfollow', [FollowController::class, 'unfollow'])->name('follows.unfollow');
+    
     Route::resource('/notes', NoteController::class)->except(['create', 'edit', 'show']);
+    Route::get('/notes/posts', [NoteController::class, 'posts'])->name('notes.posts');
     Route::put('/notes/archive/{note}', [NoteController::class, 'archive'])->name('notes.archive');
     Route::put('/notes/retrieve/{note}', [NoteController::class, 'retrieve'])->name('notes.retrieve');
+    Route::get('/notes/schedule', [NoteController::class, 'schedule'])->name('notes.schedule');
     Route::get('/notes/likes/{note}', [NoteController::class, 'likes'])->name('notes.likes');
 
     Route::resource('/tags', TagController::class)->except(['create', 'edit', 'show']);

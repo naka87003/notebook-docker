@@ -58,7 +58,7 @@ onMounted(async () => {
 });
 
 const loadNotes = async (): Promise<(NoteType & { likes_count: number })[]> => {
-  const response = await axios.get(route('timeline.posts'), {
+  const response = await axios.get(route('notes.posts'), {
     params: {
       offset: notes.value.length,
       search: search.value,

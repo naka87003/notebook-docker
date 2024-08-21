@@ -17,11 +17,4 @@ class CalendarController extends Controller
             ['categoryItems' => Category::get()]
         );
     }
-
-    public function Schedule()
-    {
-        $schedule = Note::where('user_id', Auth::id())->where('category_id', 3)->with(['user', 'category', 'status', 'tag'])->get();
-
-        return response()->json($schedule);
-    }
 }

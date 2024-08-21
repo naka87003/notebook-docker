@@ -21,7 +21,7 @@ const previewImagePath = computed(() => {
 
 const like = async () => {
   if (isLiked.value === false) {
-    await axios.post(route('timeline.like'), {
+    await axios.post(route('likes.like'), {
       note_id: props.note.id
     })
       .then(function (response) {
@@ -32,7 +32,7 @@ const like = async () => {
         console.log(error);
       });
   } else {
-    await axios.post(route('timeline.unlike'), {
+    await axios.post(route('likes.unlike'), {
       note_id: props.note.id
     })
       .then(function (response) {

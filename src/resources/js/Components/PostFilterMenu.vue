@@ -30,7 +30,7 @@ const resetFilter = () => {
 const loadUsers = useDebounceFn(async (searchText: string): Promise<void> => {
   if (searchText.length > 2) {
     message.value = 'Searching...';
-    await axios.get(route('timeline.users'), {
+    await axios.get(route('users.users'), {
       params: {
         search: searchText
       }

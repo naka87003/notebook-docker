@@ -47,7 +47,7 @@
     });
 
     const getSchedule = async () => {
-      await axios.get(route('calendar.schedule'), {
+      await axios.get(route('notes.schedule'), {
         params: {
         }
       })
