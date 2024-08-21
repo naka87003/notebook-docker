@@ -10,21 +10,19 @@ const props = defineProps<{
 }>();
 
 const isFollowing = ref(false);
-const followees = ref([]);
-const followers = ref([]);
-const followeesCount = ref(0);
-const followersCount = ref(0);
+const count = ref({
+  followees: 0,
+  followers: 0
+});
 
 const isMyself = computed(() => props.selectedUser.id === usePage().props.auth.user.id);
 
 watch(() => props.selectedUser, async () => {
   await axios.get(route('users.user', props.selectedUser.id))
     .then(response => {
-      followees.value = response.data.followees;
-      followers.value = response.data.followers;
-      followeesCount.value = response.data.followees.length;
-      followersCount.value = response.data.followers.length;
-      isFollowing.value = followers.value.some((follower) => follower.id === usePage().props.auth.user.id);
+      count.value.followees = response.data.followees_count;
+      count.value.followers = response.data.followers_count;
+      isFollowing.value = response.data.followedByLoginUser;
     })
     .catch(error => {
       console.log(error);
@@ -38,7 +36,7 @@ const follow = async () => {
     })
       .then(function () {
         isFollowing.value = true;
-        followersCount.value++;
+        count.value.followers++;
       })
       .catch(function (error) {
         console.log(error);
@@ -51,7 +49,7 @@ const unfollow = async () => {
   })
     .then(function () {
       isFollowing.value = false;
-      followersCount.value--;
+      count.value.followers--;
     })
     .catch(function (error) {
       console.log(error);
@@ -72,8 +70,8 @@ const unfollow = async () => {
     </v-card-text>
     <v-divider class="mb-1" />
     <v-card-actions>
-      <v-btn class="text-capitalize ms-1">{{ followeesCount }} Following</v-btn>
-      <v-btn class="text-capitalize">{{ followersCount }} Followers</v-btn>
+      <v-btn class="text-capitalize ms-1">{{ count.followees }} Following</v-btn>
+      <v-btn class="text-capitalize">{{ count.followers }} Followers</v-btn>
       <v-spacer></v-spacer>
       <FollowButton v-if="isMyself === false" :isFollowing @follow="follow" @unfollow="unfollow" />
     </v-card-actions>

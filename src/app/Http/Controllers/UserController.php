@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Follow;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -16,7 +18,8 @@ class UserController extends Controller
 
     public function user(string $id)
     {
-        $user = User::with(['followees', 'followers'])->find((int)$id);
+        $user = User::withCount(['followees', 'followers'])->find((int)$id);
+        $user->followedByLoginUser = Follow::where('followee_id', (int)$id)->where('follower_id', Auth::id())->exists();
         return response()->json($user);
     }
 }
