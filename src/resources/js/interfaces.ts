@@ -5,13 +5,13 @@ export type User = {
   email_verified_at?: string;
   image_path?: string;
   comment?: string;
+  created_at: string;
+  updated_at: string;
 };
 
 export type Note = {
   id: number;
   title?: string;
-  created_at: string;
-  updated_at: string;
   starts_at?: string;
   ends_at?: string;
   content?: string;
@@ -25,6 +25,8 @@ export type Note = {
   category?: Category;
   user?: User;
   likes?: Like[];
+  created_at: string;
+  updated_at: string;
 };
 
 export type Sort = {

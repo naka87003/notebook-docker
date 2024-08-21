@@ -1,13 +1,20 @@
 <script setup lang="ts">
 import { User } from '@/interfaces';
 import { usePage } from '@inertiajs/vue3';
-import axios from 'axios';
 import { ref, watch, computed } from 'vue';
+import axios from 'axios';
 import FollowButton from './FollowButton.vue';
+import FollowerList from './FollowerList.vue';
+import FolloweeList from './FolloweeList.vue';
 
 const props = defineProps<{
   selectedUser: User;
 }>();
+
+const dialog = ref({
+  followerList: false,
+  followeeList: false
+});
 
 const isFollowing = ref(false);
 const count = ref({
@@ -67,19 +74,33 @@ const unfollow = async () => {
     </template>
     <v-card-text v-if="selectedUser.comment" class="ms-1 mt-2">
       {{ selectedUser.comment }}
-
     </v-card-text>
-    <v-divider class="mb-1 hidden-sm-and-up" />
-    <v-card-actions class="hidden-sm-and-up">
-      <v-btn class="text-capitalize ms-1">{{ count.followees }} Following</v-btn>
-      <v-btn class="text-capitalize">{{ count.followers }} Followers</v-btn>
+    <v-divider class="mb-1 hidden-sm-and-up" :class="{ 'hidden-xs': isMyself }" />
+    <v-card-actions class="hidden-sm-and-up" :class="{ 'hidden-xs': isMyself }">
+      <v-btn class="text-capitalize ms-1" @click="dialog.followeeList = true">
+        {{ count.followees }} Following
+      </v-btn>
+      <v-btn class="text-capitalize" @click="dialog.followerList = true">
+        {{ count.followers }} Followers
+      </v-btn>
     </v-card-actions>
     <v-divider class="mb-1" />
     <v-card-actions>
-      <v-btn class="text-capitalize ms-1 hidden-xs">{{ count.followees }} Following</v-btn>
-      <v-btn class="text-capitalize hidden-xs">{{ count.followers }} Followers</v-btn>
+      <v-btn class="text-capitalize ms-1" :class="{ 'hidden-xs': isMyself === false }"
+        @click="dialog.followeeList = true">
+        {{ count.followees }} Following
+      </v-btn>
+      <v-btn class="text-capitalize" :class="{ 'hidden-xs': isMyself === false }" @click="dialog.followerList = true">
+        {{ count.followers }} Followers
+      </v-btn>
       <v-spacer></v-spacer>
       <FollowButton v-if="isMyself === false" :isFollowing @follow="follow" @unfollow="unfollow" />
     </v-card-actions>
   </v-card>
+  <v-dialog v-model="dialog.followerList" maxWidth="600px" scrollable>
+    <FollowerList :selectedUser @close="dialog.followerList = false" />
+  </v-dialog>
+  <v-dialog v-model="dialog.followeeList" maxWidth="600px" scrollable>
+    <FolloweeList :selectedUser @close="dialog.followeeList = false" />
+  </v-dialog>
 </template>

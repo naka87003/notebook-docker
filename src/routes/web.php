@@ -18,6 +18,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
   
     Route::get('/users/user/{user}', [UserController::class, 'user'])->name('users.user');
     Route::get('/users/users', [UserController::class, 'users'])->name('users.users');
+    Route::get('/users/followers/{user}', [UserController::class, 'followers'])->name('users.followers');
+    Route::get('/users/followees/{user}', [UserController::class, 'followees'])->name('users.followees');
 
     Route::post('/likes/like', [LikeController::class, 'like'])->name('likes.like');
     Route::post('/likes/unlike', [LikeController::class, 'unlike'])->name('likes.unlike');
