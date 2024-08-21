@@ -41,10 +41,6 @@ if (props.userItem) {
   userItems.value.push(props.userItem);
 }
 
-const bottomElement: Ref<HTMLElement | null> = ref();
-
-let observer: IntersectionObserver | null = null;
-
 const selectedUser = computed((): User | undefined => userItems.value.find((item) => item.id === filter.value.user))
 
 const searchEntered = computed((): boolean => Boolean(search.value));
@@ -57,45 +53,35 @@ watchDebounced(search,
 );
 
 onMounted(async () => {
-  // 最下部までスクロールしたらさらに読み込むイベントを登録
-  if (bottomElement.value) {
-    observer = new IntersectionObserver(
-      async (entries: IntersectionObserverEntry[]) => {
-        const [entry] = entries;
-        if (entry.isIntersecting) {
-          await loadNotes();
-        }
-      },
-      { root: null, threshold: 0 });
-    observer.observe(bottomElement.value);
-  }
+  const result = await loadNotes();
+  notes.value.push(...result);
 });
 
-onUnmounted(() => {
-  observer?.disconnect();
-});
-
-const loadNotes = async (): Promise<void> => {
-  await axios.get(route('timeline.posts'), {
+const loadNotes = async (): Promise<(NoteType & { likes_count: number })[]> => {
+  const response = await axios.get(route('timeline.posts'), {
     params: {
       offset: notes.value.length,
       search: search.value,
       ...filter.value
     }
   })
-    .then(response => {
-      notes.value.push(...response.data);
-    })
-    .catch(error => {
-      console.log(error);
-    });
+  return response.data;
+};
+
+const load = async ({ done }): Promise<void> => {
+  const result = await loadNotes();
+  if (result.length > 0) {
+    notes.value.push(...result);
+    done('ok');
+  } else {
+    done('empty');
+  }
 };
 
 const refreshDisplay = async (): Promise<void> => {
-  observer?.disconnect();
   notes.value.splice(0);
-  await loadNotes();
-  observer.observe(bottomElement.value);
+  const result = await loadNotes();
+  notes.value.push(...result);
 };
 
 const filterApply = async (newFilter: PostsFilter): Promise<void> => {
@@ -135,11 +121,15 @@ const showEnlargedImage = (src: string) => {
         </v-col>
       </v-row>
       <v-alert v-if="notes.length === 0" variant="text" class="text-center" text="No data available" />
-      <v-row>
-        <v-col v-for="note in notes" cols="12">
-          <Post :note @showEnlargedImage="showEnlargedImage" />
-        </v-col>
-      </v-row>
+      <v-infinite-scroll v-else :onLoad="load" class="w-100 overflow-hidden" empty-text="">
+        <v-row>
+          <template v-for="note in notes" :key="note.id">
+            <v-col cols="12">
+              <Post :note @showEnlargedImage="showEnlargedImage" />
+            </v-col>
+          </template>
+        </v-row>
+      </v-infinite-scroll>
     </v-container>
     <v-dialog v-model="dialog.filterMenu" max-width="600" scrollable>
       <PostFilterMenu v-model:userItems="userItems" :filter @close="dialog.filterMenu = false" @apply="filterApply" />
@@ -148,7 +138,6 @@ const showEnlargedImage = (src: string) => {
       <v-img :src="previewImagePath" height="90vh" />
     </v-dialog>
   </AuthenticatedLayout>
-  <div ref="bottomElement"></div>
 </template>
 
 <style>
