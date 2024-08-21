@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Note } from '@/interfaces';
 import { computed, ref } from 'vue';
-import { usePage } from '@inertiajs/vue3';
+import { router, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 import { simplifyDateTime, splitByNewline, relativeDateTime } from '@/common';
 
@@ -44,6 +44,12 @@ const like = async () => {
       });
   }
 };
+
+const showSelectedUserPosts = (userId: number) => {
+  router.get(route('timeline'), {
+    user: userId
+  });
+};
 </script>
 
 <template>
@@ -68,7 +74,7 @@ const like = async () => {
         @click="$emit('showEnlargedImage', previewImagePath)" />
     </v-card-text>
     <v-card-actions>
-      <v-list-item class="w-100">
+      <v-list-item @click="showSelectedUserPosts(note.user.id)">
         <template v-slot:prepend>
           <v-avatar color="grey-darken-3" style="z-index: 1;">
             <v-img v-if="note.user.image_path" :src="'storage/' + note.user.image_path" />
@@ -77,11 +83,12 @@ const like = async () => {
         </template>
         <v-list-item-title>{{ note.user.name }}</v-list-item-title>
         <v-list-item-subtitle v-if="note.tag" class="text-caption">{{ note.tag?.name }}</v-list-item-subtitle>
-        <template v-slot:append>
-          <v-btn :prepend-icon="isLiked ? 'mdi-heart' : 'mdi-heart-outline'" :class="{ 'text-pink': isLiked }"
-            @click="like">{{ likeCount }}</v-btn>
-        </template>
       </v-list-item>
+      <v-spacer />
+      <v-btn :prepend-icon="isLiked ? 'mdi-heart' : 'mdi-heart-outline'" :class="{ 'text-pink': isLiked }"
+        @click="like">
+        {{ likeCount }}
+      </v-btn>
     </v-card-actions>
   </v-card>
 </template>
