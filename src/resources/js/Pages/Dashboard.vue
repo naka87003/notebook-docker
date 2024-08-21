@@ -118,23 +118,23 @@ const noteUpdated = async () => {
   showSnackBar('Updated Successfully.');
 };
 
-const showEditDialog = (item: NoteType): void => {
-  targetNote.value = item;
+const showEditDialog = (note: NoteType): void => {
+  targetNote.value = note;
   dialog.value.edit = true;
 };
 
-const showArchiveConfirmDialog = (item: NoteType): void => {
-  targetNote.value = item;
+const showArchiveConfirmDialog = (note: NoteType): void => {
+  targetNote.value = note;
   dialog.value.archiveConfirm = true;
 };
 
-const showRetrieveConfirmDialog = (item: NoteType): void => {
-  targetNote.value = item;
+const showRetrieveConfirmDialog = (note: NoteType): void => {
+  targetNote.value = note;
   dialog.value.retrieveConfirm = true;
 };
 
-const showDeleteConfirmDialog = (item: NoteType): void => {
-  targetNote.value = item;
+const showDeleteConfirmDialog = (note: NoteType): void => {
+  targetNote.value = note;
   dialog.value.deleteConfirm = true;
 };
 
@@ -233,24 +233,24 @@ const showLikedUserList = (note: NoteType) => {
     </template>
     <v-container>
       <v-alert v-if="notes.length === 0" variant="text" class="text-center" text="No data available" />
-      <v-infinite-scroll v-else :items="notes" :onLoad="load" class="w-100 overflow-hidden" empty-text="">
-          <v-row>
-          <template v-for="(item, index) in notes" :key="item">
+      <v-infinite-scroll v-else :onLoad="load" class="w-100 overflow-hidden" empty-text="">
+        <v-row>
+          <template v-for="note in notes" :key="note.id">
             <v-col cols="12">
-              <Note :note="item" @showEnlargedImage="showEnlargedImage" @showLikedUserList="showLikedUserList(item)">
+              <Note :note="note" @showEnlargedImage="showEnlargedImage" @showLikedUserList="showLikedUserList(note)">
                 <template #actions>
-                  <v-icon size="small" class="ms-5" icon="mdi-pencil-outline" @click="showEditDialog(item)" />
-                  <v-icon v-if="item.status.name === 'archived'" size="small" class="ms-5" icon="mdi-keyboard-return"
-                    @click="showRetrieveConfirmDialog(item)" />
+                  <v-icon size="small" class="ms-5" icon="mdi-pencil-outline" @click="showEditDialog(note)" />
+                  <v-icon v-if="note.status.name === 'archived'" size="small" class="ms-5" icon="mdi-keyboard-return"
+                    @click="showRetrieveConfirmDialog(note)" />
                   <v-icon v-else size="small" class="ms-5" icon="mdi-archive-plus-outline"
-                    @click="showArchiveConfirmDialog(item)" />
-                  <v-icon size="small" class="ms-5" icon="mdi-delete-outline" @click="showDeleteConfirmDialog(item)" />
+                    @click="showArchiveConfirmDialog(note)" />
+                  <v-icon size="small" class="ms-5" icon="mdi-delete-outline" @click="showDeleteConfirmDialog(note)" />
                 </template>
               </Note>
             </v-col>
           </template>
         </v-row>
-        </v-infinite-scroll>
+      </v-infinite-scroll>
     </v-container>
   </AuthenticatedLayout>
   <v-dialog v-model="dialog.create" fullscreen scrollable>
