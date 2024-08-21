@@ -33,10 +33,10 @@ watch(() => props.selectedUser, async () => {
     .catch(error => {
       console.log(error);
     });
-});
+}, { immediate: true });
 
 const follow = async () => {
-  if(isMyself.value === false) {
+  if (isMyself.value === false) {
     await axios.post(route('timeline.follow'), {
       user_id: props.selectedUser.id
     })
