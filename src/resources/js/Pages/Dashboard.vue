@@ -283,7 +283,7 @@ const showLikedUserList = (note: NoteType) => {
   <v-dialog v-model="dialog.enlargedImage" close-on-content-click maxWidth="1000px">
     <v-img :src="previewImagePath" height="90vh" />
   </v-dialog>
-  <v-dialog v-model="dialog.likedUserList" maxWidth="600px">
+  <v-dialog v-model="dialog.likedUserList" maxWidth="600px" scrollable>
     <LikedUserList :targetNote @close="dialog.likedUserList = false" />
   </v-dialog>
 </template>

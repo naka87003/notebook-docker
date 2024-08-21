@@ -173,9 +173,15 @@ class NoteController extends Controller
         return response()->json();
     }
 
-    public function likes(string $id)
+    public function likes(string $id, Request $request)
     {
-        $likes = Like::where('note_id', $id)->with('user')->orderBy('created_at', 'DESC')->get();
+        $query = Like::where('note_id', $id)->with('user');
+
+        if (is_numeric($request->offset)) {
+            $query->offset($request->offset);
+        }
+
+        $likes = $query->orderBy('created_at', 'DESC')->limit(20)->get();
         return response()->json($likes);
     }
 }
