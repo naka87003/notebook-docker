@@ -14,9 +14,9 @@ class UserController extends Controller
         return response()->json($users);
     }
 
-    public function user(Request $request)
+    public function user(string $id)
     {
-        $user = User::with(['followees', 'followers'])->find((int)$request->user_id);
+        $user = User::with(['followees', 'followers'])->find((int)$id);
         return response()->json($user);
     }
 }

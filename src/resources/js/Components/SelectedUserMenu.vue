@@ -18,11 +18,7 @@ const followersCount = ref(0);
 const isMyself = computed(() => props.selectedUser.id === usePage().props.auth.user.id);
 
 watch(() => props.selectedUser, async () => {
-  await axios.get(route('users.user'), {
-    params: {
-      user_id: props.selectedUser.id
-    }
-  })
+  await axios.get(route('users.user', props.selectedUser.id))
     .then(response => {
       followees.value = response.data.followees;
       followers.value = response.data.followers;

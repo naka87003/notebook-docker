@@ -16,7 +16,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar');
     Route::get('/timeline', [TimelineController::class, 'index'])->name('timeline');
   
-    Route::get('/users/user', [UserController::class, 'user'])->name('users.user');
+    Route::get('/users/user/{user}', [UserController::class, 'user'])->name('users.user');
     Route::get('/users/users', [UserController::class, 'users'])->name('users.users');
 
     Route::post('/likes/like', [LikeController::class, 'like'])->name('likes.like');
