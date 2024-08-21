@@ -36,7 +36,7 @@ const confirmUnfollow = () => {
 </script>
 
 <template>
-  <v-btn v-if="isFollowing" :color="btnStyle.color" :text="btnStyle.text" class="me-3" variant="outlined"
+  <v-btn v-if="isFollowing" :color="btnStyle.color" :text="btnStyle.text" class="me-3" variant="tonal"
     @click="dialog.unfollowConfirm = true" @mouseover="changeBtnStyle" @mouseleave="changeBtnStyle" />
   <v-btn v-else color="primary" class="me-3" variant="outlined" @click="$emit('follow')">Follow</v-btn>
   <v-dialog v-model="dialog.unfollowConfirm" max-width="600">
