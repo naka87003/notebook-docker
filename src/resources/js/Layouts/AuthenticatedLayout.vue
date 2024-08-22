@@ -68,7 +68,7 @@ const pageTransition = (name: string) => {
             <v-icon icon="mdi-bell-outline" />
           </v-badge>
         </v-btn>
-        <v-divider vertical class="hidden-xs" />
+        <v-divider vertical class="hidden-xs mx-3" />
         <v-menu class="hidden-sm-and-down">
           <template v-slot:activator="{ props }">
             <v-list-item v-bind="props" class="hidden-sm-and-down">
