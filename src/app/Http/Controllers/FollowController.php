@@ -6,6 +6,7 @@ use App\Models\Follow;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Jobs\SendNotificationEmail;
 
 class FollowController extends Controller
 {
@@ -19,6 +20,10 @@ class FollowController extends Controller
 
             ]);
         }
+
+        $user = User::find($request->user_id);
+
+        dispatch(new SendNotificationEmail($user, Auth::user()));
         return response()->json();
     }
 
