@@ -179,6 +179,13 @@ class NoteController extends Controller
         if ($request->user) {
             $query->where('user_id', $request->user);
         }
+
+        if ($request->following === 'true') {
+            $query->whereHas('user.followers', function (Builder $query) {
+                $query->where('follows.follower_id', Auth::id());
+            });
+        }
+
         if (is_numeric($request->offset)) {
             $query->offset($request->offset);
         }

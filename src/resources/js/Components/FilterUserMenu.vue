@@ -7,7 +7,7 @@ import { User } from '@/interfaces';
 
 const emit = defineEmits<{
   close: [];
-  apply: [newFilter: PostsFilter];
+  apply: [user: number];
 }>();
 
 const props = defineProps<{ filter: PostsFilter }>();
@@ -16,16 +16,7 @@ const userItems: Ref<User[]> = defineModel('userItems');
 
 const message = ref('Please enter at least 3 characters.');
 
-const newFilter: Ref<PostsFilter> = ref({
-  onlyMyLiked: props.filter.onlyMyLiked,
-  user: props.filter.user
-});
-
-const resetFilter = () => {
-  newFilter.value.onlyMyLiked = false;
-  newFilter.value.user = null;
-  emit('apply', newFilter.value);
-};
+const user: Ref<number> = ref(props.filter.user)
 
 const loadUsers = useDebounceFn(async (searchText: string): Promise<void> => {
   if (searchText.length > 2) {
@@ -52,9 +43,9 @@ const loadUsers = useDebounceFn(async (searchText: string): Promise<void> => {
 <template>
   <v-card>
     <v-toolbar density="comfortable" color="transparent">
-      <v-toolbar-title class="text-h6" text="Filter Menu"></v-toolbar-title>
+      <v-toolbar-title class="text-h6" text="Filter User"></v-toolbar-title>
       <template v-slot:prepend>
-        <v-icon class="ms-3" icon="mdi-filter-menu-outline" />
+        <v-icon class="ms-3" icon="mdi-account-filter-outline" />
       </template>
       <template v-slot:append>
         <v-btn icon="mdi-close" @click="$emit('close')"></v-btn>
@@ -64,17 +55,7 @@ const loadUsers = useDebounceFn(async (searchText: string): Promise<void> => {
     <v-card-text>
       <v-row>
         <v-col cols="12">
-          <div class="text-subtitle-1 text-medium-emphasis">Like</div>
-          <v-checkbox v-model="newFilter.onlyMyLiked" class="mb-n10">
-            <template #label>
-              <v-icon icon="mdi-heart" class="mx-3"></v-icon>
-              Show only my liked posts
-            </template>
-          </v-checkbox>
-        </v-col>
-        <v-col cols="12">
-          <div class="text-subtitle-1 text-medium-emphasis">User</div>
-          <v-autocomplete v-model="newFilter.user" hide-details="auto" density="compact" placeholder="Select User"
+          <v-autocomplete v-model="user" hide-details="auto" density="compact" placeholder="Select User"
             variant="outlined" :items="userItems" item-title="name" item-value="id" :no-data-text="message" clearable
             @update:search="loadUsers">
             <template v-slot:item="{ props, item }">
@@ -103,10 +84,9 @@ const loadUsers = useDebounceFn(async (searchText: string): Promise<void> => {
     </v-card-text>
     <v-divider />
     <template v-slot:actions>
-      <v-btn variant="plain" @click="resetFilter">Reset</v-btn>
       <v-spacer></v-spacer>
       <v-btn variant="plain" @click="$emit('close')">Close</v-btn>
-      <v-btn color="primary" variant="tonal" @click="$emit('apply', newFilter)">Apply</v-btn>
+      <v-btn color="primary" variant="tonal" @click="$emit('apply', user)">Apply</v-btn>
     </template>
   </v-card>
 </template>

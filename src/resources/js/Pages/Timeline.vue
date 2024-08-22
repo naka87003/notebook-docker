@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
-import { ref, computed, onMounted, onUnmounted, type Ref } from 'vue';
+import { ref, computed, onMounted, type Ref } from 'vue';
 import { watchDebounced } from '@vueuse/core'
 import axios from 'axios';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Post from '@/Components/Post.vue';
 import type { Note as NoteType, PostsFilter, User } from '@/interfaces';
-import PostFilterMenu from '@/Components/PostFilterMenu.vue';
+import FilterUserMenu from '@/Components/FilterUserMenu.vue';
 import SelectedUserMenu from '@/Components/SelectedUserMenu.vue';
 
 const props = defineProps<{
@@ -15,7 +15,7 @@ const props = defineProps<{
 }>();
 
 const dialog = ref({
-  filterMenu: false,
+  filterUserMenu: false,
   enlargedImage: false
 });
 
@@ -32,7 +32,8 @@ const snackbar = ref({
 
 const filter: Ref<PostsFilter> = ref({
   onlyMyLiked: false,
-  user: props.user ?? null
+  user: props.user ?? null,
+  following: false
 });
 
 const userItems: Ref<User[]> = ref([]);
@@ -44,8 +45,6 @@ if (props.userItem) {
 const selectedUser = computed((): User | undefined => userItems.value.find((item) => item.id === filter.value.user))
 
 const searchEntered = computed((): boolean => Boolean(search.value));
-
-const filterChanged = computed((): boolean => (filter.value.onlyMyLiked === true || filter.value.user !== null));
 
 watchDebounced(search,
   () => refreshDisplay(),
@@ -84,16 +83,29 @@ const refreshDisplay = async (): Promise<void> => {
   notes.value.push(...result);
 };
 
-const filterApply = async (newFilter: PostsFilter): Promise<void> => {
-  dialog.value.filterMenu = false;
-  filter.value.onlyMyLiked = newFilter.onlyMyLiked;
-  filter.value.user = newFilter.user;
-  await refreshDisplay();
-};
-
 const showEnlargedImage = (src: string) => {
   dialog.value.enlargedImage = true;
   previewImagePath.value = src;
+};
+
+const filterUser = async (user: number): Promise<void> => {
+  filter.value.following = false;
+  filter.value.onlyMyLiked = false;
+  dialog.value.filterUserMenu = false;
+  filter.value.user = user;
+  await refreshDisplay();
+};
+
+const filterOnlyMyLiked = async () => {
+  filter.value.onlyMyLiked = !filter.value.onlyMyLiked;
+  await refreshDisplay();
+};
+
+const filterFollowing = async () => {
+  filter.value.onlyMyLiked = false;
+  filter.value.user = null;
+  filter.value.following = !filter.value.following;
+  await refreshDisplay();
 };
 </script>
 
@@ -112,7 +124,11 @@ const showEnlargedImage = (src: string) => {
         </template>
       </v-text-field>
       <v-spacer></v-spacer>
-      <v-btn icon="mdi-filter-menu-outline" :class="{ 'text-red': filterChanged }" @click="dialog.filterMenu = true" />
+      <v-btn icon="mdi-account-multiple-outline" :class="{ 'text-red': filter.following }"
+        @click="filterFollowing" />
+      <v-btn icon="mdi-heart-outline" :class="{ 'text-red': filter.onlyMyLiked }" @click="filterOnlyMyLiked" />
+      <v-btn icon="mdi-account-filter-outline" :class="{ 'text-red': filter.user }"
+        @click="dialog.filterUserMenu = true" />
     </template>
     <v-container>
       <v-row v-if="selectedUser">
@@ -131,20 +147,11 @@ const showEnlargedImage = (src: string) => {
         </v-row>
       </v-infinite-scroll>
     </v-container>
-    <v-dialog v-model="dialog.filterMenu" max-width="600" scrollable>
-      <PostFilterMenu v-model:userItems="userItems" :filter @close="dialog.filterMenu = false" @apply="filterApply" />
+    <v-dialog v-model="dialog.filterUserMenu" max-width="600" scrollable>
+      <FilterUserMenu v-model:userItems="userItems" :filter @close="dialog.filterUserMenu = false" @apply="filterUser" />
     </v-dialog>
     <v-dialog v-model="dialog.enlargedImage" close-on-content-click maxWidth="1000px">
       <v-img :src="previewImagePath" height="90vh" />
     </v-dialog>
   </AuthenticatedLayout>
 </template>
-
-<style>
-.note-paragraph {
-  background-image: linear-gradient(180deg, rgba(204, 204, 204, 0) 0%, rgba(204, 204, 204, 0) 98.5%, rgba(100, 100, 100, 100) 100%);
-  background-repeat: repeat-y;
-  background-size: 100% 1.7em;
-  line-height: 1.7;
-}
-</style>

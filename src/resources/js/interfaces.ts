@@ -35,15 +35,16 @@ export type Sort = {
 };
 
 export type NotesFilter = {
-  category: number[],
-  tag: number[],
-  status: number,
-  onlyLiked: boolean
+  category: number[];
+  tag: number[];
+  status: number;
+  onlyLiked: boolean;
 };
 
 export type PostsFilter = {
-  onlyMyLiked: boolean,
-  user: number,
+  onlyMyLiked: boolean;
+  user: number;
+  following: boolean;
 };
 
 export type Category = {
@@ -61,13 +62,13 @@ export type Tag = {
 };
 
 export type TagCount = {
-  normal_count: number,
-  archived_count: number
+  normal_count: number;
+  archived_count: number;
 }
 
 export type Status = {
-  id: number,
-  name: string,
+  id: number;
+  name: string;
 };
 
 export type Like = {
