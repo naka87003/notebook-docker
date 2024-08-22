@@ -34,7 +34,7 @@ const previewImagePath = computed(() => {
         <p class="text-body-2">from {{ simplifyDateTime(targetNote.starts_at) }}</p>
         <p class="text-body-2">to {{ simplifyDateTime(targetNote.ends_at) }}</p>
       </v-alert>
-      <p v-for="paragraph in splitByNewline(targetNote.content ?? '')" class="note-paragraph">{{ paragraph }}</p>
+      <p v-for="paragraph in splitByNewline(targetNote.content ?? '')" class="note-paragraph text-body-1">{{ paragraph }}</p>
       <v-img v-if="previewImagePath" :src="previewImagePath" width="300" class="mt-3 cursor-pointer"
         @click="dialog.enlargedImage = true" />
     </v-card-text>
@@ -65,11 +65,11 @@ const previewImagePath = computed(() => {
   </v-dialog>
 </template>
 
-<style>
+<style scoped>
 .note-paragraph {
   background-image: linear-gradient(180deg, rgba(204, 204, 204, 0) 0%, rgba(204, 204, 204, 0) 98.5%, rgba(100, 100, 100, 100) 100%);
   background-repeat: repeat-y;
-  background-size: 100% 1.7em;
-  line-height: 1.7;
+  background-size: 100% 1.5em;
+  line-height: 1.5;
 }
 </style>

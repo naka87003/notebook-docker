@@ -68,7 +68,7 @@ const previewImagePath = computed(() => {
 .note-paragraph {
   background-image: linear-gradient(180deg, rgba(204, 204, 204, 0) 0%, rgba(204, 204, 204, 0) 98.5%, rgba(100, 100, 100, 100) 100%);
   background-repeat: repeat-y;
-  background-size: 100% 1.7em;
-  line-height: 1.7;
+  background-size: 100% 1.5em;
+  line-height: 1.5;
 }
 </style>
