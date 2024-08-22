@@ -33,7 +33,7 @@ const previewImagePath = computed(() => {
         <p class="text-body-2">to {{ simplifyDateTime(note.ends_at) }}</p>
       </v-alert>
       <p v-for="paragraph in splitByNewline(note.content ?? '')" class="note-paragraph text-body-1">{{ paragraph }}</p>
-      <v-img v-if="previewImagePath" :src="previewImagePath" width="300" class="mt-3 cursor-pointer"
+      <v-img v-if="previewImagePath" :src="previewImagePath" width="300" class="mt-3 cursor-pointer" style="z-index: 1;"
         @click="$emit('showEnlargedImage', previewImagePath)" />
     </v-card-text>
     <v-card-actions>
