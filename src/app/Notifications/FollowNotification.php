@@ -6,6 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\Lang;
 
 class FollowNotification extends Notification
 {
@@ -35,9 +36,19 @@ class FollowNotification extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
-        return (new MailMessage)
-        ->subject('You have a new follower!')
-        ->markdown('mail.follow', ['follower' => $this->follower]);
+        $url = config('app.url') . '/timeline?user=' . $this->follower->id;
+
+        $message = (new MailMessage)
+            ->subject(Lang::get('You have a new follower!'))
+            ->line(Lang::get($this->follower->name . ' followed you.'))
+            ->line(Lang::get("Please click the button below to check your new follower's posts."))
+            ->action(Lang::get('Check Posts'), $url);
+
+        $message->viewData['data'] = [
+            'image_path' => $this->follower->image_path
+        ];
+
+        return $message;
     }
 
     /**

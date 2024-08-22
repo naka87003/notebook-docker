@@ -16,6 +16,11 @@
 
 @endforeach
 
+{{-- Profile Image --}}
+@if (isset($data['image_path']) && $data['image_path'])
+  <img src="{{ $message->embed(storage_path('app/public/' . $data['image_path'])) }}">
+@endif
+
 {{-- Action Button --}}
 @isset($actionText)
 <?php
