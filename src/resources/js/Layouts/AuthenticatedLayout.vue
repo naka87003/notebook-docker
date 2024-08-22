@@ -25,6 +25,8 @@ const currentPageName = computed({
 
 const userImagePath = computed((): string | null => usePage().props.auth.user.image_path);
 
+const unreadNotifications = computed((): number => usePage().props.unreadNotifications as number);
+
 const avatarImagePath = computed(() => userImagePath.value ? 'storage/' + userImagePath.value : null);
 
 const logout = () => {
@@ -54,11 +56,19 @@ const pageTransition = (name: string) => {
             @click="pageTransition('timeline')">Timeline</v-tab>
         </v-tabs>
         <v-spacer />
-        <v-btn icon="mdi-tag-multiple-outline" class="hidden-sm-and-down" :active="currentPageName === 'tags.index'"
-          @click="pageTransition('tags.index')" />
-        <v-btn :icon="isDark ? 'mdi-weather-night' : 'mdi-weather-sunny'" class="hidden-sm-and-down ms-3"
-          @click="isDark = !isDark" />
-        <v-divider vertical class="hidden-xs ms-3" />
+        <v-btn class="hidden-sm-and-down " stacked :active="currentPageName === 'tags.index'"
+          @click="pageTransition('tags.index')">
+          <v-icon icon="mdi-tag-multiple-outline" />
+        </v-btn>
+        <v-btn class="hidden-sm-and-down " stacked @click="isDark = !isDark">
+          <v-icon :icon="isDark ? 'mdi-weather-night' : 'mdi-weather-sunny'" />
+        </v-btn>
+        <v-btn stacked>
+          <v-badge :model-value="unreadNotifications > 0" color="error" :content="unreadNotifications">
+            <v-icon icon="mdi-bell-outline" />
+          </v-badge>
+        </v-btn>
+        <v-divider vertical class="hidden-xs" />
         <v-menu class="hidden-sm-and-down">
           <template v-slot:activator="{ props }">
             <v-list-item v-bind="props" class="hidden-sm-and-down">
@@ -90,10 +100,10 @@ const pageTransition = (name: string) => {
       </v-container>
     </v-app-bar>
     <v-main>
-        <v-dialog v-model="dialog.humburgerMenu" scrollable>
-          <HumburgerMenu :currentPageName v-model:isDark="isDark" @logout="logout"
-            @close="dialog.humburgerMenu = false" />
-        </v-dialog>
+      <v-dialog v-model="dialog.humburgerMenu" scrollable>
+        <HumburgerMenu :currentPageName v-model:isDark="isDark" @logout="logout"
+          @close="dialog.humburgerMenu = false" />
+      </v-dialog>
       <slot />
     </v-main>
   </v-layout>

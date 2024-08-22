@@ -12,9 +12,10 @@ class CalendarController extends Controller
 {
     public function index()
     {
-        return Inertia::render(
-            'Calendar',
-            ['categoryItems' => Category::get()]
-        );
+        $props = [
+            'categoryItems' => Category::get(),
+            'unreadNotifications' => Auth::user()->unreadNotifications->count()
+        ];
+        return Inertia::render('Calendar', $props);
     }
 }

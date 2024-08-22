@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class DashboardController extends Controller
@@ -15,6 +16,7 @@ class DashboardController extends Controller
     {
         $props = [
             'categoryItems' => Category::get(),
+            'unreadNotifications' => Auth::user()->unreadNotifications->count()
         ];
         if (isset($request->tag) && is_numeric($request->tag)) {
             $props['tag'] = (int)$request->tag;

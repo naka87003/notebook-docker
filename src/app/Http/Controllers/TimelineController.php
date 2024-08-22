@@ -18,7 +18,9 @@ class TimelineController extends Controller
      */
     public function index(Request $request)
     {
-        $props = [];
+        $props = [
+            'unreadNotifications' => Auth::user()->unreadNotifications->count()
+        ];
         if (isset($request->user) && is_numeric($request->user)) {
             $user = User::find((int)$request->user);
             if ($user) {
