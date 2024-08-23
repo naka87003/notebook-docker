@@ -76,4 +76,16 @@ export type Like = {
   user_id: number;
   user?: User;
   updated_at: string;
+};
+
+export type Notification = {
+  id: string;
+  notifiable_id: number;
+  notifiable_type: string;
+  data: {
+    follower: User;
+  };
+  read_at: string;
+  created_at: string;
+  updated_at: string;
 }

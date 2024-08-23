@@ -4,17 +4,17 @@ import { router, usePage } from '@inertiajs/vue3';
 import { useTheme } from 'vuetify'
 import { useDark } from '@vueuse/core';
 import HumburgerMenu from '@/Components/HumburgerMenu.vue';
+import NotificationList from '@/Components/NotificationList.vue';
 
 const theme = useTheme();
 const isDark = useDark();
 
 const dialog = ref({
-  humburgerMenu: false
+  humburgerMenu: false,
+  notifications: false
 });
 
-watch(isDark, (value) => {
-  theme.global.name.value = value ? 'dark' : 'light';
-}, { immediate: true });
+const unreadNotifications = ref(usePage().props.unreadNotifications as number);
 
 const currentPageName = computed({
   get() {
@@ -25,9 +25,11 @@ const currentPageName = computed({
 
 const userImagePath = computed((): string | null => usePage().props.auth.user.image_path);
 
-const unreadNotifications = computed((): number => usePage().props.unreadNotifications as number);
-
 const avatarImagePath = computed(() => userImagePath.value ? 'storage/' + userImagePath.value : null);
+
+watch(isDark, (value) => {
+  theme.global.name.value = value ? 'dark' : 'light';
+}, { immediate: true });
 
 const logout = () => {
   router.post('logout');
@@ -35,6 +37,11 @@ const logout = () => {
 
 const pageTransition = (name: string) => {
   router.visit(route(name));
+};
+
+const markAllAsRead = () => {
+  dialog.value.notifications = false;
+  unreadNotifications.value = 0;
 };
 </script>
 
@@ -63,7 +70,7 @@ const pageTransition = (name: string) => {
         <v-btn class="hidden-sm-and-down " stacked @click="isDark = !isDark">
           <v-icon :icon="isDark ? 'mdi-weather-night' : 'mdi-weather-sunny'" />
         </v-btn>
-        <v-btn stacked>
+        <v-btn stacked @click="dialog.notifications = true">
           <v-badge :model-value="unreadNotifications > 0" color="error" :content="unreadNotifications">
             <v-icon icon="mdi-bell-outline" />
           </v-badge>
@@ -103,6 +110,9 @@ const pageTransition = (name: string) => {
       <v-dialog v-model="dialog.humburgerMenu" scrollable>
         <HumburgerMenu :currentPageName v-model:isDark="isDark" @logout="logout"
           @close="dialog.humburgerMenu = false" />
+      </v-dialog>
+      <v-dialog v-model="dialog.notifications" maxWidth="600px" scrollable>
+        <NotificationList @close="dialog.notifications = false" @markAllAsRead="markAllAsRead"/>
       </v-dialog>
       <slot />
     </v-main>
