@@ -72,7 +72,7 @@ const showSelectedUserPosts = (userId: number) => {
     <v-card-actions>
       <v-list-item @click="showSelectedUserPosts(note.user.id)">
         <template v-slot:prepend>
-          <v-avatar color="grey-darken-3" style="z-index: 1;">
+          <v-avatar color="grey-darken-3" size="small" style="z-index: 1;">
             <v-img v-if="note.user.image_path" :src="'storage/' + note.user.image_path" />
             <v-icon v-else icon="mdi-account" />
           </v-avatar>
@@ -81,7 +81,6 @@ const showSelectedUserPosts = (userId: number) => {
         <v-list-item-subtitle v-if="note.tag" class="text-caption">{{ note.tag?.name }}</v-list-item-subtitle>
       </v-list-item>
       <v-spacer />
-      <v-btn prepend-icon="mdi-comment-outline" class="hidden-xs">10</v-btn>
       <v-btn :prepend-icon="isLiked ? 'mdi-heart' : 'mdi-heart-outline'" class="hidden-xs" :class="{ 'text-pink': isLiked }" 
         @click="like">
         {{ likeCount }}
@@ -89,7 +88,6 @@ const showSelectedUserPosts = (userId: number) => {
     </v-card-actions>
     <v-card-actions class="hidden-sm-and-up">
       <v-spacer />
-      <v-btn prepend-icon="mdi-comment-outline">10</v-btn>
       <v-btn :prepend-icon="isLiked ? 'mdi-heart' : 'mdi-heart-outline'" :class="{ 'text-pink': isLiked }"
         @click="like">
         {{ likeCount }}
