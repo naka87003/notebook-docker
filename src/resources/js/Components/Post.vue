@@ -21,9 +21,7 @@ const previewImagePath = computed(() => {
 
 const like = async () => {
   if (isLiked.value === false) {
-    await axios.post(route('likes.like'), {
-      note_id: props.note.id
-    })
+    await axios.post(route('likes.like', props.note.id))
       .then(function (response) {
         likeCount.value++
         isLiked.value = true;
@@ -32,9 +30,7 @@ const like = async () => {
         console.log(error);
       });
   } else {
-    await axios.post(route('likes.unlike'), {
-      note_id: props.note.id
-    })
+    await axios.delete(route('likes.unlike', props.note.id))
       .then(function (response) {
         likeCount.value--;
         isLiked.value = false;

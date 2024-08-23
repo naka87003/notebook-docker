@@ -9,6 +9,7 @@ use App\Http\Controllers\TimelineController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\FollowController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -21,11 +22,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/users/followers/{user}', [UserController::class, 'followers'])->name('users.followers');
     Route::get('/users/followees/{user}', [UserController::class, 'followees'])->name('users.followees');
 
-    Route::post('/likes/like', [LikeController::class, 'like'])->name('likes.like');
-    Route::post('/likes/unlike', [LikeController::class, 'unlike'])->name('likes.unlike');
+    Route::post('/likes/like/{note}', [LikeController::class, 'like'])->name('likes.like');
+    Route::delete('/likes/unlike/{note}', [LikeController::class, 'unlike'])->name('likes.unlike');
 
-    Route::post('/follows/follow', [FollowController::class, 'follow'])->name('follows.follow');
-    Route::post('/follows/unfollow', [FollowController::class, 'unfollow'])->name('follows.unfollow');
+    Route::post('/follows/follow/{user}', [FollowController::class, 'follow'])->name('follows.follow');
+    Route::delete('/follows/unfollow/{user}', [FollowController::class, 'unfollow'])->name('follows.unfollow');
     
     Route::resource('/notes', NoteController::class)->except(['create', 'edit', 'show']);
     Route::get('/notes/posts', [NoteController::class, 'posts'])->name('notes.posts');
@@ -37,6 +38,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('/tags', TagController::class)->except(['create', 'edit', 'show']);
     Route::get('/tags/items/select', [TagController::class, 'selectItems'])->name('tags.items.select');
     Route::get('/tags/items/datatable', [TagController::class, 'datatableItems'])->name('tags.items.datatable');
+
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications');
+    Route::put('/notifications/read/{notification}', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
+    Route::put('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
 });
 
 Route::middleware('auth')->group(function () {

@@ -38,9 +38,7 @@ watch(() => props.selectedUser, async () => {
 
 const follow = async () => {
   if (isMyself.value === false) {
-    await axios.post(route('follows.follow'), {
-      user_id: props.selectedUser.id
-    })
+    await axios.post(route('follows.follow', props.selectedUser.id))
       .then(function () {
         isFollowing.value = true;
         count.value.followers++;
@@ -51,9 +49,7 @@ const follow = async () => {
   }
 }
 const unfollow = async () => {
-  await axios.post(route('follows.unfollow'), {
-    user_id: props.selectedUser.id
-  })
+  await axios.delete(route('follows.unfollow', props.selectedUser.id))
     .then(function () {
       isFollowing.value = false;
       count.value.followers--;

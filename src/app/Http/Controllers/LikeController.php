@@ -4,26 +4,25 @@ namespace App\Http\Controllers;
 
 use App\Models\Like;
 use App\Models\Note;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class LikeController extends Controller
 {
-    public function like(Request $request)
+    public function like($note_id)
     {
-        $exists = Like::where('note_id', $request->note_id)->where('user_id', Auth::id())->exists();
-        if ($exists === false && Note::find($request->note_id)) {
+        $exists = Like::where('note_id', $note_id)->where('user_id', Auth::id())->exists();
+        if ($exists === false && Note::find($note_id)) {
             Like::create([
                 'user_id' => Auth::id(),
-                'note_id' => $request->note_id
+                'note_id' => $note_id
             ]);
         }
         return response()->json();
     }
 
-    public function unlike(Request $request)
+    public function unlike($note_id)
     {
-        Like::where('note_id', $request->note_id)->where('user_id', Auth::id())->delete();
+        Like::where('note_id', $note_id)->where('user_id', Auth::id())->delete();
         return response()->json();
     }
 }
