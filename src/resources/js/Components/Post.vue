@@ -81,7 +81,7 @@ const showSelectedUserPosts = (userId: number) => {
         <v-list-item-subtitle v-if="note.tag" class="text-caption">{{ note.tag?.name }}</v-list-item-subtitle>
       </v-list-item>
       <v-spacer />
-      <v-btn prepend-icon="mdi-comment-outline" class="hidden-xs">{{ note.comments_count }}</v-btn>
+      <v-btn prepend-icon="mdi-comment-outline" class="hidden-xs">{{ note.comments_count || '' }}</v-btn>
       <v-btn :prepend-icon="isLiked ? 'mdi-heart' : 'mdi-heart-outline'" class="hidden-xs"
         :class="{ 'text-pink': isLiked }" @click="like">
         {{ likeCount }}
@@ -89,7 +89,7 @@ const showSelectedUserPosts = (userId: number) => {
     </v-card-actions>
     <v-card-actions class="hidden-sm-and-up">
       <v-spacer />
-      <v-btn prepend-icon="mdi-comment-outline">{{ note.comments_count }}</v-btn>
+      <v-btn prepend-icon="mdi-comment-outline">{{ note.comments_count || '' }}</v-btn>
       <v-btn :prepend-icon="isLiked ? 'mdi-heart' : 'mdi-heart-outline'" :class="{ 'text-pink': isLiked }"
         @click="like">
         {{ likeCount }}
