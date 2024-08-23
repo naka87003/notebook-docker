@@ -24,7 +24,7 @@ class ProfileController extends Controller
         $props = [
             'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
             'status' => session('status'),
-            'unreadNotifications' => Auth::user()->unreadNotifications->count()
+            'unreadNotificationCount' => Auth::user()->unreadNotifications->count()
         ];
         return Inertia::render('Profile/Edit', $props);
     }

@@ -16,7 +16,7 @@ class DashboardController extends Controller
     {
         $props = [
             'categoryItems' => Category::get(),
-            'unreadNotifications' => Auth::user()->unreadNotifications->count()
+            'unreadNotificationCount' => Auth::user()->unreadNotifications->count()
         ];
         if (isset($request->tag) && is_numeric($request->tag)) {
             $props['tag'] = (int)$request->tag;

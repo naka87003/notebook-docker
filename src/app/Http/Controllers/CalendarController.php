@@ -14,7 +14,7 @@ class CalendarController extends Controller
     {
         $props = [
             'categoryItems' => Category::get(),
-            'unreadNotifications' => Auth::user()->unreadNotifications->count()
+            'unreadNotificationCount' => Auth::user()->unreadNotifications->count()
         ];
         return Inertia::render('Calendar', $props);
     }

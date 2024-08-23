@@ -19,7 +19,7 @@ class TagController extends Controller
     public function index()
     {
         $props = [
-            'unreadNotifications' => Auth::user()->unreadNotifications->count()
+            'unreadNotificationCount' => Auth::user()->unreadNotifications->count()
         ];
         return Inertia::render('Tag', $props);
     }

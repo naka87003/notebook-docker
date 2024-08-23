@@ -14,7 +14,7 @@ const dialog = ref({
   notifications: false
 });
 
-const unreadNotifications = ref(usePage().props.unreadNotifications as number);
+const unreadNotificationCount = ref(usePage().props.unreadNotificationCount as number);
 
 const currentPageName = computed({
   get() {
@@ -41,7 +41,7 @@ const pageTransition = (name: string) => {
 
 const markAllAsRead = () => {
   dialog.value.notifications = false;
-  unreadNotifications.value = 0;
+  unreadNotificationCount.value = 0;
 };
 </script>
 
@@ -71,7 +71,7 @@ const markAllAsRead = () => {
           <v-icon :icon="isDark ? 'mdi-weather-night' : 'mdi-weather-sunny'" />
         </v-btn>
         <v-btn stacked @click="dialog.notifications = true">
-          <v-badge :model-value="unreadNotifications > 0" color="error" :content="unreadNotifications">
+          <v-badge :model-value="unreadNotificationCount > 0" color="info" :content="unreadNotificationCount">
             <v-icon icon="mdi-bell-outline" />
           </v-badge>
         </v-btn>
@@ -112,7 +112,7 @@ const markAllAsRead = () => {
           @close="dialog.humburgerMenu = false" />
       </v-dialog>
       <v-dialog v-model="dialog.notifications" maxWidth="600px" scrollable>
-        <NotificationList @close="dialog.notifications = false" @markAllAsRead="markAllAsRead"/>
+        <NotificationList :unreadNotificationCount @close="dialog.notifications = false" @markAllAsRead="markAllAsRead"/>
       </v-dialog>
       <slot />
     </v-main>
