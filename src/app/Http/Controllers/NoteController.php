@@ -189,7 +189,7 @@ class NoteController extends Controller
         if (is_numeric($request->offset)) {
             $query->offset($request->offset);
         }
-        $notes = $query->with(['user', 'category', 'status', 'tag', 'likes'])->orderBy('updated_at', 'DESC')->limit(20)->get();
+        $notes = $query->with(['user', 'category', 'status', 'tag', 'likes'])->withCount(['comments'])->orderBy('updated_at', 'DESC')->limit(20)->get();
         return response()->json($notes);
     }
 

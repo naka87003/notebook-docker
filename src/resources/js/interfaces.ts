@@ -25,6 +25,7 @@ export type Note = {
   category?: Category;
   user?: User;
   likes?: Like[];
+  comments_count: number;
   created_at: string;
   updated_at: string;
 };
