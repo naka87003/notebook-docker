@@ -5,6 +5,10 @@ import { relativeDateTime } from '@/common';
 import { onMounted, Ref, ref } from 'vue';
 import axios from 'axios';
 
+defineProps<{
+  unreadNotificationCount: number;
+}>();
+
 const emit = defineEmits<{
   close: [];
   markAllAsRead: []
@@ -75,7 +79,7 @@ const markAllAsRead = async () => {
       <v-list v-if="items.length > 0">
         <v-infinite-scroll :onLoad="load" class="w-100 overflow-hidden" empty-text="">
           <template v-for="item in items" :key="item.id">
-            <v-list-item :base-color="item.read_at === null ? 'red' : ''"
+            <v-list-item :base-color="item.read_at ? '' : 'info'" 
               @click="showSelectedUserPosts(item.id, item.data.follower.id)">
               <v-list-item-title>{{ item.data.follower.name }} followed you.</v-list-item-title>
               <template v-slot:prepend>
@@ -96,7 +100,8 @@ const markAllAsRead = async () => {
     <template v-slot:actions>
       <v-btn variant="plain" @click="$emit('close')">Close</v-btn>
       <v-spacer></v-spacer>
-      <v-btn color="primary" variant="tonal" @click="markAllAsRead">Mark All as Read</v-btn>
+      <v-btn color="secondary" variant="tonal" :disabled="unreadNotificationCount === 0" @click="markAllAsRead">Mark All as
+        Read</v-btn>
     </template>
   </v-card>
 </template>
