@@ -57,4 +57,12 @@ class Note extends Model
     {
         return $this->hasMany(Like::class);
     }
+
+    /**
+     *  NoteのCommentsを取得
+     */
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class);
+    }
 }
