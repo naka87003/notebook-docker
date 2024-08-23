@@ -16,6 +16,7 @@ import LikedUserList from '@/Components/LikedUserList.vue';
 const props = defineProps<{
   tag?: number;
   status?: number;
+  newRegisteredUser: boolean;
 }>();
 
 const search = ref('');
@@ -232,7 +233,17 @@ const showLikedUserList = (note: NoteType) => {
       <v-btn icon="mdi-filter-menu-outline" :class="{ 'text-red': filterChanged }" @click="dialog.filterMenu = true" />
     </template>
     <v-container>
-      <v-alert v-if="notes.length === 0" variant="text" class="text-center" text="No data available" />
+      <template v-if="newRegisteredUser">
+        <v-alert icon="mdi-hand-clap" color="success" variant="tonal" class="hidden-xs">
+          <v-alert-title>Welcome to Notebook, {{ $page.props.auth.user.name }}!</v-alert-title>
+          Let's click the plus button at the top right to create your first note!
+        </v-alert>
+        <v-alert icon="mdi-hand-clap" color="success" variant="tonal" class="hidden-sm-and-up">
+          <v-alert-title>Welcome, {{ $page.props.auth.user.name }}!</v-alert-title>
+          Let's click the plus button above to create your first note!
+        </v-alert>
+      </template>
+      <v-alert v-else-if="notes.length === 0" variant="text" class="text-center" text="No data available" />
       <v-infinite-scroll v-else :onLoad="load" class="w-100 overflow-hidden" empty-text="">
         <v-row>
           <template v-for="note in notes" :key="note.id">
