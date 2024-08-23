@@ -250,12 +250,11 @@ const showLikedUserList = (note: NoteType) => {
             <v-col cols="12">
               <Note :note="note" @showEnlargedImage="showEnlargedImage" @showLikedUserList="showLikedUserList(note)">
                 <template #actions>
-                  <v-icon size="small" class="ms-5" icon="mdi-pencil-outline" @click="showEditDialog(note)" />
-                  <v-icon v-if="note.status.name === 'archived'" size="small" class="ms-5" icon="mdi-keyboard-return"
+                  <v-btn icon="mdi-pencil-outline" size="small" @click="showEditDialog(note)" />
+                  <v-btn v-if="note.status.name === 'archived'" size="small" icon="mdi-keyboard-return"
                     @click="showRetrieveConfirmDialog(note)" />
-                  <v-icon v-else size="small" class="ms-5" icon="mdi-archive-plus-outline"
-                    @click="showArchiveConfirmDialog(note)" />
-                  <v-icon size="small" class="ms-5" icon="mdi-delete-outline" @click="showDeleteConfirmDialog(note)" />
+                  <v-btn v-else icon="mdi-archive-plus-outline" size="small" @click="showArchiveConfirmDialog(note)" />
+                  <v-btn icon="mdi-delete-outline" size="small" @click="showDeleteConfirmDialog(note)" />
                 </template>
               </Note>
             </v-col>

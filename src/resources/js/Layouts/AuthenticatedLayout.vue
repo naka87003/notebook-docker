@@ -63,11 +63,11 @@ const markAllAsRead = () => {
             @click="pageTransition('timeline')">Timeline</v-tab>
         </v-tabs>
         <v-spacer />
-        <v-btn class="hidden-sm-and-down " stacked :active="currentPageName === 'tags.index'"
+        <v-btn class="hidden-sm-and-down" stacked :active="currentPageName === 'tags.index'"
           @click="pageTransition('tags.index')">
           <v-icon icon="mdi-tag-multiple-outline" />
         </v-btn>
-        <v-btn class="hidden-sm-and-down " stacked @click="isDark = !isDark">
+        <v-btn class="hidden-sm-and-down" stacked @click="isDark = !isDark">
           <v-icon :icon="isDark ? 'mdi-weather-night' : 'mdi-weather-sunny'" />
         </v-btn>
         <v-btn stacked @click="dialog.notifications = true">
@@ -75,7 +75,7 @@ const markAllAsRead = () => {
             <v-icon icon="mdi-bell-outline" />
           </v-badge>
         </v-btn>
-        <v-divider vertical class="hidden-xs mx-3" />
+        <v-divider vertical class="hidden-xs mx-1" />
         <v-menu class="hidden-sm-and-down">
           <template v-slot:activator="{ props }">
             <v-list-item v-bind="props" class="hidden-sm-and-down">

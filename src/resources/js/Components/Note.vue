@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import type { Note } from '@/interfaces';
+import type { Note, Tag } from '@/interfaces';
+import { router } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import { simplifyDateTime, splitByNewline, relativeDateTime } from '@/common';
 
@@ -13,6 +14,13 @@ defineEmits<{
 const previewImagePath = computed(() => {
   return props.note.image_path ? 'storage/' + props.note.image_path : null;
 });
+
+const showTaggedNotes = () => {
+  router.get(route('dashboard'), {
+    tag: props.note.tag.id,
+    status: props.note.status_id
+  });
+};
 </script>
 
 <template>
@@ -36,31 +44,32 @@ const previewImagePath = computed(() => {
       <v-img v-if="previewImagePath" :src="previewImagePath" width="300" class="mt-3 cursor-pointer" style="z-index: 1;"
         @click="$emit('showEnlargedImage', previewImagePath)" />
     </v-card-text>
-    <v-card-actions>
-      <v-list-item class="w-100">
-        <template v-slot:prepend>
-          <template v-if="note.tag">
-            <v-icon :color="note.tag?.hex_color" size="small" class="me-1 hidden-xs" icon="mdi-tag" />
-            <span class="me-5 text-caption hidden-xs">{{ note.tag?.name }}</span>
-            <v-tooltip :text="note.tag?.name" location="top">
-              <template v-slot:activator="{ props }">
-                <v-icon icon="mdi-tag" size="small" class="me-5 hidden-sm-and-up" :color="note.tag?.hex_color"
-                  v-bind="props" open-on-click />
-              </template>
-            </v-tooltip>
-          </template>
-          <v-icon v-if="note.status.name === 'archived'" size="small" class="me-5" icon="mdi-archive-outline" />
-          <v-icon v-if="note.public === false" size="small" class="me-5" icon="mdi-lock-outline"></v-icon>
-          <v-btn v-else-if="note.likes_count" class="ms-n4" prepend-icon="mdi-heart"
-            @click="$emit('showLikedUserList')">
-            {{ note.likes_count }}
-          </v-btn>
+    <v-card-actions v-if="note.tag" class="hidden-sm-and-up">
+      <v-btn @click="showTaggedNotes">
+        <template #prepend>
+          <v-icon :color="note.tag?.hex_color">mdi-tag</v-icon>
         </template>
-        <template v-slot:append>
-          <slot name="actions" />
-        </template>
-      </v-list-item>
+        <span class="text-caption">{{ note.tag?.name }}</span>
+      </v-btn>
     </v-card-actions>
+    <v-card-actions>
+      <template v-if="note.tag">
+        <v-btn class="hidden-xs" @click="showTaggedNotes">
+          <template #prepend>
+            <v-icon :color="note.tag?.hex_color">mdi-tag</v-icon>
+          </template>
+          <span class="text-caption">{{ note.tag?.name }}</span>
+        </v-btn>
+      </template>
+      <v-icon v-if="note.status.name === 'archived'" size="small" class="me-5" icon="mdi-archive-outline" />
+      <v-icon v-if="note.public === false" size="small" class="me-5" icon="mdi-lock-outline"></v-icon>
+      <v-btn v-else-if="note.likes_count" prepend-icon="mdi-heart" @click="$emit('showLikedUserList')">
+        {{ note.likes_count }}
+      </v-btn>
+      <v-spacer />
+      <slot name="actions" />
+    </v-card-actions>
+
   </v-card>
 </template>
 
