@@ -56,8 +56,9 @@ const showSelectedUserPosts = (userId: number) => {
     </v-toolbar>
     <v-divider />
     <v-card-text class="py-0">
-      <v-list>
-        <v-infinite-scroll v-if="items.length > 0" :onLoad="load" class="w-100 overflow-hidden" empty-text="">
+      <v-alert v-if="items.length === 0" variant="text" class="text-center" text="No data available" />
+      <v-list v-if="items.length > 0">
+        <v-infinite-scroll :onLoad="load" class="w-100 overflow-hidden" empty-text="">
           <template v-for="item in items" :key="item.id">
             <v-list-item @click="showSelectedUserPosts(item.id)">
               <template v-slot:prepend>
