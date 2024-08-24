@@ -16,7 +16,7 @@ const likeCount = ref(props.note.likes.length);
 const isLiked = ref(props.note.likes.some((like) => like.user_id === usePage().props.auth.user.id));
 
 const previewImagePath = computed(() => {
-  return props.note.image_path ? 'storage/' + props.note.image_path : null;
+  return props.note.image_path ? '/storage/' + props.note.image_path : null;
 });
 
 const like = async () => {
@@ -46,6 +46,10 @@ const showSelectedUserPosts = (userId: number) => {
     user: userId
   });
 };
+
+const showComments = () => {
+  router.get(route('comments', props.note.id));
+}
 </script>
 
 <template>
@@ -73,7 +77,7 @@ const showSelectedUserPosts = (userId: number) => {
       <v-list-item @click="showSelectedUserPosts(note.user.id)">
         <template v-slot:prepend>
           <v-avatar color="grey-darken-3" size="small" style="z-index: 1;">
-            <v-img v-if="note.user.image_path" :src="'storage/' + note.user.image_path" />
+            <v-img v-if="note.user.image_path" :src="'/storage/' + note.user.image_path" />
             <v-icon v-else icon="mdi-account" />
           </v-avatar>
         </template>
@@ -81,7 +85,7 @@ const showSelectedUserPosts = (userId: number) => {
         <v-list-item-subtitle v-if="note.tag" class="text-caption">{{ note.tag?.name }}</v-list-item-subtitle>
       </v-list-item>
       <v-spacer />
-      <v-btn prepend-icon="mdi-comment-outline" class="hidden-xs">{{ note.comments_count || '' }}</v-btn>
+      <v-btn prepend-icon="mdi-comment-outline" class="hidden-xs" @click="showComments">{{ note.comments_count || '' }}</v-btn>
       <v-btn :prepend-icon="isLiked ? 'mdi-heart' : 'mdi-heart-outline'" class="hidden-xs"
         :class="{ 'text-pink': isLiked }" @click="like">
         {{ likeCount }}
@@ -89,7 +93,7 @@ const showSelectedUserPosts = (userId: number) => {
     </v-card-actions>
     <v-card-actions class="hidden-sm-and-up">
       <v-spacer />
-      <v-btn prepend-icon="mdi-comment-outline">{{ note.comments_count || '' }}</v-btn>
+      <v-btn prepend-icon="mdi-comment-outline" @click="showComments">{{ note.comments_count || '' }}</v-btn>
       <v-btn :prepend-icon="isLiked ? 'mdi-heart' : 'mdi-heart-outline'" :class="{ 'text-pink': isLiked }"
         @click="like">
         {{ likeCount }}
