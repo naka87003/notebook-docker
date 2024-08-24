@@ -25,7 +25,7 @@ const currentPageName = computed({
 
 const userImagePath = computed((): string | null => usePage().props.auth.user.image_path);
 
-const avatarImagePath = computed(() => userImagePath.value ? 'storage/' + userImagePath.value : null);
+const avatarImagePath = computed(() => userImagePath.value ? '/storage/' + userImagePath.value : null);
 
 watch(isDark, (value) => {
   theme.global.name.value = value ? 'dark' : 'light';
