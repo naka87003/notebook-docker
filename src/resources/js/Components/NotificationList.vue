@@ -84,7 +84,7 @@ const markAllAsRead = async () => {
               <v-list-item-title>{{ item.data.follower.name }} followed you.</v-list-item-title>
               <template v-slot:prepend>
                 <v-avatar color="surface-light">
-                  <v-img v-if="item.data.follower.image_path" :src="'storage/' + item.data.follower.image_path" />
+                  <v-img v-if="item.data.follower.image_path" :src="'/storage/' + item.data.follower.image_path" />
                   <v-icon v-else icon="mdi-account" />
                 </v-avatar>
               </template>
