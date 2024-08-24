@@ -12,7 +12,7 @@ defineEmits<{
 }>();
 
 const previewImagePath = computed(() => {
-  return props.note.image_path ? 'storage/' + props.note.image_path : null;
+  return props.note.image_path ? '/storage/' + props.note.image_path : null;
 });
 
 const showTaggedNotes = () => {
