@@ -9,6 +9,7 @@ const props = defineProps<{ note: Note }>();
 
 defineEmits<{
   showEnlargedImage: [src: string];
+  showComments: [];
 }>();
 
 const likeCount = ref(props.note.likes.length);
@@ -47,9 +48,9 @@ const showSelectedUserPosts = (userId: number) => {
   });
 };
 
-const showComments = () => {
-  router.get(route('comments', props.note.id));
-}
+// const showComments = () => {
+//   router.get(route('comments', props.note.id));
+// }
 </script>
 
 <template>
@@ -85,7 +86,8 @@ const showComments = () => {
         <v-list-item-subtitle v-if="note.tag" class="text-caption">{{ note.tag?.name }}</v-list-item-subtitle>
       </v-list-item>
       <v-spacer />
-      <v-btn prepend-icon="mdi-comment-outline" class="hidden-xs" @click="showComments">{{ note.comments_count || '' }}</v-btn>
+      <v-btn prepend-icon="mdi-comment-outline" class="hidden-xs" @click="$emit('showComments')">{{ note.comments_count || ''
+        }}</v-btn>
       <v-btn :prepend-icon="isLiked ? 'mdi-heart' : 'mdi-heart-outline'" class="hidden-xs"
         :class="{ 'text-pink': isLiked }" @click="like">
         {{ likeCount }}
@@ -93,7 +95,7 @@ const showComments = () => {
     </v-card-actions>
     <v-card-actions class="hidden-sm-and-up">
       <v-spacer />
-      <v-btn prepend-icon="mdi-comment-outline" @click="showComments">{{ note.comments_count || '' }}</v-btn>
+      <v-btn prepend-icon="mdi-comment-outline" @click="$emit('showComments')">{{ note.comments_count || '' }}</v-btn>
       <v-btn :prepend-icon="isLiked ? 'mdi-heart' : 'mdi-heart-outline'" :class="{ 'text-pink': isLiked }"
         @click="like">
         {{ likeCount }}

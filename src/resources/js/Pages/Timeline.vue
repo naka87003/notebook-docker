@@ -5,9 +5,10 @@ import { watchDebounced } from '@vueuse/core'
 import axios from 'axios';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Post from '@/Components/Post.vue';
-import type { Note as NoteType, PostsFilter, User } from '@/interfaces';
+import type { Note, PostsFilter, User } from '@/interfaces';
 import FilterUserMenu from '@/Components/FilterUserMenu.vue';
 import SelectedUserMenu from '@/Components/SelectedUserMenu.vue';
+import PostComments from '@/Components/PostComments.vue';
 
 const props = defineProps<{
   user?: number;
@@ -16,14 +17,17 @@ const props = defineProps<{
 
 const dialog = ref({
   filterUserMenu: false,
-  enlargedImage: false
+  enlargedImage: false,
+  postComments: false
 });
 
 const search = ref('');
 
 const previewImagePath = ref('');
 
-const notes: Ref<NoteType[]> = ref([]);
+const targetNote: Ref<Note> = ref(null);
+
+const notes: Ref<Note[]> = ref([]);
 
 const snackbar = ref({
   display: false,
@@ -56,7 +60,7 @@ onMounted(async () => {
   notes.value.push(...result);
 });
 
-const loadNotes = async (): Promise<(NoteType & { likes_count: number })[]> => {
+const loadNotes = async (): Promise<(Note & { likes_count: number })[]> => {
   const response = await axios.get(route('notes.posts'), {
     params: {
       offset: notes.value.length,
@@ -107,6 +111,21 @@ const filterFollowing = async () => {
   filter.value.following = !filter.value.following;
   await refreshDisplay();
 };
+
+const showComments = (note: Note) => {
+  targetNote.value = note;
+  dialog.value.postComments = true;
+};
+
+const closeComments = () => {
+  notes.value = notes.value.map((note): Note => {
+    if (note.id === targetNote.value.id) {
+      return targetNote.value;
+    }
+    return note;
+  });
+  dialog.value.postComments = false;
+};
 </script>
 
 <template>
@@ -124,8 +143,7 @@ const filterFollowing = async () => {
         </template>
       </v-text-field>
       <v-spacer></v-spacer>
-      <v-btn icon="mdi-account-multiple-outline" :class="{ 'text-red': filter.following }"
-        @click="filterFollowing" />
+      <v-btn icon="mdi-account-multiple-outline" :class="{ 'text-red': filter.following }" @click="filterFollowing" />
       <v-btn icon="mdi-heart-outline" :class="{ 'text-red': filter.onlyMyLiked }" @click="filterOnlyMyLiked" />
       <v-btn icon="mdi-account-filter-outline" :class="{ 'text-red': filter.user }"
         @click="dialog.filterUserMenu = true" />
@@ -141,17 +159,21 @@ const filterFollowing = async () => {
         <v-row>
           <template v-for="note in notes" :key="note.id">
             <v-col cols="12">
-              <Post :note @showEnlargedImage="showEnlargedImage" />
+              <Post :note @showEnlargedImage="showEnlargedImage" @showComments="showComments(note)" />
             </v-col>
           </template>
         </v-row>
       </v-infinite-scroll>
     </v-container>
     <v-dialog v-model="dialog.filterUserMenu" max-width="600" scrollable>
-      <FilterUserMenu v-model:userItems="userItems" :filter @close="dialog.filterUserMenu = false" @apply="filterUser" />
+      <FilterUserMenu v-model:userItems="userItems" :filter @close="dialog.filterUserMenu = false"
+        @apply="filterUser" />
     </v-dialog>
     <v-dialog v-model="dialog.enlargedImage" close-on-content-click maxWidth="1000px">
       <v-img :src="previewImagePath" height="90vh" />
+    </v-dialog>
+    <v-dialog v-model="dialog.postComments" fullscreen scrollable transition="scroll-x-transition">
+      <PostComments v-model:note="targetNote" @close="closeComments" />
     </v-dialog>
   </AuthenticatedLayout>
 </template>

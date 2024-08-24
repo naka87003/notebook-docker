@@ -13,13 +13,11 @@ class CommentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(string $noteId)
+    public function index(string $noteId, Request $request)
     {
-        $props = [
-            'unreadNotificationCount' => Auth::user()->unreadNotifications->count(),
-            'note' => Note::with(['user', 'category', 'status', 'tag', 'likes'])->withCount(['comments'])->find($noteId)
-        ];
-        return Inertia::render('Comment', $props);
+        $skip = is_numeric($request->offset) ? $request->offset : 0;
+        $comments = Comment::where('note_id', $noteId)->orderBy('updated_at', 'DESC')->offset($skip)->limit(20)->with(['user'])->get();
+        return response()->json($comments);
     }
 
     public function store(string $noteId, Request $request)
@@ -34,12 +32,5 @@ class CommentController extends Controller
         ]);
 
         return back();
-    }
-
-    public function comments(string $noteId, Request $request) {
-
-        $skip = is_numeric($request->offset) ? $request->offset : 0;
-        $comments = Comment::where('note_id', $noteId)->orderBy('updated_at', 'DESC')->offset($skip)->limit(20)->with(['user'])->get();
-        return response()->json($comments);
     }
 }
