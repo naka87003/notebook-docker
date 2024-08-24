@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CalendarController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\NoteController;
@@ -38,6 +39,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('/tags', TagController::class)->except(['create', 'edit', 'show']);
     Route::get('/tags/items/select', [TagController::class, 'selectItems'])->name('tags.items.select');
     Route::get('/tags/items/datatable', [TagController::class, 'datatableItems'])->name('tags.items.datatable');
+
+    Route::get('/comments/{note}', [CommentController::class, 'index'])->name('comments');
+    Route::post('/comments/{note}', [CommentController::class, 'store'])->name('comments.store');
+    Route::get('/comments/comments/{note}', [CommentController::class, 'comments'])->name('comments.comments');
 
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications');
     Route::put('/notifications/read/{notification}', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
