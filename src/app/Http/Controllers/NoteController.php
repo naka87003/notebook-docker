@@ -154,6 +154,15 @@ class NoteController extends Controller
     }
 
     /**
+     * noteを1件取得
+     */
+    public function note(string $id)
+    {
+        $note = Note::with(['user', 'category', 'status', 'tag', 'likes'])->withCount(['comments'])->find($id);
+        return response()->json($note);
+    }
+
+    /**
      * タイムラインに表示するNotesを取得
      */
     public function posts(Request $request)

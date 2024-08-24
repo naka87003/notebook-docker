@@ -1,20 +1,22 @@
 <script setup lang="ts">
 import type { Note } from '@/interfaces';
-import { computed, ref } from 'vue';
+import { computed, inject } from 'vue';
 import { router, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 import { simplifyDateTime, splitByNewline, relativeDateTime } from '@/common';
 
 const props = defineProps<{ note: Note }>();
 
-defineEmits<{
+const emit = defineEmits<{
   showEnlargedImage: [src: string];
   showComments: [];
 }>();
 
-const likeCount = ref(props.note.likes.length);
+const updatePosts: (id: number) => Promise<void> = inject('updatePosts');
 
-const isLiked = ref(props.note.likes.some((like) => like.user_id === usePage().props.auth.user.id));
+const likeCount = computed((): number => props.note.likes.length);
+
+const isLiked = computed((): boolean => props.note.likes.some((like) => like.user_id === usePage().props.auth.user.id));
 
 const previewImagePath = computed(() => {
   return props.note.image_path ? '/storage/' + props.note.image_path : null;
@@ -22,23 +24,11 @@ const previewImagePath = computed(() => {
 
 const like = async () => {
   if (isLiked.value === false) {
-    await axios.post(route('likes.like', props.note.id))
-      .then(function (response) {
-        likeCount.value++
-        isLiked.value = true;
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
+    await axios.post(route('likes.like', props.note.id));
+    updatePosts(props.note.id);
   } else {
-    await axios.delete(route('likes.unlike', props.note.id))
-      .then(function (response) {
-        likeCount.value--;
-        isLiked.value = false;
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
+    await axios.delete(route('likes.unlike', props.note.id));
+    updatePosts(props.note.id);
   }
 };
 
@@ -47,10 +37,6 @@ const showSelectedUserPosts = (userId: number) => {
     user: userId
   });
 };
-
-// const showComments = () => {
-//   router.get(route('comments', props.note.id));
-// }
 </script>
 
 <template>
@@ -86,8 +72,9 @@ const showSelectedUserPosts = (userId: number) => {
         <v-list-item-subtitle v-if="note.tag" class="text-caption">{{ note.tag?.name }}</v-list-item-subtitle>
       </v-list-item>
       <v-spacer />
-      <v-btn prepend-icon="mdi-comment-outline" class="hidden-xs" @click="$emit('showComments')">{{ note.comments_count || ''
-        }}</v-btn>
+      <v-btn prepend-icon="mdi-comment-outline" class="hidden-xs" @click="$emit('showComments')">
+        {{ note.comments_count || '' }}
+      </v-btn>
       <v-btn :prepend-icon="isLiked ? 'mdi-heart' : 'mdi-heart-outline'" class="hidden-xs"
         :class="{ 'text-pink': isLiked }" @click="like">
         {{ likeCount }}

@@ -30,6 +30,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/follows/unfollow/{user}', [FollowController::class, 'unfollow'])->name('follows.unfollow');
     
     Route::resource('/notes', NoteController::class)->except(['create', 'edit', 'show']);
+    Route::get('/notes/note/{note}', [NoteController::class, 'note'])->name('notes.note');
     Route::get('/notes/posts', [NoteController::class, 'posts'])->name('notes.posts');
     Route::put('/notes/archive/{note}', [NoteController::class, 'archive'])->name('notes.archive');
     Route::put('/notes/retrieve/{note}', [NoteController::class, 'retrieve'])->name('notes.retrieve');

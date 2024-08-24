@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
-import { ref, computed, onMounted, type Ref } from 'vue';
+import { ref, computed, onMounted, provide, type Ref } from 'vue';
 import { watchDebounced } from '@vueuse/core'
+import type { Note, PostsFilter, User } from '@/interfaces';
 import axios from 'axios';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Post from '@/Components/Post.vue';
-import type { Note, PostsFilter, User } from '@/interfaces';
 import FilterUserMenu from '@/Components/FilterUserMenu.vue';
 import SelectedUserMenu from '@/Components/SelectedUserMenu.vue';
 import PostComments from '@/Components/PostComments.vue';
@@ -25,7 +25,7 @@ const search = ref('');
 
 const previewImagePath = ref('');
 
-const targetNote: Ref<Note> = ref(null);
+const targetNoteId: Ref<number> = ref(null);
 
 const notes: Ref<Note[]> = ref([]);
 
@@ -40,15 +40,13 @@ const filter: Ref<PostsFilter> = ref({
   following: false
 });
 
-const userItems: Ref<User[]> = ref([]);
+const userItems: Ref<User[]> = ref(props.userItem ? [props.userItem] : []);
 
-if (props.userItem) {
-  userItems.value.push(props.userItem);
-}
-
-const selectedUser = computed((): User | undefined => userItems.value.find((item) => item.id === filter.value.user))
+const selectedUser = computed((): User | undefined => userItems.value.find((item) => item.id === filter.value.user));
 
 const searchEntered = computed((): boolean => Boolean(search.value));
+
+const targetNote = computed(() => notes.value.find((note) => note.id === targetNoteId.value))
 
 watchDebounced(search,
   () => refreshDisplay(),
@@ -112,20 +110,27 @@ const filterFollowing = async () => {
   await refreshDisplay();
 };
 
-const showComments = (note: Note) => {
-  targetNote.value = note;
+const showComments = (id: number) => {
+  targetNoteId.value = id;
   dialog.value.postComments = true;
 };
 
-const closeComments = () => {
+const closeComments = async () => {
+  await updatePosts(targetNoteId.value);
+  dialog.value.postComments = false;
+};
+
+const updatePosts = async (id: number) => {
+  const response = await axios.get(route('notes.note', id));
   notes.value = notes.value.map((note): Note => {
-    if (note.id === targetNote.value.id) {
-      return targetNote.value;
+    if (note.id === id) {
+      return response.data;
     }
     return note;
   });
-  dialog.value.postComments = false;
 };
+
+provide('updatePosts', updatePosts);
 </script>
 
 <template>
@@ -159,7 +164,8 @@ const closeComments = () => {
         <v-row>
           <template v-for="note in notes" :key="note.id">
             <v-col cols="12">
-              <Post :note @showEnlargedImage="showEnlargedImage" @showComments="showComments(note)" />
+              <Post :note @showEnlargedImage="showEnlargedImage" @showComments="showComments(note.id)"
+                @update="updatePosts(note.id)" />
             </v-col>
           </template>
         </v-row>
@@ -173,7 +179,7 @@ const closeComments = () => {
       <v-img :src="previewImagePath" height="90vh" />
     </v-dialog>
     <v-dialog v-model="dialog.postComments" fullscreen scrollable transition="scroll-x-transition">
-      <PostComments v-model:note="targetNote" @close="closeComments" />
+      <PostComments :targetNote @close="closeComments" />
     </v-dialog>
   </AuthenticatedLayout>
 </template>
