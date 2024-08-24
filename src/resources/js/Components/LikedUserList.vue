@@ -49,7 +49,9 @@ const showSelectedUserPosts = (userId: number) => {
 <template>
   <v-card class="mx-auto w-100">
     <v-toolbar>
-      <v-btn icon="mdi-heart" variant="text"></v-btn>
+      <template #prepend>
+        <v-icon icon="mdi-heart" class="ms-3"/>
+      </template>
       <v-toolbar-title>Liked User List</v-toolbar-title>
       <template v-slot:append>
         <v-btn icon="mdi-close" @click="$emit('close')"></v-btn>
