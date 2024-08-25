@@ -71,15 +71,15 @@ const markAllAsRead = async () => {
 const titleMsg = (item: Notification) => {
   switch (item.data.type) {
     case 'follow':
-      return `${item.user.name} followed you`;
+      return 'followed you';
     case 'comment':
-      return `${item.user.name} commented on your note`;
+      return 'commented on your note';
   }
 };
 </script>
 
 <template>
-  <v-card class="mx-auto w-100">
+  <v-card class="w-100">
     <v-toolbar>
       <v-toolbar-title>Notifications</v-toolbar-title>
       <template v-slot:prepend>
@@ -90,27 +90,28 @@ const titleMsg = (item: Notification) => {
       </template>
     </v-toolbar>
     <v-divider />
-    <v-card-text class="py-0">
+    <v-card-text class="pa-0">
       <v-alert v-if="items.length === 0" variant="text" class="text-center" text="No data available" />
-      <v-list v-if="items.length > 0">
-        <v-infinite-scroll :onLoad="load" class="w-100 overflow-hidden" empty-text="">
-          <template v-for="item in items" :key="item.id">
-            <v-list-item :base-color="item.read_at ? '' : 'info'" @click="selectItem(item)">
-              <v-list-item-title>{{ titleMsg(item) }}</v-list-item-title>
-              <template v-slot:prepend>
-                <v-avatar color="surface-light">
-                  <v-img v-if="item.user.image_path" :src="'/storage/' + item.user.image_path" />
-                  <v-icon v-else icon="mdi-account" />
-                </v-avatar>
-              </template>
-              <template v-slot:append>
-                <span class="text-caption">{{ relativeDateTime(item.created_at) }}</span>
-              </template>
-            </v-list-item>
-            <v-divider />
-          </template>
-        </v-infinite-scroll>
-      </v-list>
+      <v-infinite-scroll v-if="items.length > 0" :onLoad="load" class="w-100 overflow-hidden" empty-text="">
+        <template v-for="item in items" :key="item.id">
+          <v-alert class="cursor-pointer" density="compact" variant="text" :color="item.read_at ? '' : 'info'"
+            @click="selectItem(item)">
+            <template v-slot:prepend>
+              <v-avatar color="surface-light">
+                <v-img v-if="item.user.image_path" :src="'/storage/' + item.user.image_path" />
+                <v-icon v-else icon="mdi-account" />
+              </v-avatar>
+            </template>
+            <template #title>
+              <span class="text-caption text-truncate">{{ item.user.name }}</span>
+              <v-spacer />
+              <span class="text-caption text-no-wrap">{{ relativeDateTime(item.created_at) }}</span>
+            </template>
+            <span class="text-caption">{{ titleMsg(item) }}</span>
+          </v-alert>
+          <v-divider />
+        </template>
+      </v-infinite-scroll>
     </v-card-text>
     <template v-slot:actions>
       <v-btn variant="plain" @click="$emit('close')">Close</v-btn>
