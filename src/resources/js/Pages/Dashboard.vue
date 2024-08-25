@@ -240,7 +240,7 @@ provide('updatePosts', updatePosts);
 
 <template>
 
-  <Head title="Dashboard" />
+  <Head title="Notes" />
   <v-snackbar v-model="snackbar.display" location="top right" color="success" timeout="3000">
     <v-icon class="me-3" style="margin-bottom: 2px;">mdi-check-circle</v-icon>{{ snackbar.message }}
   </v-snackbar>
