@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Follow;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-use App\Jobs\SendNotificationEmail;
+use App\Jobs\SendFollowNotificationEmail;
 
 class FollowController extends Controller
 {
@@ -22,7 +22,7 @@ class FollowController extends Controller
 
         $user = User::find($user_id);
 
-        dispatch(new SendNotificationEmail($user, Auth::user()));
+        dispatch(new SendFollowNotificationEmail($user, Auth::user()));
         return response()->json();
     }
 
