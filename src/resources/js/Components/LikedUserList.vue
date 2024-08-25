@@ -50,7 +50,7 @@ const showSelectedUserPosts = (userId: number) => {
   <v-card class="mx-auto w-100">
     <v-toolbar>
       <template #prepend>
-        <v-icon icon="mdi-heart" class="ms-3"/>
+        <v-icon icon="mdi-heart" class="ms-3" />
       </template>
       <v-toolbar-title>Liked User List</v-toolbar-title>
       <template v-slot:append>
@@ -58,26 +58,25 @@ const showSelectedUserPosts = (userId: number) => {
       </template>
     </v-toolbar>
     <v-divider />
-    <v-card-text class="py-0">
-      <v-list>
-        <v-infinite-scroll v-if="items.length > 0" :onLoad="load" class="w-100 overflow-hidden" empty-text="">
-          <template v-for="item in items" :key="item.id">
-            <v-list-item @click="showSelectedUserPosts(item.user.id)">
-              <template v-slot:prepend>
-                <v-avatar color="surface-light">
-                  <v-img v-if="item.user.image_path" :src="'storage/' + item.user.image_path" />
-                  <v-icon v-else icon="mdi-account" />
-                </v-avatar>
-              </template>
-              <v-list-item-title>{{ item.user.name }}</v-list-item-title>
-              <template v-slot:append>
-                <span class="text-caption">{{ relativeDateTime(item.updated_at) }}</span>
-              </template>
-            </v-list-item>
-            <v-divider />
-          </template>
-        </v-infinite-scroll>
-      </v-list>
+    <v-card-text class="pa-0">
+      <v-infinite-scroll v-if="items.length > 0" :onLoad="load" class="w-100 overflow-hidden" empty-text="">
+        <template v-for="item in items" :key="item.id">
+          <v-alert class="cursor-pointer" density="compact" variant="text" @click="showSelectedUserPosts(item.user.id)">
+            <template v-slot:prepend>
+              <v-avatar color="surface-light">
+                <v-img v-if="item.user.image_path" :src="'storage/' + item.user.image_path" />
+                <v-icon v-else icon="mdi-account" />
+              </v-avatar>
+            </template>
+            <template #title>
+              <span class="text-body-2 text-truncate">{{ item.user.name }}</span>
+              <v-spacer />
+              <span class="text-caption text-no-wrap">{{ relativeDateTime(item.updated_at) }}</span>
+            </template>
+          </v-alert>
+          <v-divider />
+        </template>
+      </v-infinite-scroll>
     </v-card-text>
   </v-card>
 </template>
