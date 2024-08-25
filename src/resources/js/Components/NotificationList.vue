@@ -40,11 +40,18 @@ const load = async ({ done }): Promise<void> => {
   }
 };
 
-const showSelectedUserPosts = async (notificationId: string, userId: number) => {
-  await markAsRead(notificationId);
-  router.get(route('timeline'), {
-    user: userId
-  });
+const selectItem = async (item: Notification) => {
+  await markAsRead(item.id);
+  let data = {};
+  switch (item.data.type) {
+    case 'follow':
+      data = { user: item.user.id };
+      break;
+    case 'comment':
+      data = { note: item.data.comment.note_id };
+      break;
+  }
+  router.get(route('timeline'), data);
 };
 
 const markAsRead = async (notificationId: string) => {
@@ -59,6 +66,15 @@ const markAllAsRead = async () => {
     .catch(error => {
       console.log(error);
     });
+};
+
+const titleMsg = (item: Notification) => {
+  switch (item.data.type) {
+    case 'follow':
+      return `${item.user.name} followed you`;
+    case 'comment':
+      return `${item.user.name} commented on your note`;
+  }
 };
 </script>
 
@@ -79,12 +95,11 @@ const markAllAsRead = async () => {
       <v-list v-if="items.length > 0">
         <v-infinite-scroll :onLoad="load" class="w-100 overflow-hidden" empty-text="">
           <template v-for="item in items" :key="item.id">
-            <v-list-item :base-color="item.read_at ? '' : 'info'" 
-              @click="showSelectedUserPosts(item.id, item.data.follower.id)">
-              <v-list-item-title>{{ item.data.follower.name }} followed you.</v-list-item-title>
+            <v-list-item :base-color="item.read_at ? '' : 'info'" @click="selectItem(item)">
+              <v-list-item-title>{{ titleMsg(item) }}</v-list-item-title>
               <template v-slot:prepend>
                 <v-avatar color="surface-light">
-                  <v-img v-if="item.data.follower.image_path" :src="'/storage/' + item.data.follower.image_path" />
+                  <v-img v-if="item.user.image_path" :src="'/storage/' + item.user.image_path" />
                   <v-icon v-else icon="mdi-account" />
                 </v-avatar>
               </template>
@@ -100,7 +115,8 @@ const markAllAsRead = async () => {
     <template v-slot:actions>
       <v-btn variant="plain" @click="$emit('close')">Close</v-btn>
       <v-spacer></v-spacer>
-      <v-btn color="secondary" variant="tonal" :disabled="unreadNotificationCount === 0" @click="markAllAsRead">Mark All as
+      <v-btn color="secondary" variant="tonal" :disabled="unreadNotificationCount === 0" @click="markAllAsRead">Mark All
+        as
         Read</v-btn>
     </template>
   </v-card>

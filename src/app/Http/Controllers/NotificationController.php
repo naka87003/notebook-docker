@@ -18,9 +18,9 @@ class NotificationController extends Controller
         $notifications = $user->notifications()->offset($skip)->limit(20)->get();
 
         $notifications = $notifications->map(function ($item) {
-            $user = User::find($item->data['follower']['id']);
+            $user = User::find($item->data['user']['id']);
             if ($user) {
-                $item->data = ['follower' => $user];
+                $item->user = $user;
                 return $item;
             }
         })->filter(function ($item) {

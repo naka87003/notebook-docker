@@ -84,11 +84,13 @@ export type Notification = {
   notifiable_id: number;
   notifiable_type: string;
   data: {
-    follower: User;
+    type: 'follow' | 'comment';
+    comment?: Comment
   };
   read_at: string;
   created_at: string;
   updated_at: string;
+  user: User;
 };
 
 export type Comment = {

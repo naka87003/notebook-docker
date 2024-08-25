@@ -61,7 +61,9 @@ class CommentNotification extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            'commenter' => $this->commenter,
+            'user' => $this->commenter,
+            'type' => 'comment',
+            'comment' => $this->comment
         ];
     }
 }
