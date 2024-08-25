@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { router, useForm, usePage } from '@inertiajs/vue3';
-import { computed, ref, onMounted, inject, Ref } from 'vue';
+import { computed, ref, onMounted, inject } from 'vue';
 import axios from 'axios';
 import Post from '@/Components/Post.vue';
-import type { Comment, Note } from '@/interfaces';
+import type { Comment, Note, User } from '@/interfaces';
 import { relativeDateTime } from '@/common';
 
 const props = defineProps<{
@@ -16,20 +16,16 @@ defineEmits<{
 
 const updatePosts: (id: number) => Promise<void> = inject('updatePosts');
 
-const dialog = ref({
-  filterUserMenu: false,
-  enlargedImage: false
-});
-
 const form = useForm({
   comment: '',
 });
 
-const previewImagePath = ref('');
-
 const items = ref([]);
 
-const userImagePath = computed((): string | null => usePage().props.auth.user.image_path);
+const userImagePath = computed((): string | null => {
+  const user = usePage().props.auth.user as User;
+  return user.image_path;
+});
 
 const avatarImagePath = computed(() => userImagePath.value ? '/storage/' + userImagePath.value : null);
 
@@ -55,11 +51,6 @@ const load = async ({ done }): Promise<void> => {
   } else {
     done('empty');
   }
-};
-
-const showEnlargedImage = (src: string) => {
-  dialog.value.enlargedImage = true;
-  previewImagePath.value = src;
 };
 
 const addComment = async () => {
@@ -94,7 +85,7 @@ const showSelectedUserPosts = (userId: number) => {
       <v-container>
         <v-row>
           <v-col cols="12">
-            <Post :note="targetNote" @showEnlargedImage="showEnlargedImage" />
+            <Post :note="targetNote" />
           </v-col>
           <v-col cols="12">
             <v-card density="compact" variant="text">
@@ -121,7 +112,7 @@ const showSelectedUserPosts = (userId: number) => {
               <template v-for="item in items" :key="item.id">
                 <v-alert density="compact" variant="text">
                   <template v-slot:prepend>
-                    <v-avatar color="grey-darken-3" style="z-index: 1;" @click="showSelectedUserPosts(item.user_id)">
+                    <v-avatar color="grey-darken-3 cursor-pointer" style="z-index: 1;" @click="showSelectedUserPosts(item.user_id)">
                       <v-img v-if="item.user.image_path" :src="'/storage/' + item.user.image_path" />
                       <v-icon v-else icon="mdi-account" />
                     </v-avatar>

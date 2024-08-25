@@ -1,16 +1,19 @@
 <script setup lang="ts">
 import type { Note } from '@/interfaces';
-import { computed, inject } from 'vue';
+import { inject, computed } from 'vue';
 import { router, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 import { simplifyDateTime, splitByNewline, relativeDateTime } from '@/common';
 
-const props = defineProps<{ note: Note }>();
+const props = defineProps<{
+  note: Note;
+}>();
 
 const emit = defineEmits<{
-  showEnlargedImage: [src: string];
   showComments: [];
 }>();
+
+const showEnlargedImage: (src: string) => void = inject('showEnlargedImage');
 
 const updatePosts: (id: number) => Promise<void> = inject('updatePosts');
 
@@ -58,7 +61,7 @@ const showSelectedUserPosts = (userId: number) => {
       </v-alert>
       <p v-for="paragraph in splitByNewline(note.content ?? '')" class="note-paragraph text-body-1">{{ paragraph }}</p>
       <v-img v-if="previewImagePath" :src="previewImagePath" width="300" class="mt-3 cursor-pointer" style="z-index: 1;"
-        @click="$emit('showEnlargedImage', previewImagePath)" />
+        @click="showEnlargedImage(previewImagePath)" />
     </v-card-text>
     <v-card-actions>
       <v-list-item @click="showSelectedUserPosts(note.user.id)">

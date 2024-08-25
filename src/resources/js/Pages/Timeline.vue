@@ -130,6 +130,7 @@ const updatePosts = async (id: number) => {
   });
 };
 
+provide('showEnlargedImage', showEnlargedImage);
 provide('updatePosts', updatePosts);
 </script>
 
