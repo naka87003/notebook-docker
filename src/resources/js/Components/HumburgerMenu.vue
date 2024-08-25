@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { usePage } from '@inertiajs/vue3';
+import { User } from '@/interfaces';
+import { router, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 defineProps<{
@@ -13,9 +14,16 @@ defineEmits<{
 
 const isDark = defineModel('isDark');
 
-const userImagePath = computed((): string | null => usePage().props.auth.user.image_path);
+const userImagePath = computed((): string | null => {
+  const user = usePage().props.auth.user as User;
+  return user.image_path;
+});
 
 const avatarImagePath = computed(() => userImagePath.value ? 'storage/' + userImagePath.value : null);
+
+const pageTransition = (name: string) => {
+  router.visit(route(name));
+};
 </script>
 
 <template>
@@ -31,7 +39,7 @@ const avatarImagePath = computed(() => userImagePath.value ? 'storage/' + userIm
       <v-list lines="two">
         <v-list-subheader>Page</v-list-subheader>
         <v-list-item title="Notes" density="compact" :active="currentPageName === 'dashboard'"
-          :href="route('dashboard')">
+          @click="pageTransition('dashboard')">
           <template v-slot:prepend>
             <v-avatar density="compact">
               <v-icon>mdi-note-multiple-outline</v-icon>
@@ -39,7 +47,7 @@ const avatarImagePath = computed(() => userImagePath.value ? 'storage/' + userIm
           </template>
         </v-list-item>
         <v-list-item title="Calendar" density="compact" :active="currentPageName === 'calendar'"
-          :href="route('calendar')">
+          @click="pageTransition('calendar')">
           <template v-slot:prepend>
             <v-avatar density="compact">
               <v-icon>mdi-calendar-outline</v-icon>
@@ -47,7 +55,7 @@ const avatarImagePath = computed(() => userImagePath.value ? 'storage/' + userIm
           </template>
         </v-list-item>
         <v-list-item title="Timeline" density="compact" :active="currentPageName === 'timeline'"
-          :href="route('timeline')">
+          @click="pageTransition('timeline')">
           <template v-slot:prepend>
             <v-avatar density="compact">
               <v-icon>mdi-timeline-outline</v-icon>
@@ -55,7 +63,7 @@ const avatarImagePath = computed(() => userImagePath.value ? 'storage/' + userIm
           </template>
         </v-list-item>
         <v-list-item title="Tags" density="compact" :active="currentPageName === 'tags.index'"
-          :href="route('tags.index')">
+          @click="pageTransition('tags.index')">
           <template v-slot:prepend>
             <v-avatar density="compact">
               <v-icon>mdi-tag-multiple-outline</v-icon>
@@ -83,7 +91,7 @@ const avatarImagePath = computed(() => userImagePath.value ? 'storage/' + userIm
         <v-divider></v-divider>
         <v-list-subheader>Account</v-list-subheader>
         <v-list-item :title="$page.props.auth.user.name" :subtitle="$page.props.auth.user.email" density="compact"
-          :active="currentPageName === 'profile.edit'" :href="route('profile.edit')">
+          :active="currentPageName === 'profile.edit'" @click="pageTransition('profile.edit')">
           <template v-slot:prepend>
             <v-avatar color="surface-light" density="compact">
               <v-img v-if="avatarImagePath" :src="avatarImagePath" />
