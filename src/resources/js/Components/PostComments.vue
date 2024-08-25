@@ -84,10 +84,10 @@ const showSelectedUserPosts = (userId: number) => {
     <v-card-text>
       <v-container>
         <v-row>
-          <v-col cols="12">
+          <v-col cols="12" class="px-0">
             <Post :note="targetNote" />
           </v-col>
-          <v-col cols="12">
+          <v-col cols="12" class="px-0">
             <v-card density="compact" variant="text">
               <v-card-text>
                 <form @submit.prevent="addComment">
@@ -118,9 +118,9 @@ const showSelectedUserPosts = (userId: number) => {
                     </v-avatar>
                   </template>
                   <template #title>
-                    <span class="text-caption">{{ item.user.name }}</span>
+                    <span class="text-caption text-truncate">{{ item.user.name }}</span>
                     <v-spacer />
-                    <span class="text-caption">{{ relativeDateTime(item.created_at) }}</span>
+                    <span class="text-caption text-no-wrap">{{ relativeDateTime(item.created_at) }}</span>
                   </template>
                   {{ item.content }}
                   <div>
