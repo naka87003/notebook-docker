@@ -67,7 +67,7 @@ const previewImagePath = computed(() => {
   if (form.image) {
     return URL.createObjectURL(preview.value.files[0]);
   } else {
-    return props.targetNote.image_path ? 'storage/' + props.targetNote.image_path : null;
+    return props.targetNote?.image_path ? 'storage/' + props.targetNote.image_path : null;
   }
 });
 

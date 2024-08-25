@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
-import { ref, computed, onMounted, type Ref } from 'vue';
+import { ref, computed, onMounted, provide, type Ref } from 'vue';
 import { watchDebounced } from '@vueuse/core'
+import type { Note, Sort, NotesFilter } from '@/interfaces';
 import axios from 'axios';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import NoteItem from '@/Components/Note.vue';
@@ -10,8 +11,8 @@ import NoteEditForm from '@/Components/NoteEditForm.vue';
 import ConfirmCard from '@/Components/ConfirmCard.vue';
 import NoteSortMenu from '@/Components/NoteSortMenu.vue';
 import NoteFilterMenu from '@/Components/NoteFilterMenu.vue';
-import type { Note, Sort, NotesFilter } from '@/interfaces';
 import LikedUserList from '@/Components/LikedUserList.vue';
+import PostComments from '@/Components/PostComments.vue';
 
 const props = defineProps<{
   tag?: number;
@@ -32,7 +33,8 @@ const dialog = ref({
   sortMenu: false,
   filterMenu: false,
   enlargedImage: false,
-  likedUserList: false
+  likedUserList: false,
+  noteComments: false
 });
 const snackbar = ref({
   display: false,
@@ -51,9 +53,11 @@ const filter: Ref<NotesFilter> = ref({
   onlyLiked: false
 });
 
-const targetNote = ref();
-
 const previewImagePath = ref('');
+
+const targetNoteId: Ref<number> = ref(null);
+
+const targetNote = computed(() => notes.value.get(targetNoteId.value));
 
 const searchEntered = computed((): boolean => Boolean(search.value));
 
@@ -126,22 +130,22 @@ const noteUpdated = async () => {
 };
 
 const showEditDialog = (note: Note): void => {
-  targetNote.value = note;
+  targetNoteId.value = note.id;
   dialog.value.edit = true;
 };
 
 const showArchiveConfirmDialog = (note: Note): void => {
-  targetNote.value = note;
+  targetNoteId.value = note.id;
   dialog.value.archiveConfirm = true;
 };
 
 const showRetrieveConfirmDialog = (note: Note): void => {
-  targetNote.value = note;
+  targetNoteId.value = note.id;
   dialog.value.retrieveConfirm = true;
 };
 
 const showDeleteConfirmDialog = (note: Note): void => {
-  targetNote.value = note;
+  targetNoteId.value = note.id;
   dialog.value.deleteConfirm = true;
 };
 
@@ -217,8 +221,21 @@ const showEnlargedImage = (src: string) => {
 
 const showLikedUserList = (note: Note) => {
   dialog.value.likedUserList = true;
-  targetNote.value = note;
-}
+  targetNoteId.value = note.id;
+};
+
+const showComments = (note: Note) => {
+  targetNoteId.value = note.id;
+  dialog.value.noteComments = true;
+};
+
+const updatePosts = async (id: number) => {
+  const response = await axios.get(route('notes.note', id));
+  notes.value.set(id, response.data);
+};
+
+provide('showEnlargedImage', showEnlargedImage);
+provide('updatePosts', updatePosts);
 </script>
 
 <template>
@@ -256,8 +273,8 @@ const showLikedUserList = (note: Note) => {
         <v-row>
           <template v-for="note in notes.values()" :key="note.id">
             <v-col cols="12">
-              <NoteItem :note="note" @showEnlargedImage="showEnlargedImage"
-                @showLikedUserList="showLikedUserList(note)">
+              <NoteItem :note="note" @showEnlargedImage="showEnlargedImage" @showLikedUserList="showLikedUserList(note)"
+                @showComments="showComments(note)">
                 <template #actions>
                   <v-btn icon="mdi-pencil-outline" size="small" @click="showEditDialog(note)" />
                   <v-btn v-if="note.status.name === 'archived'" size="small" icon="mdi-keyboard-return"
@@ -304,5 +321,8 @@ const showLikedUserList = (note: Note) => {
   </v-dialog>
   <v-dialog v-model="dialog.likedUserList" maxWidth="600px" scrollable>
     <LikedUserList :targetNote @close="dialog.likedUserList = false" />
+  </v-dialog>
+  <v-dialog v-model="dialog.noteComments" fullscreen scrollable transition="scroll-x-transition">
+    <PostComments :targetNote @close="dialog.noteComments = false" />
   </v-dialog>
 </template>

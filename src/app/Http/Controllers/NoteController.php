@@ -43,7 +43,7 @@ class NoteController extends Controller
         if (is_numeric($request->offset)) {
             $query->offset($request->offset);
         }
-        $notes = $query->with(['user', 'category', 'status', 'tag'])->withCount(['likes'])->orderBy($request->key, $request->order)->limit(20)->get();
+        $notes = $query->with(['user', 'category', 'status', 'tag', 'likes'])->withCount(['likes', 'comments'])->orderBy($request->key, $request->order)->limit(20)->get();
         return response()->json($notes);
     }
 
@@ -158,7 +158,7 @@ class NoteController extends Controller
      */
     public function note(string $id)
     {
-        $note = Note::with(['user', 'category', 'status', 'tag', 'likes'])->withCount(['comments'])->find($id);
+        $note = Note::with(['user', 'category', 'status', 'tag', 'likes'])->withCount(['likes', 'comments'])->find($id);
         return response()->json($note);
     }
 

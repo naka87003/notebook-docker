@@ -9,6 +9,7 @@ const props = defineProps<{ note: Note & { likes_count: number } }>();
 defineEmits<{
   showEnlargedImage: [src: string];
   showLikedUserList: [];
+  showComments: [];
 }>();
 
 const previewImagePath = computed(() => {
@@ -61,15 +62,18 @@ const showTaggedNotes = () => {
           <span class="text-caption">{{ note.tag?.name }}</span>
         </v-btn>
       </template>
-      <v-icon v-if="note.status.name === 'archived'" size="small" class="me-5" icon="mdi-archive-outline" />
-      <v-icon v-if="note.public === false" size="small" class="me-5" icon="mdi-lock-outline"></v-icon>
-      <v-btn v-else-if="note.likes_count" prepend-icon="mdi-heart" @click="$emit('showLikedUserList')">
+      <v-btn v-if="note.status.name === 'archived'" size="small" icon="mdi-archive-outline" readonly />
+      <v-btn v-if="note.public === false" size="small" icon="mdi-lock-outline" readonly />
+      <v-btn v-if="note.public && note.comments_count" prepend-icon="mdi-comment-outline"
+        @click="$emit('showComments')">
+        {{ note.comments_count || '' }}
+      </v-btn>
+      <v-btn v-if="note.public && note.likes_count" prepend-icon="mdi-heart" @click="$emit('showLikedUserList')">
         {{ note.likes_count }}
       </v-btn>
       <v-spacer />
       <slot name="actions" />
     </v-card-actions>
-
   </v-card>
 </template>
 
