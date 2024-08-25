@@ -4,13 +4,13 @@ import { ref, computed, onMounted, type Ref } from 'vue';
 import { watchDebounced } from '@vueuse/core'
 import axios from 'axios';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import Note from '@/Components/Note.vue';
+import NoteItem from '@/Components/Note.vue';
 import NoteCreateForm from '@/Components/NoteCreateForm.vue';
 import NoteEditForm from '@/Components/NoteEditForm.vue';
 import ConfirmCard from '@/Components/ConfirmCard.vue';
 import NoteSortMenu from '@/Components/NoteSortMenu.vue';
 import NoteFilterMenu from '@/Components/NoteFilterMenu.vue';
-import type { Note as NoteType, Sort, NotesFilter } from '@/interfaces';
+import type { Note, Sort, NotesFilter } from '@/interfaces';
 import LikedUserList from '@/Components/LikedUserList.vue';
 
 const props = defineProps<{
@@ -20,7 +20,9 @@ const props = defineProps<{
 }>();
 
 const search = ref('');
-const notes: Ref<(NoteType & { likes_count: number })[]> = ref([]);
+
+const notes = ref(new Map<number, Note & { likes_count: number }>());
+
 const dialog = ref({
   create: false,
   edit: false,
@@ -82,13 +84,15 @@ onMounted(async () => {
     filter.value.tag.push(props.tag);
   }
   const result = await loadNotes();
-  notes.value.push(...result);
+  for (const note of result) {
+    notes.value.set(note.id, note);
+  }
 });
 
-const loadNotes = async (): Promise<(NoteType & { likes_count: number })[]> => {
+const loadNotes = async (): Promise<(Note & { likes_count: number })[]> => {
   const response = await axios.get(route('notes.index'), {
     params: {
-      offset: notes.value.length,
+      offset: notes.value.size,
       search: search.value,
       ...sort.value,
       ...filter.value
@@ -100,7 +104,9 @@ const loadNotes = async (): Promise<(NoteType & { likes_count: number })[]> => {
 const load = async ({ done }): Promise<void> => {
   const result = await loadNotes();
   if (result.length > 0) {
-    notes.value.push(...result);
+    for (const note of result) {
+      notes.value.set(note.id, note);
+    }
     done('ok');
   } else {
     done('empty');
@@ -119,22 +125,22 @@ const noteUpdated = async () => {
   showSnackBar('Updated Successfully.');
 };
 
-const showEditDialog = (note: NoteType): void => {
+const showEditDialog = (note: Note): void => {
   targetNote.value = note;
   dialog.value.edit = true;
 };
 
-const showArchiveConfirmDialog = (note: NoteType): void => {
+const showArchiveConfirmDialog = (note: Note): void => {
   targetNote.value = note;
   dialog.value.archiveConfirm = true;
 };
 
-const showRetrieveConfirmDialog = (note: NoteType): void => {
+const showRetrieveConfirmDialog = (note: Note): void => {
   targetNote.value = note;
   dialog.value.retrieveConfirm = true;
 };
 
-const showDeleteConfirmDialog = (note: NoteType): void => {
+const showDeleteConfirmDialog = (note: Note): void => {
   targetNote.value = note;
   dialog.value.deleteConfirm = true;
 };
@@ -181,9 +187,11 @@ const showSnackBar = (msg: string): void => {
 };
 
 const refreshDisplay = async (): Promise<void> => {
-  notes.value.splice(0);
+  notes.value.clear();
   const result = await loadNotes();
-  notes.value.push(...result);
+  for (const note of result) {
+    notes.value.set(note.id, note);
+  }
 };
 
 const sortApply = async (newSort: Sort): Promise<void> => {
@@ -207,7 +215,7 @@ const showEnlargedImage = (src: string) => {
   previewImagePath.value = src;
 };
 
-const showLikedUserList = (note: NoteType) => {
+const showLikedUserList = (note: Note) => {
   dialog.value.likedUserList = true;
   targetNote.value = note;
 }
@@ -243,12 +251,13 @@ const showLikedUserList = (note: NoteType) => {
           Let's click the plus button above to create your first note!
         </v-alert>
       </template>
-      <v-alert v-else-if="notes.length === 0" variant="text" class="text-center" text="No data available" />
+      <v-alert v-else-if="notes.size === 0" variant="text" class="text-center" text="No data available" />
       <v-infinite-scroll v-else :onLoad="load" class="w-100 overflow-hidden" empty-text="">
         <v-row>
-          <template v-for="note in notes" :key="note.id">
+          <template v-for="note in notes.values()" :key="note.id">
             <v-col cols="12">
-              <Note :note="note" @showEnlargedImage="showEnlargedImage" @showLikedUserList="showLikedUserList(note)">
+              <NoteItem :note="note" @showEnlargedImage="showEnlargedImage"
+                @showLikedUserList="showLikedUserList(note)">
                 <template #actions>
                   <v-btn icon="mdi-pencil-outline" size="small" @click="showEditDialog(note)" />
                   <v-btn v-if="note.status.name === 'archived'" size="small" icon="mdi-keyboard-return"
@@ -256,7 +265,7 @@ const showLikedUserList = (note: NoteType) => {
                   <v-btn v-else icon="mdi-archive-plus-outline" size="small" @click="showArchiveConfirmDialog(note)" />
                   <v-btn icon="mdi-delete-outline" size="small" @click="showDeleteConfirmDialog(note)" />
                 </template>
-              </Note>
+              </NoteItem>
             </v-col>
           </template>
         </v-row>
