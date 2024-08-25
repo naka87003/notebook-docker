@@ -99,4 +99,6 @@ export type Comment = {
   user_id: number;
   note_id: number;
   user: User;
+  created_at: string;
+  updated_at: string;
 };

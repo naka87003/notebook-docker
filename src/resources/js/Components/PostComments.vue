@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { router, useForm, usePage } from '@inertiajs/vue3';
+import { useForm, usePage } from '@inertiajs/vue3';
 import { computed, ref, onMounted, inject } from 'vue';
 import axios from 'axios';
 import Post from '@/Components/Post.vue';
+import CommentItem from '@/Components/Comment.vue';
 import type { Comment, Note, User } from '@/interfaces';
-import { relativeDateTime } from '@/common';
+
 
 const props = defineProps<{
   targetNote: Note;
@@ -65,11 +66,7 @@ const addComment = async () => {
   });
 };
 
-const showSelectedUserPosts = (userId: number) => {
-  router.get(route('timeline'), {
-    user: userId
-  });
-};
+
 </script>
 
 <template>
@@ -92,7 +89,7 @@ const showSelectedUserPosts = (userId: number) => {
               <v-card-text>
                 <form @submit.prevent="addComment">
                   <v-textarea v-model="form.comment" density="compact" placeholder="Add a comment" hide-details
-                    clearable auto-grow rows="1" maxLength="300" :error="Boolean(form.errors.comment)">
+                    clearable auto-grow rows="1" :error="Boolean(form.errors.comment)" counter="140" maxLength="140">
                     <template v-slot:prepend>
                       <v-avatar color="surface-light">
                         <v-img v-if="avatarImagePath" :src="avatarImagePath" />
@@ -109,24 +106,8 @@ const showSelectedUserPosts = (userId: number) => {
               </v-card-text>
             </v-card>
             <v-infinite-scroll v-if="items.length > 0" :onLoad="load" class="w-100 overflow-hidden" empty-text="">
-              <template v-for="item in items" :key="item.id">
-                <v-alert density="compact" variant="text">
-                  <template v-slot:prepend>
-                    <v-avatar color="grey-darken-3 cursor-pointer" style="z-index: 1;" @click="showSelectedUserPosts(item.user_id)">
-                      <v-img v-if="item.user.image_path" :src="'/storage/' + item.user.image_path" />
-                      <v-icon v-else icon="mdi-account" />
-                    </v-avatar>
-                  </template>
-                  <template #title>
-                    <span class="text-caption text-truncate">{{ item.user.name }}</span>
-                    <v-spacer />
-                    <span class="text-caption text-no-wrap">{{ relativeDateTime(item.created_at) }}</span>
-                  </template>
-                  {{ item.content }}
-                  <div>
-                    <v-icon flat size="x-small" icon="mdi-reply-outline" @click="console.log('click')" />
-                  </div>
-                </v-alert>
+              <template v-for="comment in items" :key="comment.id">
+                <CommentItem :comment />
               </template>
             </v-infinite-scroll>
           </v-col>
