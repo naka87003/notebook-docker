@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendCommentNotificationEmail;
 use App\Models\Comment;
 use App\Models\Note;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Inertia\Inertia;
 
 class CommentController extends Controller
 {
@@ -25,11 +26,18 @@ class CommentController extends Controller
         $request->validate([
             'comment' => 'required|max:300',
         ]);
-        Comment::create([
+        $comment = Comment::create([
             'content' => $request->comment,
             'user_id' => Auth::user()->id,
             'note_id' => $noteId,
         ]);
+
+        $note = Note::find($noteId);
+
+        if (Auth::user()->id !== $note->user_id) {
+            $user = User::find($note->user_id);
+            dispatch(new SendCommentNotificationEmail($user, Auth::user(), $comment));
+        }
 
         return back();
     }
