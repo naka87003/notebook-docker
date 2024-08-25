@@ -13,6 +13,7 @@ import PostComments from '@/Components/PostComments.vue';
 const props = defineProps<{
   user?: number;
   userItem?: User;
+  note?: Note;
 }>();
 
 const dialog = ref({
@@ -27,7 +28,7 @@ const previewImagePath = ref('');
 
 const targetNoteId: Ref<number> = ref(null);
 
-const notes: Ref<Note[]> = ref([]);
+const notes = ref(new Map<number, Note>());
 
 const snackbar = ref({
   display: false,
@@ -46,7 +47,7 @@ const selectedUser = computed((): User | undefined => userItems.value.find((item
 
 const searchEntered = computed((): boolean => Boolean(search.value));
 
-const targetNote = computed(() => notes.value.find((note) => note.id === targetNoteId.value))
+const targetNote = computed(() => notes.value.get(targetNoteId.value));
 
 watchDebounced(search,
   () => refreshDisplay(),
@@ -55,13 +56,20 @@ watchDebounced(search,
 
 onMounted(async () => {
   const result = await loadNotes();
-  notes.value.push(...result);
+  for (const note of result) {
+    notes.value.set(note.id, note);
+  }
+
+  if (props.note) {
+    notes.value.set(props.note.id, props.note);
+    showComments(props.note.id);
+  }
 });
 
 const loadNotes = async (): Promise<(Note & { likes_count: number })[]> => {
   const response = await axios.get(route('notes.posts'), {
     params: {
-      offset: notes.value.length,
+      offset: notes.value.size,
       search: search.value,
       ...filter.value
     }
@@ -72,7 +80,9 @@ const loadNotes = async (): Promise<(Note & { likes_count: number })[]> => {
 const load = async ({ done }): Promise<void> => {
   const result = await loadNotes();
   if (result.length > 0) {
-    notes.value.push(...result);
+    for (const note of result) {
+      notes.value.set(note.id, note);
+    }
     done('ok');
   } else {
     done('empty');
@@ -80,9 +90,11 @@ const load = async ({ done }): Promise<void> => {
 };
 
 const refreshDisplay = async (): Promise<void> => {
-  notes.value.splice(0);
+  notes.value.clear();
   const result = await loadNotes();
-  notes.value.push(...result);
+  for (const note of result) {
+      notes.value.set(note.id, note);
+    }
 };
 
 const showEnlargedImage = (src: string) => {
@@ -122,12 +134,7 @@ const closeComments = async () => {
 
 const updatePosts = async (id: number) => {
   const response = await axios.get(route('notes.note', id));
-  notes.value = notes.value.map((note): Note => {
-    if (note.id === id) {
-      return response.data;
-    }
-    return note;
-  });
+  notes.value.set(id,response.data);
 };
 
 provide('showEnlargedImage', showEnlargedImage);
@@ -160,10 +167,10 @@ provide('updatePosts', updatePosts);
           <SelectedUserMenu :selectedUser />
         </v-col>
       </v-row>
-      <v-alert v-if="notes.length === 0" variant="text" class="text-center" text="No data available" />
+      <v-alert v-if="notes.size === 0" variant="text" class="text-center" text="No data available" />
       <v-infinite-scroll v-else :onLoad="load" class="w-100 overflow-hidden" empty-text="">
         <v-row>
-          <template v-for="note in notes" :key="note.id">
+          <template v-for="note in notes.values()" :key="note.id">
             <v-col cols="12">
               <Post :note @showEnlargedImage="showEnlargedImage" @showComments="showComments(note.id)"
                 @update="updatePosts(note.id)" />

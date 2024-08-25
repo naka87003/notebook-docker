@@ -25,7 +25,13 @@ class TimelineController extends Controller
             $user = User::find((int)$request->user);
             if ($user) {
                 $props['user'] = (int)$request->user;
-                $props['userItem'] = User::find((int)$request->user);
+                $props['userItem'] = $user;
+            }
+        }
+        if (isset($request->note) && is_numeric($request->note)) {
+            $note = Note::with(['user', 'category', 'status', 'tag', 'likes'])->withCount(['comments'])->find((int)$request->note);
+            if ($note) {
+                $props['note'] = $note;
             }
         }
         return Inertia::render('Timeline', $props);
