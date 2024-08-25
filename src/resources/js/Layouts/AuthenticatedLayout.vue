@@ -3,6 +3,7 @@ import { ref, computed, watch } from 'vue';
 import { router, usePage } from '@inertiajs/vue3';
 import { useTheme } from 'vuetify'
 import { useDark } from '@vueuse/core';
+import type { User } from '@/interfaces';
 import HumburgerMenu from '@/Components/HumburgerMenu.vue';
 import NotificationList from '@/Components/NotificationList.vue';
 
@@ -23,7 +24,10 @@ const currentPageName = computed({
   set() { }
 });
 
-const userImagePath = computed((): string | null => usePage().props.auth.user.image_path);
+const userImagePath = computed((): string | null => {
+  const user = usePage().props.auth.user as User;
+  return user.image_path;
+});
 
 const avatarImagePath = computed(() => userImagePath.value ? '/storage/' + userImagePath.value : null);
 
@@ -112,7 +116,8 @@ const markAllAsRead = () => {
           @close="dialog.humburgerMenu = false" />
       </v-dialog>
       <v-dialog v-model="dialog.notifications" maxWidth="600px" scrollable>
-        <NotificationList :unreadNotificationCount @close="dialog.notifications = false" @markAllAsRead="markAllAsRead"/>
+        <NotificationList :unreadNotificationCount @close="dialog.notifications = false"
+          @markAllAsRead="markAllAsRead" />
       </v-dialog>
       <slot />
     </v-main>
