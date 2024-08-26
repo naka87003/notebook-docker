@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { router, useForm, usePage } from '@inertiajs/vue3';
 import { relativeDateTime, splitByNewline } from '@/common';
-import { Comment, User } from '@/interfaces';
+import type { Comment, Reply, User } from '@/interfaces';
 import { computed, ref } from 'vue';
 import axios from 'axios';
-import Reply from './Reply.vue';
+import ReplyItem from './Reply.vue';
+import ConfirmCard from './ConfirmCard.vue';
 
 const props = defineProps<{
   comment: Comment;
@@ -19,14 +20,20 @@ const form = useForm({
   reply: '',
 });
 
-const items = ref([]);
+const replies = ref(new Map<number, Reply>());
 
 const truncate = ref(true);
+
+const dialog = ref({
+  deleteConfirm: false
+});
 
 const display = ref({
   replyForm: false,
   replies: false
 });
+
+const targetReplyId = ref();
 
 const userImagePath = computed((): string | null => {
   const user = usePage().props.auth.user as User;
@@ -59,10 +66,10 @@ const showSelectedUserPosts = (userId: number) => {
   });
 };
 
-const loadItems = async (fresh: boolean = false): Promise<Comment[]> => {
+const loadItems = async (fresh: boolean = false): Promise<Reply[]> => {
   const params = {};
   if (fresh === false) {
-    params['offset'] = items.value.length;
+    params['offset'] = replies.value.size;
   }
   const response = await axios.get(route('replies', props.comment.id), { params })
   return response.data;
@@ -71,7 +78,9 @@ const loadItems = async (fresh: boolean = false): Promise<Comment[]> => {
 const load = async ({ done }): Promise<void> => {
   const result = await loadItems();
   if (result.length > 0) {
-    items.value.push(...result);
+    for (const reply of result) {
+      replies.value.set(reply.id, reply);
+    }
     done('ok');
   } else {
     done('empty');
@@ -89,12 +98,31 @@ const addReply = async () => {
 };
 
 const replyAdded = async () => {
+  replies.value.clear();
   const result = await loadItems(true);
-  items.value = result;
+  for (const reply of result) {
+    replies.value.set(reply.id, reply);
+  }
   display.value.replies = true;
   display.value.replyForm = false;
   emit('updateComment');
-}
+};
+const showDeleteConfirmDialog = (id: number): void => {
+  targetReplyId.value = id;
+  dialog.value.deleteConfirm = true;
+};
+
+const deleteReply = async () => {
+  dialog.value.deleteConfirm = false;
+  await axios.delete(route('replies.destroy', targetReplyId.value))
+    .then(async () => {
+      replies.value.delete(targetReplyId.value);
+      emit('updateComment');
+    })
+    .catch(error => {
+      console.log(error);
+    });
+};
 </script>
 
 <template>
@@ -151,9 +179,14 @@ const replyAdded = async () => {
       :prepend-icon="display.replies ? 'mdi-chevron-up' : 'mdi-chevron-down'" class="text-lowercase px-0"
       color="primary" @click="display.replies = !display.replies">{{ comment.replies_count }} replies</v-btn>
     <v-infinite-scroll v-if="display.replies" :onLoad="load" class="w-100 overflow-hidden" empty-text="">
-      <template v-for="reply in items" :key="reply.id">
-        <Reply :reply @replyAdded="replyAdded" />
+      <template v-for="reply in replies.values()" :key="reply.id">
+        <ReplyItem :reply @replyAdded="replyAdded" @delete="showDeleteConfirmDialog(reply.id)" />
       </template>
     </v-infinite-scroll>
   </v-alert>
+  <v-dialog v-model="dialog.deleteConfirm" max-width="600">
+    <ConfirmCard icon="mdi-delete-outline" title="Delete Reply" message="Are you sure you want to delete this reply?"
+      description="Once the reply is deleted, it will be permanently deleted." confirmBtnName="Delete"
+      confirmBtnColor="error" @confirmed="deleteReply" @close="dialog.deleteConfirm = false" />
+  </v-dialog>
 </template>
