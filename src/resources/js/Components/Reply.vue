@@ -91,7 +91,7 @@ const addReply = async () => {
         </v-list>
       </v-menu>
     </template>
-    <p v-if="reply.reply_to" class="text-caption text-primary mt-n2">{{ '@ ' + reply.addressee.name }}</p>
+    <p v-if="reply.reply_to" class="text-caption text-primary mt-n1">{{ '@ ' + reply.addressee.name }}</p>
     <p class="text-body-2" v-for="paragraph in paragraphs">{{ paragraph }}</p>
     <v-btn v-if="isTruncated" class="text-capitalize ps-0" color="primary" variant="text" density="compact"
       @click="truncate = false">Show more</v-btn>
