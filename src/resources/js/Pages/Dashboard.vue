@@ -159,7 +159,7 @@ const archiveNote = async (): Promise<void> => {
   dialog.value.archiveConfirm = false;
   await axios.put(route('notes.archive', targetNote.value.id))
     .then(async () => {
-      await refreshDisplay();
+      notes.value.delete(targetNote.value.id);
       showSnackBar('Archived Successfully.');
     })
     .catch(error => {
@@ -171,7 +171,7 @@ const retrieveNote = async (): Promise<void> => {
   dialog.value.retrieveConfirm = false;
   await axios.put(route('notes.retrieve', targetNote.value.id))
     .then(async () => {
-      await refreshDisplay();
+      notes.value.delete(targetNote.value.id);
       showSnackBar('Retrieved Successfully.');
     })
     .catch(error => {
@@ -183,7 +183,7 @@ const deleteNote = async (): Promise<void> => {
   dialog.value.deleteConfirm = false;
   await axios.delete(route('notes.destroy', targetNote.value.id))
     .then(async () => {
-      await refreshDisplay();
+      notes.value.delete(targetNote.value.id);
       showSnackBar('Deleted Successfully.');
     })
     .catch(error => {
