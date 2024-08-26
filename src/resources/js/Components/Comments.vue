@@ -64,6 +64,7 @@ const load = async ({ done }): Promise<void> => {
 };
 
 const addComment = async () => {
+  comments.value.clear();
   form.post(route('comments.store', props.targetNote.id), {
     preserveScroll: true,
     onSuccess: async () => {
@@ -119,8 +120,9 @@ const updateComment = async (id: number) => {
             <v-card density="compact" variant="text">
               <v-card-text class="pa-0">
                 <form @submit.prevent="addComment">
-                  <v-textarea v-model="form.comment" density="compact" variant="underlined" placeholder="Add a comment" hide-details
-                    clearable auto-grow rows="1" :error="Boolean(form.errors.comment)" counter="140" maxLength="140">
+                  <v-textarea v-model="form.comment" density="compact" variant="underlined" placeholder="Add a comment"
+                    hide-details clearable auto-grow rows="1" :error="Boolean(form.errors.comment)" counter="140"
+                    maxLength="140">
                     <template v-slot:prepend>
                       <v-avatar color="surface-light">
                         <v-img v-if="avatarImagePath" :src="avatarImagePath" />
@@ -130,8 +132,9 @@ const updateComment = async (id: number) => {
                   </v-textarea>
                   <v-card-actions v-show="form.comment" class="mb-n4 pa-0">
                     <v-spacer />
-                    <v-btn size="small" variant="tonal" color="secondary" class="text-capitalize" :class="{ 'text-disabled': form.processing }"
-                      :disabled="form.processing" @click="addComment">Comment</v-btn>
+                    <v-btn size="small" variant="tonal" color="secondary" class="text-capitalize"
+                      :class="{ 'text-disabled': form.processing }" :disabled="form.processing"
+                      @click="addComment">Comment</v-btn>
                   </v-card-actions>
                 </form>
               </v-card-text>
