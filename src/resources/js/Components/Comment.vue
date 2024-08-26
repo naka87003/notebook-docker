@@ -140,8 +140,9 @@ const addReply = async () => {
         </v-card-actions>
       </v-card-text>
     </v-card>
-    <v-btn v-if="comment.replies_count" variant="text" prepend-icon="mdi-chevron-down" class="text-lowercase px-0"
-      color="primary" @click="display.replies = !display.replies">{{ comment.replies_count }} replies</v-btn>
+    <v-btn v-if="comment.replies_count" variant="text"
+      :prepend-icon="display.replies ? 'mdi-chevron-up' : 'mdi-chevron-down'" class="text-lowercase px-0" color="primary"
+      @click="display.replies = !display.replies">{{ comment.replies_count }} replies</v-btn>
     <v-infinite-scroll v-if="display.replies" :onLoad="load" class="w-100 overflow-hidden" empty-text="">
       <template v-for="reply in items" :key="reply.id">
         <div>{{ reply.content }} {{ reply.created_at }}</div>
