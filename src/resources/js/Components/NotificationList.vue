@@ -42,16 +42,17 @@ const load = async ({ done }): Promise<void> => {
 
 const selectItem = async (item: Notification) => {
   await markAsRead(item.id);
-  let data = {};
   switch (item.data.type) {
     case 'follow':
-      data = { user: item.user.id };
+      router.get(route('timeline'), { user: item.user.id });
       break;
     case 'comment':
-      data = { note: item.data.comment.note_id };
+      router.get(route('dashboard'), { note: item.data.comment.note_id });
+      break;
+    case 'like':
+      router.get(route('dashboard'), { note: item.data.note_id });
       break;
   }
-  router.get(route('timeline'), data);
 };
 
 const markAsRead = async (notificationId: string) => {
@@ -74,6 +75,8 @@ const titleMsg = (item: Notification) => {
       return 'followed you';
     case 'comment':
       return 'commented on your note';
+    case 'like':
+      return 'liked on your note';
   }
 };
 </script>
@@ -116,9 +119,9 @@ const titleMsg = (item: Notification) => {
     <template v-slot:actions>
       <v-btn variant="plain" @click="$emit('close')">Close</v-btn>
       <v-spacer></v-spacer>
-      <v-btn color="secondary" variant="tonal" :disabled="unreadNotificationCount === 0" @click="markAllAsRead">Mark All
-        as
-        Read</v-btn>
+      <v-btn color="secondary" variant="tonal" :disabled="unreadNotificationCount === 0" @click="markAllAsRead">
+        Mark All as Read
+      </v-btn>
     </template>
   </v-card>
 </template>
