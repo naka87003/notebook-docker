@@ -52,6 +52,9 @@ const selectItem = async (item: Notification) => {
     case 'like':
       router.get(route('dashboard'), { note: item.data.note_id });
       break;
+    case 'reply':
+      router.get(route('timeline'), { note: item.data.comment.note_id });
+      break;
   }
 };
 
@@ -77,6 +80,8 @@ const titleMsg = (item: Notification) => {
       return 'commented on your note';
     case 'like':
       return 'liked on your note';
+    case 'reply':
+      return 'replied to your comment';
   }
 };
 </script>

@@ -85,7 +85,7 @@ export type Notification = {
   notifiable_id: number;
   notifiable_type: string;
   data: {
-    type: 'follow' | 'comment' | 'like';
+    type: 'follow' | 'comment' | 'like' | 'reply';
     comment?: Comment;
     note_id?: number;
   };

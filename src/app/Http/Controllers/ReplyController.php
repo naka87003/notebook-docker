@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendReplyNotificationEmail;
+use App\Models\Comment;
 use App\Models\Reply;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -34,7 +37,21 @@ class ReplyController extends Controller
             $props['reply_to'] = $request->reply_to;
         }
 
-        Reply::create($props);
+        $reply = Reply::create($props);
+
+        $comment = Comment::find($reply->comment_id);
+
+        if (isset($reply->reply_to) && is_numeric($reply->reply_to)) {
+            if (Auth::user()->id !== $reply->reply_to) {
+                $user = User::find($reply->reply_to);
+                dispatch(new SendReplyNotificationEmail($user, Auth::user(), $comment, $reply));
+            }
+        } else {
+            if (Auth::user()->id !== $comment->user_id) {
+                $user = User::find($comment->user_id);
+                dispatch(new SendReplyNotificationEmail($user, Auth::user(), $comment, $reply));
+            }
+        }
 
         return back();
     }
