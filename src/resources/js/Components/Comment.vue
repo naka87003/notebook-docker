@@ -4,6 +4,7 @@ import { relativeDateTime, splitByNewline } from '@/common';
 import { Comment, User } from '@/interfaces';
 import { computed, ref } from 'vue';
 import axios from 'axios';
+import Reply from './Reply.vue';
 
 const props = defineProps<{
   comment: Comment;
@@ -81,17 +82,23 @@ const addReply = async () => {
   form.post(route('replies.store', props.comment.id), {
     preserveScroll: true,
     onSuccess: async () => {
-      form.reset('reply');
+      form.reset();
       const result = await loadItems(true);
       items.value = result;
       emit('updateComment');
     }
   });
 };
+
+const replyAdded = async () => {
+  const result = await loadItems(true);
+  items.value = result;
+  emit('updateComment');
+}
 </script>
 
 <template>
-  <v-alert density="compact" variant="text">
+  <v-alert density="compact" variant="text" class="pa-0">
     <template v-slot:prepend>
       <v-avatar color="grey-darken-3 cursor-pointer" style="z-index: 1;"
         @click="showSelectedUserPosts(comment.user_id)">
@@ -107,8 +114,8 @@ const addReply = async () => {
         <template v-slot:activator="{ props }">
           <v-btn v-bind="props" icon="mdi-dots-horizontal" variant="plain" size="small" />
         </template>
-        <v-list>
-          <v-list-item density="compact" prepend-icon="mdi-delete-outline" @click="$emit('delete')">
+        <v-list class="pa-0">
+          <v-list-item density="compact" prepend-icon="mdi-delete-outline" slim @click="$emit('delete')">
             <v-list-item-title>Delete</v-list-item-title>
           </v-list-item>
         </v-list>
@@ -123,8 +130,8 @@ const addReply = async () => {
     <v-card v-show="display.replyForm" density="compact" variant="text">
       <v-card-text class="pa-0">
         <form @submit.prevent="addReply">
-          <v-textarea v-model="form.reply" density="compact" placeholder="Add a reply" hide-details clearable auto-grow
-            rows="1" counter="140" maxLength="140">
+          <v-textarea v-model="form.reply" density="compact" variant="underlined" placeholder="Add a reply" hide-details
+            clearable auto-grow rows="1" counter="140" maxLength="140">
             <template v-slot:prepend>
               <v-avatar color="surface-light" size="small">
                 <v-img v-if="avatarImagePath" :src="avatarImagePath" />
@@ -135,17 +142,17 @@ const addReply = async () => {
         </form>
         <v-card-actions v-show="form.reply" class="mb-n4 pa-0">
           <v-spacer />
-          <v-btn size="small" variant="tonal" color="secondary" :class="{ 'text-disabled': form.processing }"
-            :disabled="form.processing" @click="addReply">Reply</v-btn>
+          <v-btn size="small" variant="tonal" color="secondary" class="text-capitalize"
+            :class="{ 'text-disabled': form.processing }" :disabled="form.processing" @click="addReply">Reply</v-btn>
         </v-card-actions>
       </v-card-text>
     </v-card>
     <v-btn v-if="comment.replies_count" variant="text"
-      :prepend-icon="display.replies ? 'mdi-chevron-up' : 'mdi-chevron-down'" class="text-lowercase px-0" color="primary"
-      @click="display.replies = !display.replies">{{ comment.replies_count }} replies</v-btn>
+      :prepend-icon="display.replies ? 'mdi-chevron-up' : 'mdi-chevron-down'" class="text-lowercase px-0"
+      color="primary" @click="display.replies = !display.replies">{{ comment.replies_count }} replies</v-btn>
     <v-infinite-scroll v-if="display.replies" :onLoad="load" class="w-100 overflow-hidden" empty-text="">
       <template v-for="reply in items" :key="reply.id">
-        <div>{{ reply.content }} {{ reply.created_at }}</div>
+        <Reply :reply @replyAdded="replyAdded" />
       </template>
     </v-infinite-scroll>
   </v-alert>

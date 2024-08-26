@@ -100,8 +100,20 @@ export type Comment = {
   content: string;
   user_id: number;
   note_id: number;
-  user: User;
   created_at: string;
   updated_at: string;
-  replies_count: number;
+  user?: User;
+  replies_count?: number;
+};
+
+export type Reply = {
+  id: number;
+  content: string;
+  user_id: number;
+  comment_id: number;
+  reply_to?: number;
+  created_at: string;
+  updated_at: string;
+  user?: User;
+  addressee?: User;
 };

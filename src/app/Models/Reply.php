@@ -27,6 +27,14 @@ class Reply extends Model
     }
 
     /**
+     *  reply宛のuserを取得
+     */
+    public function addressee(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'reply_to');
+    }
+
+    /**
      *  replyされたcommentを取得
      */
     public function comment(): BelongsTo
