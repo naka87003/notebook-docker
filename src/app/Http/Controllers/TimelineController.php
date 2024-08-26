@@ -29,7 +29,7 @@ class TimelineController extends Controller
             }
         }
         if (isset($request->note) && is_numeric($request->note)) {
-            $note = Note::with(['user', 'category', 'status', 'tag', 'likes'])->withCount(['comments'])->find((int)$request->note);
+            $note = Note::with(['user', 'category', 'status', 'tag', 'likes'])->withCount(['likes', 'comments'])->find((int)$request->note);
             if ($note) {
                 $props['note'] = $note;
             }
