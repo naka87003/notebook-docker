@@ -4,6 +4,7 @@ import { computed, ref, onMounted, inject } from 'vue';
 import axios from 'axios';
 import CommentItem from '@/Components/Comment.vue';
 import type { Comment, Note, User } from '@/interfaces';
+import ConfirmCard from './ConfirmCard.vue';
 
 const props = defineProps<{
   targetNote: Note;
@@ -18,6 +19,12 @@ const updatePosts: (id: number) => Promise<void> = inject('updatePosts');
 const form = useForm({
   comment: '',
 });
+
+const dialog = ref({
+  deleteConfirm: false
+})
+
+const targetCommentId = ref();
 
 const items = ref([]);
 
@@ -63,6 +70,24 @@ const addComment = async () => {
     }
   });
 };
+
+const showDeleteConfirmDialog = (id: number): void => {
+  targetCommentId.value = id;
+  dialog.value.deleteConfirm = true;
+};
+
+const deleteComment = async () => {
+  dialog.value.deleteConfirm = false;
+  await axios.delete(route('comments.destroy', targetCommentId.value))
+    .then(async () => {
+      const result = await loadItems(true);
+      items.value = result;
+      updatePosts(props.targetNote.id);
+    })
+    .catch(error => {
+      console.log(error);
+    });
+};
 </script>
 
 <template>
@@ -78,7 +103,7 @@ const addComment = async () => {
       <v-container>
         <v-row>
           <v-col cols="12" class="px-0">
-            <slot/>
+            <slot />
           </v-col>
           <v-col cols="12" class="px-0">
             <v-card density="compact" variant="text">
@@ -103,7 +128,7 @@ const addComment = async () => {
             </v-card>
             <v-infinite-scroll v-if="items.length > 0" :onLoad="load" class="w-100 overflow-hidden" empty-text="">
               <template v-for="comment in items" :key="comment.id">
-                <CommentItem :comment />
+                <CommentItem :comment @delete="showDeleteConfirmDialog(comment.id)" />
               </template>
             </v-infinite-scroll>
           </v-col>
@@ -111,4 +136,10 @@ const addComment = async () => {
       </v-container>
     </v-card-text>
   </v-card>
+  <v-dialog v-model="dialog.deleteConfirm" max-width="600">
+    <ConfirmCard icon="mdi-delete-outline" title="Delete Comment"
+      message="Are you sure you want to delete this comment?"
+      description="Once the comment is deleted, it will be permanently deleted." confirmBtnName="Delete"
+      confirmBtnColor="error" @confirmed="deleteComment" @close="dialog.deleteConfirm = false" />
+  </v-dialog>
 </template>

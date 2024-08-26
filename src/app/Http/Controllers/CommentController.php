@@ -41,4 +41,13 @@ class CommentController extends Controller
 
         return back();
     }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Comment $comment)
+    {
+        $comment->delete();
+        return response()->json();
+    }
 }
