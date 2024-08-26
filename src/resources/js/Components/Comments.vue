@@ -2,10 +2,8 @@
 import { useForm, usePage } from '@inertiajs/vue3';
 import { computed, ref, onMounted, inject } from 'vue';
 import axios from 'axios';
-import Post from '@/Components/Post.vue';
 import CommentItem from '@/Components/Comment.vue';
 import type { Comment, Note, User } from '@/interfaces';
-
 
 const props = defineProps<{
   targetNote: Note;
@@ -65,8 +63,6 @@ const addComment = async () => {
     }
   });
 };
-
-
 </script>
 
 <template>
@@ -82,7 +78,7 @@ const addComment = async () => {
       <v-container>
         <v-row>
           <v-col cols="12" class="px-0">
-            <Post :note="targetNote" />
+            <slot/>
           </v-col>
           <v-col cols="12" class="px-0">
             <v-card density="compact" variant="text">

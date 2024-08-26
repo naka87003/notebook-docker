@@ -8,7 +8,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Post from '@/Components/Post.vue';
 import FilterUserMenu from '@/Components/FilterUserMenu.vue';
 import SelectedUserMenu from '@/Components/SelectedUserMenu.vue';
-import PostComments from '@/Components/PostComments.vue';
+import Comments from '@/Components/Comments.vue';
 
 const props = defineProps<{
   user?: number;
@@ -187,7 +187,9 @@ provide('updatePosts', updatePosts);
       <v-img :src="previewImagePath" height="90vh" />
     </v-dialog>
     <v-dialog v-model="dialog.postComments" fullscreen scrollable transition="scroll-x-transition">
-      <PostComments :targetNote @close="closeComments" />
+      <Comments :targetNote @close="closeComments" >
+        <Post :note="targetNote" commentLinkDisabled/>
+      </Comments>
     </v-dialog>
   </AuthenticatedLayout>
 </template>
