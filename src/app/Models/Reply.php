@@ -17,6 +17,15 @@ class Reply extends Model
      */
     protected $guarded = [];
 
+
+    /**
+     *  replyしたuserを取得
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
     /**
      *  replyされたcommentを取得
      */

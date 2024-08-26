@@ -103,4 +103,5 @@ export type Comment = {
   user: User;
   created_at: string;
   updated_at: string;
+  replies_count: number;
 };

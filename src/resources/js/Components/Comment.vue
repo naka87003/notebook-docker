@@ -1,18 +1,38 @@
 <script setup lang="ts">
-import { router, usePage } from '@inertiajs/vue3';
+import { router, useForm, usePage } from '@inertiajs/vue3';
 import { relativeDateTime, splitByNewline } from '@/common';
 import { Comment, User } from '@/interfaces';
 import { computed, ref } from 'vue';
+import axios from 'axios';
 
 const props = defineProps<{
   comment: Comment;
 }>();
 
-defineEmits<{
+const emit = defineEmits<{
   delete: [];
+  updateComment: [];
 }>();
 
+const form = useForm({
+  reply: '',
+});
+
+const items = ref([]);
+
 const truncate = ref(true);
+
+const display = ref({
+  replyForm: false,
+  replies: false
+});
+
+const userImagePath = computed((): string | null => {
+  const user = usePage().props.auth.user as User;
+  return user.image_path;
+});
+
+const avatarImagePath = computed(() => userImagePath.value ? '/storage/' + userImagePath.value : null);
 
 const isMyComment = computed((): boolean => {
   const user = usePage().props.auth.user as User;
@@ -35,6 +55,37 @@ const isTruncated = computed(() => truncate.value && arrCommentLines.value.lengt
 const showSelectedUserPosts = (userId: number) => {
   router.get(route('timeline'), {
     user: userId
+  });
+};
+
+const loadItems = async (fresh: boolean = false): Promise<Comment[]> => {
+  const params = {};
+  if (fresh === false) {
+    params['offset'] = items.value.length;
+  }
+  const response = await axios.get(route('replies', props.comment.id), { params })
+  return response.data;
+};
+
+const load = async ({ done }): Promise<void> => {
+  const result = await loadItems();
+  if (result.length > 0) {
+    items.value.push(...result);
+    done('ok');
+  } else {
+    done('empty');
+  }
+};
+
+const addReply = async () => {
+  form.post(route('replies.store', props.comment.id), {
+    preserveScroll: true,
+    onSuccess: async () => {
+      form.reset('reply');
+      const result = await loadItems(true);
+      items.value = result;
+      emit('updateComment');
+    }
   });
 };
 </script>
@@ -67,7 +118,34 @@ const showSelectedUserPosts = (userId: number) => {
     <v-btn v-if="isTruncated" class="text-capitalize ps-0" color="primary" variant="text" density="compact"
       @click="truncate = false">Show more</v-btn>
     <div>
-      <v-icon flat size="x-small" icon="mdi-reply-outline" @click="console.log('click')" />
+      <v-icon flat size="x-small" icon="mdi-reply-outline" @click="display.replyForm = !display.replyForm" />
     </div>
+    <v-card v-show="display.replyForm" density="compact" variant="text">
+      <v-card-text class="pa-0">
+        <form @submit.prevent="addReply">
+          <v-textarea v-model="form.reply" density="compact" placeholder="Add a reply" hide-details clearable auto-grow
+            rows="1" counter="140" maxLength="140">
+            <template v-slot:prepend>
+              <v-avatar color="surface-light" size="small">
+                <v-img v-if="avatarImagePath" :src="avatarImagePath" />
+                <v-icon v-else icon="mdi-account" />
+              </v-avatar>
+            </template>
+          </v-textarea>
+        </form>
+        <v-card-actions v-show="form.reply" class="mb-n4 pa-0">
+          <v-spacer />
+          <v-btn size="small" variant="tonal" color="secondary" :class="{ 'text-disabled': form.processing }"
+            :disabled="form.processing" @click="addReply">Reply</v-btn>
+        </v-card-actions>
+      </v-card-text>
+    </v-card>
+    <v-btn v-if="comment.replies_count" variant="text" prepend-icon="mdi-chevron-down" class="text-lowercase px-0"
+      color="primary" @click="display.replies = !display.replies">{{ comment.replies_count }} replies</v-btn>
+    <v-infinite-scroll v-if="display.replies" :onLoad="load" class="w-100 overflow-hidden" empty-text="">
+      <template v-for="reply in items" :key="reply.id">
+        <div>{{ reply.content }} {{ reply.created_at }}</div>
+      </template>
+    </v-infinite-scroll>
   </v-alert>
 </template>

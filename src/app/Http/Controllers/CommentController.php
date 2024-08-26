@@ -17,14 +17,14 @@ class CommentController extends Controller
     public function index(string $noteId, Request $request)
     {
         $skip = is_numeric($request->offset) ? $request->offset : 0;
-        $comments = Comment::where('note_id', $noteId)->orderBy('updated_at', 'DESC')->offset($skip)->limit(20)->with(['user'])->get();
+        $comments = Comment::where('note_id', $noteId)->orderBy('updated_at', 'DESC')->offset($skip)->limit(20)->with(['user'])->withCount('replies')->get();
         return response()->json($comments);
     }
 
     public function store(string $noteId, Request $request)
     {
         $request->validate([
-            'comment' => 'required|max:300',
+            'comment' => 'required|max:160',
         ]);
         $comment = Comment::create([
             'content' => $request->comment,
@@ -49,5 +49,14 @@ class CommentController extends Controller
     {
         $comment->delete();
         return response()->json();
+    }
+
+    /**
+     * commentを1件取得
+     */
+    public function comment(string $id)
+    {
+        $comment = Comment::with(['user'])->withCount('replies')->find($id);
+        return response()->json($comment);
     }
 }

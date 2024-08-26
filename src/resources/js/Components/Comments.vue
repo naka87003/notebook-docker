@@ -26,7 +26,7 @@ const dialog = ref({
 
 const targetCommentId = ref();
 
-const items = ref([]);
+const comments = ref(new Map<number, Comment>());
 
 const userImagePath = computed((): string | null => {
   const user = usePage().props.auth.user as User;
@@ -37,13 +37,15 @@ const avatarImagePath = computed(() => userImagePath.value ? '/storage/' + userI
 
 onMounted(async () => {
   const result = await loadItems();
-  items.value.push(...result);
+  for (const comment of result) {
+    comments.value.set(comment.id, comment);
+  }
 });
 
 const loadItems = async (fresh: boolean = false): Promise<Comment[]> => {
   const params = {};
   if (fresh === false) {
-    params['offset'] = items.value.length;
+    params['offset'] = comments.value.size;
   }
   const response = await axios.get(route('comments', props.targetNote.id), { params })
   return response.data;
@@ -52,7 +54,9 @@ const loadItems = async (fresh: boolean = false): Promise<Comment[]> => {
 const load = async ({ done }): Promise<void> => {
   const result = await loadItems();
   if (result.length > 0) {
-    items.value.push(...result);
+    for (const comment of result) {
+      comments.value.set(comment.id, comment);
+    }
     done('ok');
   } else {
     done('empty');
@@ -65,7 +69,9 @@ const addComment = async () => {
     onSuccess: async () => {
       form.reset('comment');
       const result = await loadItems(true);
-      items.value = result;
+      for (const comment of result) {
+        comments.value.set(comment.id, comment);
+      }
       updatePosts(props.targetNote.id);
     }
   });
@@ -81,12 +87,19 @@ const deleteComment = async () => {
   await axios.delete(route('comments.destroy', targetCommentId.value))
     .then(async () => {
       const result = await loadItems(true);
-      items.value = result;
+      for (const comment of result) {
+        comments.value.set(comment.id, comment);
+      }
       updatePosts(props.targetNote.id);
     })
     .catch(error => {
       console.log(error);
     });
+};
+
+const updateComment = async (id: number) => {
+  const response = await axios.get(route('comments.comment', id));
+  comments.value.set(id, response.data);
 };
 </script>
 
@@ -126,9 +139,10 @@ const deleteComment = async () => {
                 </form>
               </v-card-text>
             </v-card>
-            <v-infinite-scroll v-if="items.length > 0" :onLoad="load" class="w-100 overflow-hidden" empty-text="">
-              <template v-for="comment in items" :key="comment.id">
-                <CommentItem :comment @delete="showDeleteConfirmDialog(comment.id)" />
+            <v-infinite-scroll v-if="comments.size > 0" :onLoad="load" class="w-100 overflow-hidden" empty-text="">
+              <template v-for="comment in comments.values()" :key="comment.id">
+                <CommentItem :comment @delete="showDeleteConfirmDialog(comment.id)"
+                  @updateComment="updateComment(comment.id)" />
               </template>
             </v-infinite-scroll>
           </v-col>

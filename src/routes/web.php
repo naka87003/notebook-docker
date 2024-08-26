@@ -11,6 +11,7 @@ use App\Http\Controllers\LikeController;
 use App\Http\Controllers\FollowController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\ReplyController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -42,8 +43,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/tags/items/datatable', [TagController::class, 'datatableItems'])->name('tags.items.datatable');
 
     Route::get('/comments/{note}', [CommentController::class, 'index'])->name('comments');
+    Route::get('/comments/comment/{comment}', [CommentController::class, 'comment'])->name('comments.comment');
     Route::post('/comments/{note}', [CommentController::class, 'store'])->name('comments.store');
     Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
+    
+    Route::get('/replies/{comment}', [ReplyController::class, 'index'])->name('replies');
+    Route::post('/replies/{comment}', [ReplyController::class, 'store'])->name('replies.store');
+    Route::delete('/replies/{reply}', [ReplyController::class, 'destroy'])->name('replies.destroy');
 
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications');
     Route::put('/notifications/read/{notification}', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
