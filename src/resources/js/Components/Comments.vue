@@ -86,10 +86,7 @@ const deleteComment = async () => {
   dialog.value.deleteConfirm = false;
   await axios.delete(route('comments.destroy', targetCommentId.value))
     .then(async () => {
-      const result = await loadItems(true);
-      for (const comment of result) {
-        comments.value.set(comment.id, comment);
-      }
+      comments.value.delete(targetCommentId.value);
       updatePosts(props.targetNote.id);
     })
     .catch(error => {
