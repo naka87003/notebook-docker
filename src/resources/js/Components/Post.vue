@@ -7,6 +7,7 @@ import { simplifyDateTime, splitByNewline, relativeDateTime } from '@/common';
 
 const props = defineProps<{
   note: Note;
+  commentLinkDisabled?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -17,7 +18,7 @@ const showEnlargedImage: (src: string) => void = inject('showEnlargedImage');
 
 const updatePosts: (id: number) => Promise<void> = inject('updatePosts');
 
-const likeCount = computed((): number => props.note.likes.length);
+const likeCount = computed((): number => props.note.likes_count);
 
 const isLiked = computed((): boolean => props.note.likes.some((like) => like.user_id === usePage().props.auth.user.id));
 
@@ -75,7 +76,7 @@ const showSelectedUserPosts = (userId: number) => {
         <v-list-item-subtitle v-if="note.tag" class="text-caption">{{ note.tag?.name }}</v-list-item-subtitle>
       </v-list-item>
       <v-spacer />
-      <v-btn prepend-icon="mdi-comment-outline" class="hidden-xs" @click="$emit('showComments')">
+      <v-btn prepend-icon="mdi-comment-outline" class="hidden-xs" @click="$emit('showComments')" :readonly="Boolean(commentLinkDisabled)">
         {{ note.comments_count || '' }}
       </v-btn>
       <v-btn :prepend-icon="isLiked ? 'mdi-heart' : 'mdi-heart-outline'" class="hidden-xs"
@@ -85,7 +86,9 @@ const showSelectedUserPosts = (userId: number) => {
     </v-card-actions>
     <v-card-actions class="hidden-sm-and-up">
       <v-spacer />
-      <v-btn prepend-icon="mdi-comment-outline" @click="$emit('showComments')">{{ note.comments_count || '' }}</v-btn>
+      <v-btn prepend-icon="mdi-comment-outline" @click="$emit('showComments')" :readonly="Boolean(commentLinkDisabled)">
+        {{ note.comments_count || '' }}
+      </v-btn>
       <v-btn :prepend-icon="isLiked ? 'mdi-heart' : 'mdi-heart-outline'" :class="{ 'text-pink': isLiked }"
         @click="like">
         {{ likeCount }}

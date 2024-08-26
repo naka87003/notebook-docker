@@ -4,7 +4,10 @@ import { router } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import { simplifyDateTime, splitByNewline, relativeDateTime } from '@/common';
 
-const props = defineProps<{ note: Note & { likes_count: number } }>();
+const props = defineProps<{
+  note: Note & { likes_count: number }
+  commentLinkDisabled?: boolean;
+}>();
 
 defineEmits<{
   showEnlargedImage: [src: string];
@@ -65,7 +68,7 @@ const showTaggedNotes = () => {
       <v-btn v-if="note.status.name === 'archived'" size="small" icon="mdi-archive-outline" readonly />
       <v-btn v-if="note.public === false" size="small" icon="mdi-lock-outline" readonly />
       <v-btn v-if="note.public && note.comments_count" prepend-icon="mdi-comment-outline"
-        @click="$emit('showComments')">
+        :readonly="Boolean(commentLinkDisabled)" @click="$emit('showComments')">
         {{ note.comments_count || '' }}
       </v-btn>
       <v-btn v-if="note.public && note.likes_count" prepend-icon="mdi-heart" @click="$emit('showLikedUserList')">
