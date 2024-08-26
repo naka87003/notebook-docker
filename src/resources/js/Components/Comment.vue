@@ -83,9 +83,7 @@ const addReply = async () => {
     preserveScroll: true,
     onSuccess: async () => {
       form.reset();
-      const result = await loadItems(true);
-      items.value = result;
-      emit('updateComment');
+      replyAdded();
     }
   });
 };
@@ -93,6 +91,8 @@ const addReply = async () => {
 const replyAdded = async () => {
   const result = await loadItems(true);
   items.value = result;
+  display.value.replies = true;
+  display.value.replyForm = false;
   emit('updateComment');
 }
 </script>
