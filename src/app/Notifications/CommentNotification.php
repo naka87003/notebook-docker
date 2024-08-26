@@ -37,7 +37,7 @@ class CommentNotification extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
-        $url = config('app.url') . '/timeline?note=' . $this->comment->note_id;
+        $url = config('app.url') . '/?note=' . $this->comment->note_id;
 
         $message = (new MailMessage)
             ->subject(Lang::get('You have a new comment'))

@@ -12,12 +12,13 @@ import ConfirmCard from '@/Components/ConfirmCard.vue';
 import NoteSortMenu from '@/Components/NoteSortMenu.vue';
 import NoteFilterMenu from '@/Components/NoteFilterMenu.vue';
 import LikedUserList from '@/Components/LikedUserList.vue';
-import PostComments from '@/Components/PostComments.vue';
+import Comments from '@/Components/Comments.vue';
 
 const props = defineProps<{
   tag?: number;
   status?: number;
   newRegisteredUser: boolean;
+  note?: Note;
 }>();
 
 const search = ref('');
@@ -90,6 +91,11 @@ onMounted(async () => {
   const result = await loadNotes();
   for (const note of result) {
     notes.value.set(note.id, note);
+  }
+
+  if (props.note) {
+    notes.value.set(props.note.id, props.note);
+    showComments(props.note);
   }
 });
 
@@ -323,6 +329,8 @@ provide('updatePosts', updatePosts);
     <LikedUserList :targetNote @close="dialog.likedUserList = false" />
   </v-dialog>
   <v-dialog v-model="dialog.noteComments" fullscreen scrollable transition="scroll-x-transition">
-    <PostComments :targetNote @close="dialog.noteComments = false" />
+    <Comments :targetNote @close="dialog.noteComments = false">
+      <NoteItem :note="targetNote" commentLinkDisabled @showEnlargedImage="showEnlargedImage" @showLikedUserList="showLikedUserList(targetNote)" />
+    </Comments>
   </v-dialog>
 </template>

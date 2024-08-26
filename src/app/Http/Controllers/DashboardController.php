@@ -28,7 +28,12 @@ class DashboardController extends Controller
             $props['status'] = (int)$request->status;
         }
 
-        
+        if (isset($request->note) && is_numeric($request->note)) {
+            $note = Note::with(['user', 'category', 'status', 'tag', 'likes'])->withCount(['likes', 'comments'])->where('user_id', $user->id)->find((int)$request->note);
+            if ($note) {
+                $props['note'] = $note;
+            }
+        }
 
         return Inertia::render('Dashboard', $props);
     }
