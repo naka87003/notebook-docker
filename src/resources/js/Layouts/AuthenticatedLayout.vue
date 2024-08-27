@@ -57,7 +57,7 @@ const markAllAsRead = () => {
           <slot name="action" />
         </v-container>
       </template>
-      <v-container class="mx-auto d-flex align-center justify-center">
+      <v-container class="d-flex align-center justify-center" fluid>
         <v-tabs v-model="currentPageName" class="hidden-xs">
           <v-tab value="dashboard" prepend-icon="mdi-note-multiple-outline"
             @click="pageTransition('dashboard')">Notes</v-tab>
@@ -79,29 +79,36 @@ const markAllAsRead = () => {
             <v-icon icon="mdi-bell-outline" />
           </v-badge>
         </v-btn>
-        <v-divider vertical class="hidden-xs mx-1" />
         <v-menu class="hidden-sm-and-down">
           <template v-slot:activator="{ props }">
-            <v-list-item v-bind="props" class="hidden-sm-and-down">
-              <v-list-item-title class="text-truncate" style="max-width: 120px">
+            <v-btn v-bind="props" stacked class="hidden-sm-and-down">
+              <v-avatar color="surface-light cursor-pointer" size="small">
+                <v-img v-if="avatarImagePath" :src="avatarImagePath" />
+                <v-icon v-else icon="mdi-account" />
+              </v-avatar>
+            </v-btn>
+          </template>
+          <v-list>
+            <v-list-item class="hidden-sm-and-down">
+              <v-list-item-title>
                 {{ $page.props.auth.user.name }}
               </v-list-item-title>
+              <v-list-item-subtitle>
+                {{ $page.props.auth.user.email }}
+              </v-list-item-subtitle>
               <template v-slot:prepend>
                 <v-avatar color="surface-light">
                   <v-img v-if="avatarImagePath" :src="avatarImagePath" />
                   <v-icon v-else icon="mdi-account" />
                 </v-avatar>
               </template>
-              <template v-slot:append>
-                <v-icon>mdi-chevron-down</v-icon>
-              </template>
             </v-list-item>
-          </template>
-          <v-list>
-            <v-list-item @click="pageTransition('profile.edit')" :active="route().current() === 'profile.edit'">
-              <v-list-item-title>Profile</v-list-item-title>
+            <v-divider class="my-3" />
+            <v-list-item @click="pageTransition('profile.edit')" :active="route().current() === 'profile.edit'"
+              prepend-icon="mdi-account-box-edit-outline" slim>
+              <v-list-item-title>Edit Profile</v-list-item-title>
             </v-list-item>
-            <v-list-item @click="logout">
+            <v-list-item @click="logout" prepend-icon="mdi-logout" slim>
               <v-list-item-title>Logout</v-list-item-title>
             </v-list-item>
           </v-list>
