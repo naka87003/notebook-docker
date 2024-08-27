@@ -29,7 +29,7 @@ class ReplyController extends Controller
 
         $props = [
             'content' => $request->reply,
-            'user_id' => Auth::user()->id,
+            'user_id' => Auth::id(),
             'comment_id' => $commentId,
         ];
 
@@ -42,12 +42,12 @@ class ReplyController extends Controller
         $comment = Comment::find($reply->comment_id);
 
         if (isset($reply->reply_to) && is_numeric($reply->reply_to)) {
-            if (Auth::user()->id !== $reply->reply_to) {
+            if (Auth::id() !== $reply->reply_to) {
                 $user = User::find($reply->reply_to);
                 dispatch(new SendReplyNotificationEmail($user, Auth::user(), $comment, $reply));
             }
         } else {
-            if (Auth::user()->id !== $comment->user_id) {
+            if (Auth::id() !== $comment->user_id) {
                 $user = User::find($comment->user_id);
                 dispatch(new SendReplyNotificationEmail($user, Auth::user(), $comment, $reply));
             }

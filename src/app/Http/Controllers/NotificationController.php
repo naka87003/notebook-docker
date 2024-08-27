@@ -13,7 +13,7 @@ class NotificationController extends Controller
      */
     public function index(Request $request)
     {
-        $user = User::find(Auth::user()->id);
+        $user = User::find(Auth::id());
         $skip = is_numeric($request->offset) ? $request->offset : 0;
         $notifications = $user->notifications()->offset($skip)->limit(20)->get();
 

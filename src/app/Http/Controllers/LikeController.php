@@ -22,7 +22,7 @@ class LikeController extends Controller
 
         $note = Note::find($noteId);
 
-        if (Auth::user()->id !== $note->user_id) {
+        if (Auth::id() !== $note->user_id) {
             $user = User::find($note->user_id);
             dispatch(new SendLikeNotification($user, Auth::user(), $noteId));
         }

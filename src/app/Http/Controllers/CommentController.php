@@ -28,13 +28,13 @@ class CommentController extends Controller
         ]);
         $comment = Comment::create([
             'content' => $request->comment,
-            'user_id' => Auth::user()->id,
+            'user_id' => Auth::id(),
             'note_id' => $noteId,
         ]);
 
         $note = Note::find($noteId);
 
-        if (Auth::user()->id !== $note->user_id) {
+        if (Auth::id() !== $note->user_id) {
             $user = User::find($note->user_id);
             dispatch(new SendCommentNotificationEmail($user, Auth::user(), $comment));
         }
