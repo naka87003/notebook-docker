@@ -5,7 +5,7 @@ import { computed } from 'vue';
 import { simplifyDateTime, splitByNewline, relativeDateTime } from '@/common';
 
 const props = defineProps<{
-  note: Note & { likes_count: number }
+  note: Note
   commentLinkDisabled?: boolean;
 }>();
 

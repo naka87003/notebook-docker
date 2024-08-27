@@ -66,7 +66,7 @@ onMounted(async () => {
   }
 });
 
-const loadNotes = async (): Promise<(Note & { likes_count: number })[]> => {
+const loadNotes = async (): Promise<Note[]> => {
   const response = await axios.get(route('notes.posts'), {
     params: {
       offset: notes.value.size,
@@ -93,8 +93,8 @@ const refreshDisplay = async (): Promise<void> => {
   notes.value.clear();
   const result = await loadNotes();
   for (const note of result) {
-      notes.value.set(note.id, note);
-    }
+    notes.value.set(note.id, note);
+  }
 };
 
 const showEnlargedImage = (src: string) => {
@@ -134,7 +134,7 @@ const closeComments = async () => {
 
 const updatePosts = async (id: number) => {
   const response = await axios.get(route('notes.note', id));
-  notes.value.set(id,response.data);
+  notes.value.set(id, response.data);
 };
 
 provide('showEnlargedImage', showEnlargedImage);
@@ -187,8 +187,8 @@ provide('updatePosts', updatePosts);
       <v-img :src="previewImagePath" height="90vh" />
     </v-dialog>
     <v-dialog v-model="dialog.postComments" fullscreen scrollable transition="scroll-x-transition">
-      <Comments :targetNote @close="closeComments" >
-        <Post :note="targetNote" commentLinkDisabled/>
+      <Comments :targetNote @close="closeComments">
+        <Post :note="targetNote" commentLinkDisabled />
       </Comments>
     </v-dialog>
   </AuthenticatedLayout>

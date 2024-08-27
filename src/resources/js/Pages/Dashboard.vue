@@ -23,7 +23,7 @@ const props = defineProps<{
 
 const search = ref('');
 
-const notes = ref(new Map<number, Note & { likes_count: number }>());
+const notes = ref(new Map<number, Note>());
 
 const dialog = ref({
   create: false,
@@ -99,7 +99,7 @@ onMounted(async () => {
   }
 });
 
-const loadNotes = async (): Promise<(Note & { likes_count: number })[]> => {
+const loadNotes = async (): Promise<Note[]> => {
   const response = await axios.get(route('notes.index'), {
     params: {
       offset: notes.value.size,
