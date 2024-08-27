@@ -141,7 +141,7 @@ const deleteReply = async () => {
     <template #append>
       <v-menu v-if="isMyComment">
         <template v-slot:activator="{ props }">
-          <v-icon v-bind="props" icon="mdi-dots-vertical" variant="plain" size="small" class="mt-n2"/>
+          <v-icon v-bind="props" icon="mdi-dots-vertical" variant="plain" size="small"/>
         </template>
         <v-list class="pa-0">
           <v-list-item density="compact" prepend-icon="mdi-delete-outline" slim @click="$emit('delete')">
