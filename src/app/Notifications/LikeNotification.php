@@ -7,6 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\Lang;
+use Illuminate\Support\Facades\Log;
 
 class LikeNotification extends Notification
 {
@@ -30,7 +31,15 @@ class LikeNotification extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ['mail', 'database'];
+        $via = ['database'];
+        $preference = $notifiable->emailPreferences->filter(function ($item) {
+            return $item->type == 'like';
+        })->first();
+
+        if ($preference !== null && $preference->value) {
+            array_push($via, 'mail');
+        }
+        return $via;
     }
 
     /**

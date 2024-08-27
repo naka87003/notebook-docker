@@ -87,4 +87,12 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->belongsToMany(User::class, 'follows', 'followee_id', 'follower_id');
     }
+
+    /**
+     *  Userのメール通知設定を取得
+     */
+    public function emailPreferences(): HasMany
+    {
+        return $this->hasMany(EmailPreference::class);
+    }
 }

@@ -117,3 +117,12 @@ export type Reply = {
   user?: User;
   addressee?: User;
 };
+
+export type EmailPrerefence = {
+  id: number;
+  user_id: number;
+  type: string;
+  value: boolean;
+  created_at: string;
+  updated_at: string;
+};

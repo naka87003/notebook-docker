@@ -12,6 +12,7 @@ use App\Http\Controllers\FollowController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ReplyController;
+use App\Http\Controllers\PreferenceController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -54,6 +55,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications');
     Route::put('/notifications/read/{notification}', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
     Route::put('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
+
+    Route::get('/preferences', [PreferenceController::class, 'edit'])->name('preferences.edit');
+    Route::patch('/preferences', [PreferenceController::class, 'update'])->name('preferences.update');
 });
 
 Route::middleware('auth')->group(function () {

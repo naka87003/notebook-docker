@@ -99,7 +99,15 @@ const pageTransition = (name: string) => {
             </v-avatar>
           </template>
         </v-list-item>
-        <v-list-item title="Logout" @click="$emit('logout')">
+        <v-list-item title="Preferences" density="compact"
+          :active="currentPageName === 'preferences.edit'" @click="pageTransition('preferences.edit')">
+          <template v-slot:prepend>
+            <v-avatar density="compact">
+              <v-icon>mdi-cog-outline</v-icon>
+            </v-avatar>
+          </template>
+        </v-list-item>
+        <v-list-item title="Logout" density="compact" @click="$emit('logout')">
           <template v-slot:prepend>
             <v-avatar density="compact">
               <v-icon>mdi-logout</v-icon>

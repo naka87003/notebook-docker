@@ -108,6 +108,10 @@ const markAllAsRead = () => {
               prepend-icon="mdi-account-box-edit-outline" slim>
               <v-list-item-title>Edit Profile</v-list-item-title>
             </v-list-item>
+            <v-list-item @click="pageTransition('preferences.edit')" :active="route().current() === 'preferences.edit'"
+              prepend-icon="mdi-cog-outline" slim>
+              <v-list-item-title>Preferences</v-list-item-title>
+            </v-list-item>
             <v-list-item @click="logout" prepend-icon="mdi-logout" slim>
               <v-list-item-title>Logout</v-list-item-title>
             </v-list-item>

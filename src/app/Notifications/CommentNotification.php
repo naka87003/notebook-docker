@@ -29,7 +29,15 @@ class CommentNotification extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ['mail', 'database'];
+        $via = ['database'];
+        $preference = $notifiable->emailPreferences->filter(function ($item) {
+            return $item->type == 'comment';
+        })->first();
+
+        if ($preference !== null && $preference->value) {
+            array_push($via, 'mail');
+        }
+        return $via;
     }
 
     /**
