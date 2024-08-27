@@ -124,7 +124,7 @@ const updateComment = async (id: number) => {
                     hide-details clearable auto-grow rows="1" :error="Boolean(form.errors.comment)" counter="140"
                     maxLength="140">
                     <template v-slot:prepend>
-                      <v-avatar color="surface-light">
+                      <v-avatar color="surface-light" size="small">
                         <v-img v-if="avatarImagePath" :src="avatarImagePath" />
                         <v-icon v-else icon="mdi-account" />
                       </v-avatar>

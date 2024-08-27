@@ -128,7 +128,7 @@ const deleteReply = async () => {
 <template>
   <v-alert density="compact" variant="text" class="pa-0">
     <template v-slot:prepend>
-      <v-avatar color="grey-darken-3 cursor-pointer" style="z-index: 1;"
+      <v-avatar color="grey-darken-3 cursor-pointer" size="small" style="z-index: 1;"
         @click="showSelectedUserPosts(comment.user_id)">
         <v-img v-if="comment.user.image_path" :src="'/storage/' + comment.user.image_path" />
         <v-icon v-else icon="mdi-account" />
@@ -137,10 +137,11 @@ const deleteReply = async () => {
     <template #title>
       <span class="text-caption text-truncate">{{ comment.user.name }}</span>
       <span class="text-caption text-no-wrap text-disabled ms-2">{{ relativeDateTime(comment.created_at) }}</span>
-      <v-spacer />
+    </template>
+    <template #append>
       <v-menu v-if="isMyComment">
         <template v-slot:activator="{ props }">
-          <v-btn v-bind="props" icon="mdi-dots-horizontal" variant="plain" size="small" />
+          <v-btn v-bind="props" icon="mdi-dots-vertical" variant="plain" size="small" />
         </template>
         <v-list class="pa-0">
           <v-list-item density="compact" prepend-icon="mdi-delete-outline" slim @click="$emit('delete')">
@@ -178,12 +179,12 @@ const deleteReply = async () => {
     <v-btn v-if="comment.replies_count" variant="text"
       :prepend-icon="display.replies ? 'mdi-chevron-up' : 'mdi-chevron-down'" class="text-lowercase px-0"
       color="primary" @click="display.replies = !display.replies">{{ comment.replies_count }} replies</v-btn>
-    <v-infinite-scroll v-if="display.replies" :onLoad="load" class="w-100 overflow-hidden" empty-text="">
+    </v-alert>
+    <v-infinite-scroll v-if="display.replies" :onLoad="load" class="ms-10 mt-n3 overflow-hidden" empty-text="">
       <template v-for="reply in replies.values()" :key="reply.id">
         <ReplyItem :reply @replyAdded="replyAdded" @delete="showDeleteConfirmDialog(reply.id)" />
       </template>
     </v-infinite-scroll>
-  </v-alert>
   <v-dialog v-model="dialog.deleteConfirm" max-width="600">
     <ConfirmCard icon="mdi-delete-outline" title="Delete Reply" message="Are you sure you want to delete this reply?"
       description="Once the reply is deleted, it will be permanently deleted." confirmBtnName="Delete"

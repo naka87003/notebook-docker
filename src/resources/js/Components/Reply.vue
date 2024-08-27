@@ -71,7 +71,7 @@ const addReply = async () => {
 <template>
   <v-alert density="compact" variant="text" class="pa-0">
     <template v-slot:prepend>
-      <v-avatar color="grey-darken-3 cursor-pointer" style="z-index: 1;" @click="showSelectedUserPosts(reply.user_id)">
+      <v-avatar color="grey-darken-3 cursor-pointer" size="small" style="z-index: 1;" @click="showSelectedUserPosts(reply.user_id)">
         <v-img v-if="reply.user.image_path" :src="'/storage/' + reply.user.image_path" />
         <v-icon v-else icon="mdi-account" />
       </v-avatar>
@@ -79,10 +79,11 @@ const addReply = async () => {
     <template #title>
       <span class="text-caption text-truncate">{{ reply.user.name }}</span>
       <span class="text-caption text-no-wrap text-disabled ms-2">{{ relativeDateTime(reply.created_at) }}</span>
-      <v-spacer />
+    </template>
+    <template #append>
       <v-menu v-if="isMyComment">
         <template v-slot:activator="{ props }">
-          <v-btn v-bind="props" icon="mdi-dots-horizontal" variant="plain" size="small" />
+          <v-btn v-bind="props" icon="mdi-dots-vertical" variant="plain" size="small" />
         </template>
         <v-list>
           <v-list-item density="compact" prepend-icon="mdi-delete-outline" @click="$emit('delete')">
