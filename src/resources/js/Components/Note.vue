@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Note, Tag } from '@/interfaces';
+import type { Note } from '@/interfaces';
 import { router } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import { simplifyDateTime, splitByNewline, relativeDateTime } from '@/common';
