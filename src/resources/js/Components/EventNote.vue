@@ -19,7 +19,7 @@ const previewImagePath = computed(() => {
 </script>
 
 <template>
-  <v-card rounded="0">
+  <v-card rounded="0" >
     <v-toolbar density="comfortable" color="transparent" :title="targetNote.title">
       <template v-slot:prepend>
         <v-icon :icon="targetNote.category.mdi_name" size="large" class="ms-3"></v-icon>
@@ -34,30 +34,34 @@ const previewImagePath = computed(() => {
         <p class="text-body-2">from {{ simplifyDateTime(targetNote.starts_at) }}</p>
         <p class="text-body-2">to {{ simplifyDateTime(targetNote.ends_at) }}</p>
       </v-alert>
-      <p v-for="paragraph in splitByNewline(targetNote.content ?? '')" class="note-paragraph text-body-1">{{ paragraph }}</p>
+      <p v-for="paragraph in splitByNewline(targetNote.content ?? '')" class="note-paragraph text-body-1">{{ paragraph
+        }}
+      </p>
       <v-img v-if="previewImagePath" :src="previewImagePath" width="300" class="mt-3 cursor-pointer"
         @click="dialog.enlargedImage = true" />
     </v-card-text>
-    <v-card-actions>
-      <v-list-item class="w-100">
-        <template v-slot:prepend>
-          <template v-if="targetNote.tag">
-            <v-icon :color="targetNote.tag?.hex_color" size="small" class="me-1 hidden-xs" icon="mdi-tag" />
-            <span class="me-5 text-caption hidden-xs">{{ targetNote.tag?.name }}</span>
-            <v-tooltip :text="targetNote.tag?.name" location="top">
-              <template v-slot:activator="{ props }">
-                <v-icon icon="mdi-tag" size="small" class="me-5 hidden-sm-and-up" :color="targetNote.tag?.hex_color"
-                  v-bind="props" open-on-click />
-              </template>
-            </v-tooltip>
+    <v-card-actions v-if="targetNote.tag" class="hidden-sm-and-up mx-2">
+      <v-btn>
+        <template #prepend>
+          <v-icon :color="targetNote.tag?.hex_color">mdi-tag</v-icon>
+        </template>
+        <span class="text-caption">{{ targetNote.tag?.name }}</span>
+      </v-btn>
+      <v-spacer/>
+    </v-card-actions>
+    <v-card-actions class="mx-2">
+      <template v-if="targetNote.tag">
+        <v-btn class="hidden-xs">
+          <template #prepend>
+            <v-icon :color="targetNote.tag?.hex_color">mdi-tag</v-icon>
           </template>
-          <v-icon v-if="targetNote.status.name === 'archived'" size="small" class="me-5" icon="mdi-archive-outline" />
-          <v-icon v-if="targetNote.public === false" size="small" class="me-5" icon="mdi-lock-outline"></v-icon>
-        </template>
-        <template v-slot:append>
-          <slot name="actions" :targetNote />
-        </template>
-      </v-list-item>
+          <span class="text-caption">{{ targetNote.tag?.name }}</span>
+        </v-btn>
+        <v-icon v-if="targetNote.status.name === 'archived'" size="small" class="me-5" icon="mdi-archive-outline" />
+        <v-icon v-if="targetNote.public === false" size="small" class="me-5" icon="mdi-lock-outline"></v-icon>
+      </template>
+      <v-spacer />
+      <slot name="actions" :targetNote />
     </v-card-actions>
   </v-card>
   <v-dialog v-model="dialog.enlargedImage" close-on-content-click maxWidth="1000px">
