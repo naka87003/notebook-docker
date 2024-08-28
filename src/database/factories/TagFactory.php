@@ -18,7 +18,7 @@ class TagFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->realText(rand(10, 20)),
+            'name' => fake()->word(),
             'hex_color' => fake()->hexColor(),
             'user_id' => User::all()->random()->id
         ];

@@ -28,17 +28,20 @@ class DatabaseSeeder extends Seeder
         $this->call([
             CategorySeeder::class,
             StatusSeeder::class,
-            TagSeeder::class,
-            NoteSeeder::class
         ]);
 
-        User::factory(50)->create();
+        User::factory(10)->create();
         Tag::factory(1000)->create();
-        Note::factory(1000)->create();
-        Note::factory(500)->event()->create();
+        Note::factory(800)->create();
+        Note::factory(400)->event()->create();
         Like::factory(2000)->create();
-        Comment::factory(2500)->create();
-        Reply::factory(2000)->create();
-        Follow::factory(200)->create();
+        Comment::factory(2400)->create();
+        Reply::factory(1200)->create();
+        Reply::factory(200)->replyTo()->create();
+        Reply::factory(200)->replyTo()->create();
+        Reply::factory(400)->replyTo()->create();
+        Reply::factory(400)->replyTo()->create();
+        Reply::factory(400)->replyTo()->create();
+        Follow::factory(50)->create();
     }
 }

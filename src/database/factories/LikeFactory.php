@@ -20,7 +20,7 @@ class LikeFactory extends Factory
     {
         return [
             'user_id' => User::all()->random()->id,
-            'note_id' => Note::all()->random()->id,
+            'note_id' => Note::where('category_id', 1)->get()->random()->id,
             'created_at' => fake()->dateTimeBetween('-3 year'),
             'updated_at' => fake()->dateTimeBetween('-3 year')
         ];

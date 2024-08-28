@@ -2,12 +2,11 @@
 
 namespace Database\Factories;
 
-use App\Models\Note;
 use App\Models\Tag;
 use App\Models\User;
 use Carbon\Carbon;
-use Faker\Generator as Faker;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Facades\Log;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Note>
@@ -21,11 +20,10 @@ class NoteFactory extends Factory
      */
     public function definition(): array
     {
-
         $userId = User::all()->random()->id;
         return [
-            'title' => fake()->randomElement([fake()->realText(rand(10, 50)), null]),
-            'content' => fake()->paragraph(rand(1, 10)),
+            'title' => fake()->randomElement([fake()->sentence(rand(1, 10)), null]),
+            'content' => fake()->paragraphs(rand(1, rand(1, 10)), true),
             'public' => true,
             'user_id' => $userId,
             'category_id' => 1,
@@ -39,14 +37,15 @@ class NoteFactory extends Factory
 
     public function event(): static
     {
-        return $this->state(function (array $attributes)  {
+        return $this->state(function (array $attributes) {
             $userId = User::all()->random()->id;
-            $start = Carbon::parse(fake()->dateTimeBetween('now', '+4 month'));
-            $end = $start->addHours(rand(0, 10));
-            
+            $dt = Carbon::parse(fake()->dateTimeBetween('now', '+3 month'));
+            $start = $dt->toDateTimeString();
+            $end = $dt->addHours(rand(1, 10))->toDateTimeString();
+
             return [
-                'title' => fake()->realText(rand(10, 30)),
-                'content' => fake()->randomElement([fake()->paragraph(rand(1, 10)), null, null]),
+                'title' => fake()->sentence(rand(1, 10)),
+                'content' => fake()->randomElement([fake()->paragraphs(rand(1, rand(1, 10)), true), null, null]),
                 'user_id' => $userId,
                 'category_id' => 3,
                 'status_id' => 1,
