@@ -99,7 +99,14 @@ class TagController extends Controller
         }
 
         if ($request->sortBy) {
-            $query->orderBy($request->sortBy[0]['key'], $request->sortBy[0]['order']);
+            switch ($request->sortBy[0]['key']) {
+                case 'normal_count':
+                case 'archived_count':
+                    $query->orderByRaw("COALESCE({$request->sortBy[0]['key']}, 0) {$request->sortBy[0]['order']}");
+                    break;
+                default:
+                    $query->orderBy($request->sortBy[0]['key'], $request->sortBy[0]['order']);
+            }
         } else {
             $query->orderBy('updated_at', 'desc');
         }
