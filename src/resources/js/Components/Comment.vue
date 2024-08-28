@@ -157,7 +157,7 @@ const deleteReply = async () => {
       <v-icon flat size="x-small" icon="mdi-reply-outline" @click="display.replyForm = !display.replyForm" />
     </div>
     <v-card v-show="display.replyForm" density="compact" variant="text">
-      <v-card-text class="pa-0">
+      <v-card-text class="pt-0 px-0">
         <form @submit.prevent="addReply">
           <v-textarea v-model="form.reply" density="compact" variant="underlined" placeholder="Add a reply" hide-details
             clearable auto-grow rows="1" counter="140" maxLength="140">
