@@ -141,7 +141,10 @@
         </template>
       </v-select>
       <v-spacer></v-spacer>
-      <v-btn icon="mdi-plus" @click="dialog.create = true" />
+      <v-btn @click="dialog.create = true">
+        <v-icon size="x-large" icon="mdi-plus" />
+        <v-tooltip activator="parent" location="bottom" text="New" />
+      </v-btn>
     </template>
     <v-container>
       <v-sheet class="overflow-auto">
@@ -163,8 +166,14 @@
     <v-dialog v-model="dialog.eventNote" max-width="1000">
       <EventNote :targetNote @close="dialog.eventNote = false">
         <template #actions="{ targetNote }">
-          <v-icon size="small" class="ms-5" icon="mdi-pencil-outline" @click="showEditDialog(targetNote)" />
-          <v-icon size="small" class="ms-5" icon="mdi-delete-outline" @click="showDeleteConfirmDialog(targetNote)" />
+          <v-btn size="small" @click="showEditDialog(targetNote)">
+            <v-icon size="large" icon="mdi-pencil-outline" />
+            <v-tooltip activator="parent" location="bottom" text="Edit" />
+          </v-btn>
+          <v-btn size="small" @click="showDeleteConfirmDialog(targetNote)">
+            <v-icon size="large" icon="mdi-delete-outline" />
+            <v-tooltip activator="parent" location="bottom" text="Delete" />
+          </v-btn>
         </template>
       </EventNote>
     </v-dialog>

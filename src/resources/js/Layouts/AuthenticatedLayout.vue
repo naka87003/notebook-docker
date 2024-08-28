@@ -70,14 +70,17 @@ const markAllAsRead = () => {
         <v-btn class="hidden-sm-and-down" stacked :active="currentPageName === 'tags.index'"
           @click="pageTransition('tags.index')">
           <v-icon icon="mdi-tag-multiple-outline" />
+          <v-tooltip activator="parent" location="bottom" text="Tag" />
         </v-btn>
         <v-btn class="hidden-sm-and-down" stacked @click="isDark = !isDark">
           <v-icon :icon="isDark ? 'mdi-weather-night' : 'mdi-weather-sunny'" />
+          <v-tooltip activator="parent" location="bottom" text="Theme" />
         </v-btn>
         <v-btn stacked @click="dialog.notifications = true">
           <v-badge :model-value="unreadNotificationCount > 0" color="info" :content="unreadNotificationCount">
             <v-icon icon="mdi-bell-outline" />
           </v-badge>
+          <v-tooltip activator="parent" location="bottom" text="Notification" />
         </v-btn>
         <v-menu class="hidden-sm-and-down">
           <template v-slot:activator="{ props }">
@@ -86,6 +89,7 @@ const markAllAsRead = () => {
                 <v-img v-if="avatarImagePath" :src="avatarImagePath" />
                 <v-icon v-else icon="mdi-account" />
               </v-avatar>
+              <v-tooltip activator="parent" location="bottom" text="Account" />
             </v-btn>
           </template>
           <v-list>
@@ -117,8 +121,10 @@ const markAllAsRead = () => {
             </v-list-item>
           </v-list>
         </v-menu>
-        <v-btn icon="mdi-menu" size="x-large" class="hidden-md-and-up"
-          @click="dialog.humburgerMenu = !dialog.humburgerMenu" />
+        <v-btn class="hidden-md-and-up" stacked @click="dialog.humburgerMenu = !dialog.humburgerMenu">
+          <v-icon icon="mdi-menu" />
+          <v-tooltip activator="parent" location="bottom" text="Menu" />
+        </v-btn>
       </v-container>
     </v-app-bar>
     <v-main>

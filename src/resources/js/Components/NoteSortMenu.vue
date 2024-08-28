@@ -28,7 +28,10 @@ const resetSort = () => {
         <v-icon class="ms-3" icon="mdi-sort" />
       </template>
       <template v-slot:append>
-        <v-btn icon="mdi-close" @click="$emit('close')"></v-btn>
+        <v-btn @click="$emit('close')">
+          <v-icon size="x-large" icon="mdi-close" />
+          <v-tooltip activator="parent" location="bottom" text="Close" />
+        </v-btn>
       </template>
     </v-toolbar>
     <v-divider />

@@ -19,13 +19,16 @@ const previewImagePath = computed(() => {
 </script>
 
 <template>
-  <v-card rounded="0" >
+  <v-card rounded="0">
     <v-toolbar density="comfortable" color="transparent" :title="targetNote.title">
       <template v-slot:prepend>
         <v-icon :icon="targetNote.category.mdi_name" size="large" class="ms-3"></v-icon>
       </template>
       <template v-slot:append>
-        <v-btn icon="mdi-close" @click="$emit('close')"></v-btn>
+        <v-btn @click="$emit('close')">
+          <v-icon size="x-large" icon="mdi-close" />
+          <v-tooltip activator="parent" location="bottom" text="Close" />
+        </v-btn>
       </template>
     </v-toolbar>
     <v-divider class="border-opacity-25 mx-1" />
@@ -47,11 +50,11 @@ const previewImagePath = computed(() => {
         </template>
         <span class="text-caption">{{ targetNote.tag?.name }}</span>
       </v-btn>
-      <v-spacer/>
+      <v-spacer />
     </v-card-actions>
     <v-card-actions class="mx-2">
       <template v-if="targetNote.tag">
-        <v-btn class="hidden-xs">
+        <v-btn class="hidden-xs" readonly>
           <template #prepend>
             <v-icon :color="targetNote.tag?.hex_color">mdi-tag</v-icon>
           </template>

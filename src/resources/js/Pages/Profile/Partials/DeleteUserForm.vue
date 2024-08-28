@@ -51,14 +51,18 @@ const closeModal = () => {
           <template v-slot:default="{ isActive }">
             <v-card>
               <v-toolbar density="comfortable" color="transparent">
-                <v-toolbar-title class="text-h6" text="Are you sure you want to delete your account?"></v-toolbar-title>
+                <v-toolbar-title class="text-h6" text="Delete Account"></v-toolbar-title>
                 <template v-slot:append>
-                  <v-btn icon="mdi-close" @click="isActive.value = false"></v-btn>
+                  <v-btn @click="isActive.value = false">
+                    <v-icon size="x-large" icon="mdi-close" />
+                    <v-tooltip activator="parent" location="bottom" text="Close" />
+                  </v-btn>
                 </template>
               </v-toolbar>
               <v-divider />
               <v-card-text>
-                <v-card class="mb-6" color="surface-variant" variant="tonal">
+                Are you sure you want to delete your account?
+                <v-card class="my-3" color="surface-variant" variant="tonal">
                   <v-card-text class="text-medium-emphasis text-caption">
                     <p>Once your account is deleted, all of its resources and data will be permanently deleted.</p>
                     <p>please enter your password to confirm you would like to permanently delete your account.</p>

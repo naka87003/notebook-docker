@@ -106,7 +106,10 @@ const updateComment = async (id: number) => {
     <v-toolbar density="compact" color="transparent">
       <v-toolbar-title class="text-h6" text="Comments"></v-toolbar-title>
       <template v-slot:prepend>
-        <v-btn icon="mdi-arrow-left" @click="$emit('close')"></v-btn>
+        <v-btn @click="$emit('close')">
+          <v-icon size="x-large" icon="mdi-arrow-left" />
+          <v-tooltip activator="parent" location="bottom" text="Back" />
+        </v-btn>
       </template>
     </v-toolbar>
     <v-divider />

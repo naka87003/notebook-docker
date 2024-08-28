@@ -54,7 +54,10 @@ const showSelectedUserPosts = (userId: number) => {
       </template>
       <v-toolbar-title>Liked User List</v-toolbar-title>
       <template v-slot:append>
-        <v-btn icon="mdi-close" @click="$emit('close')"></v-btn>
+        <v-btn @click="$emit('close')">
+          <v-icon size="x-large" icon="mdi-close" />
+          <v-tooltip activator="parent" location="bottom" text="Close" />
+        </v-btn>
       </template>
     </v-toolbar>
     <v-divider />

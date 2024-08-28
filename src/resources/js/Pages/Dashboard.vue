@@ -259,9 +259,18 @@ provide('updatePosts', updatePosts);
         </template>
       </v-text-field>
       <v-spacer></v-spacer>
-      <v-btn icon="mdi-plus" @click="dialog.create = true" />
-      <v-btn :icon="sortIcon" :class="{ 'text-red': sortChanged }" @click="dialog.sortMenu = true" />
-      <v-btn icon="mdi-filter-menu-outline" :class="{ 'text-red': filterChanged }" @click="dialog.filterMenu = true" />
+      <v-btn @click="dialog.create = true">
+        <v-icon size="x-large" icon="mdi-plus" />
+        <v-tooltip activator="parent" location="bottom" text="New" />
+      </v-btn>
+      <v-btn :class="{ 'text-red': sortChanged }" @click="dialog.sortMenu = true">
+        <v-icon size="x-large" :icon="sortIcon" />
+        <v-tooltip activator="parent" location="bottom" text="Sort" />
+      </v-btn>
+      <v-btn :class="{ 'text-red': filterChanged }" @click="dialog.filterMenu = true">
+        <v-icon size="x-large" icon="mdi-filter-menu-outline" />
+        <v-tooltip activator="parent" location="bottom" text="Filter" />
+      </v-btn>
     </template>
     <v-container>
       <template v-if="newRegisteredUser">
@@ -282,11 +291,22 @@ provide('updatePosts', updatePosts);
               <NoteItem :note="note" @showEnlargedImage="showEnlargedImage" @showLikedUserList="showLikedUserList(note)"
                 @showComments="showComments(note)">
                 <template #actions>
-                  <v-btn icon="mdi-pencil-outline" size="small" @click="showEditDialog(note)" />
-                  <v-btn v-if="note.status.name === 'archived'" size="small" icon="mdi-keyboard-return"
-                    @click="showRetrieveConfirmDialog(note)" />
-                  <v-btn v-else icon="mdi-archive-plus-outline" size="small" @click="showArchiveConfirmDialog(note)" />
-                  <v-btn icon="mdi-delete-outline" size="small" @click="showDeleteConfirmDialog(note)" />
+                  <v-btn size="small" @click="showEditDialog(note)">
+                    <v-icon size="large" icon="mdi-pencil-outline" />
+                    <v-tooltip activator="parent" location="bottom" text="Edit" />
+                  </v-btn>
+                  <v-btn v-if="note.status.name === 'archived'" size="small" @click="showRetrieveConfirmDialog(note)">
+                    <v-icon size="large" icon="mdi-keyboard-return" />
+                    <v-tooltip activator="parent" location="bottom" text="Retrieve" />
+                  </v-btn>
+                  <v-btn v-else size="small" @click="showArchiveConfirmDialog(note)">
+                    <v-icon size="large" icon="mdi-archive-plus-outline" />
+                    <v-tooltip activator="parent" location="bottom" text="Archive" />
+                  </v-btn>
+                  <v-btn size="small" @click="showDeleteConfirmDialog(note)">
+                    <v-icon size="large" icon="mdi-delete-outline" />
+                    <v-tooltip activator="parent" location="bottom" text="Delete" />
+                  </v-btn>
                 </template>
               </NoteItem>
             </v-col>
@@ -330,7 +350,8 @@ provide('updatePosts', updatePosts);
   </v-dialog>
   <v-dialog v-model="dialog.noteComments" fullscreen scrollable transition="scroll-x-transition">
     <Comments :targetNote @close="dialog.noteComments = false">
-      <NoteItem :note="targetNote" commentLinkDisabled @showEnlargedImage="showEnlargedImage" @showLikedUserList="showLikedUserList(targetNote)" />
+      <NoteItem :note="targetNote" commentLinkDisabled @showEnlargedImage="showEnlargedImage"
+        @showLikedUserList="showLikedUserList(targetNote)" />
     </Comments>
   </v-dialog>
 </template>

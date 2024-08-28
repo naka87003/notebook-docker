@@ -156,10 +156,18 @@ provide('updatePosts', updatePosts);
         </template>
       </v-text-field>
       <v-spacer></v-spacer>
-      <v-btn icon="mdi-account-multiple-outline" :class="{ 'text-red': filter.following }" @click="filterFollowing" />
-      <v-btn icon="mdi-heart-outline" :class="{ 'text-red': filter.onlyMyLiked }" @click="filterOnlyMyLiked" />
-      <v-btn icon="mdi-account-filter-outline" :class="{ 'text-red': filter.user }"
-        @click="dialog.filterUserMenu = true" />
+      <v-btn :class="{ 'text-red': filter.following }" @click="filterFollowing">
+        <v-icon size="x-large" icon="mdi-account-multiple-outline" />
+        <v-tooltip activator="parent" location="bottom" text="Filter by following users" />
+      </v-btn>
+      <v-btn :class="{ 'text-red': filter.onlyMyLiked }" @click="filterOnlyMyLiked">
+        <v-icon size="x-large" icon="mdi-heart-outline" />
+        <v-tooltip activator="parent" location="bottom" text="Filter by my liked posts" />
+      </v-btn>
+      <v-btn :class="{ 'text-red': filter.user }" @click="dialog.filterUserMenu = true">
+        <v-icon size="x-large" icon="mdi-account-filter-outline" />
+        <v-tooltip activator="parent" location="bottom" text="Filter by selected user" />
+      </v-btn>
     </template>
     <v-container>
       <v-row v-if="selectedUser">
