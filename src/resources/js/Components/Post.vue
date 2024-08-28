@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Note } from '@/interfaces';
-import { inject, computed } from 'vue';
+import { inject, computed, ref } from 'vue';
 import { router, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 import { simplifyDateTime, splitByNewline, relativeDateTime } from '@/common';
@@ -18,12 +18,27 @@ const showEnlargedImage: (src: string) => void = inject('showEnlargedImage');
 
 const updatePosts: (id: number) => Promise<void> = inject('updatePosts');
 
+const truncate = ref(true);
+
 const likeCount = computed((): number => props.note.likes_count);
 
 const isLiked = computed((): boolean => props.note.likes.some((like) => like.user_id === usePage().props.auth.user.id));
 
 const previewImagePath = computed(() => {
   return props.note.image_path ? '/storage/' + props.note.image_path : null;
+});
+
+const arrCommentLines = computed(() => splitByNewline(props.note.content ?? ''));
+
+const isTruncated = computed(() => truncate.value && arrCommentLines.value.length > 8);
+
+const paragraphs = computed(() => {
+  let lines = arrCommentLines.value;
+  if (truncate.value && lines.length > 8) {
+    lines = lines.slice(0, 7);
+    lines[lines.length - 1] += '...';
+  }
+  return lines;
 });
 
 const like = async () => {
@@ -60,7 +75,9 @@ const showSelectedUserPosts = (userId: number) => {
         <p class="text-body-2">from {{ simplifyDateTime(note.starts_at) }}</p>
         <p class="text-body-2">to {{ simplifyDateTime(note.ends_at) }}</p>
       </v-alert>
-      <p v-for="paragraph in splitByNewline(note.content ?? '')" class="note-paragraph text-body-1">{{ paragraph }}</p>
+      <p v-for="paragraph in paragraphs" class="note-paragraph text-body-1">{{ paragraph }}</p>
+      <v-btn v-if="isTruncated" class="text-capitalize ps-0" color="primary" variant="text" density="compact"
+        @click="truncate = false">Show more</v-btn>
       <v-img v-if="previewImagePath" :src="previewImagePath" width="300" class="mt-3 cursor-pointer" style="z-index: 1;"
         @click="showEnlargedImage(previewImagePath)" />
     </v-card-text>
