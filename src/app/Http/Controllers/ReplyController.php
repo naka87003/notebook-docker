@@ -17,7 +17,7 @@ class ReplyController extends Controller
     public function index(string $commentId, Request $request)
     {
         $skip = is_numeric($request->offset) ? $request->offset : 0;
-        $replies = Reply::where('comment_id', $commentId)->orderBy('updated_at', 'DESC')->offset($skip)->limit(20)->with(['user', 'addressee'])->get();
+        $replies = Reply::where('comment_id', $commentId)->orderBy('created_at', 'DESC')->offset($skip)->limit(20)->with(['user', 'addressee'])->get();
         return response()->json($replies);
     }
 
