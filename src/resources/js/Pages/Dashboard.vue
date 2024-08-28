@@ -22,6 +22,8 @@ const props = defineProps<{
   note?: Note;
 }>();
 
+const isInProgress = ref(true);
+
 const search = ref('');
 
 const notes = ref(new Map<number, Note>());
@@ -99,6 +101,7 @@ onMounted(async () => {
     notes.value.set(props.note.id, props.note);
     showComments(props.note);
   }
+  isInProgress.value = false;
 });
 
 const loadNotes = async (): Promise<Note[]> => {
@@ -199,11 +202,13 @@ const showSnackBar = (msg: string): void => {
 };
 
 const refreshDisplay = async (): Promise<void> => {
+  isInProgress.value = true;
   const result = await loadNotes();
   notes.value.clear();
   for (const note of result) {
     notes.value.set(note.id, note);
   }
+  isInProgress.value = false;
 };
 
 const searchApply = (newSearch: string) => {
@@ -294,7 +299,7 @@ provide('updatePosts', updatePosts);
           Let's click the plus button above to create your first note!
         </v-alert>
       </template>
-      <v-alert v-else-if="notes.size === 0" variant="text" class="text-center" text="No data available" />
+      <v-alert v-else-if="isInProgress === false && notes.size === 0" variant="text" class="text-center" text="No data available" />
       <v-infinite-scroll v-else :onLoad="load" class="w-100 overflow-hidden" empty-text="">
         <v-row>
           <template v-for="note in notes.values()" :key="note.id">

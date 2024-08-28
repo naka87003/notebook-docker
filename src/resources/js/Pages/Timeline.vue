@@ -24,6 +24,8 @@ const dialog = ref({
   searchText: false
 });
 
+const isInProgress = ref(true);
+
 const search = ref('');
 
 const previewImagePath = ref('');
@@ -61,11 +63,11 @@ onMounted(async () => {
   for (const note of result) {
     notes.value.set(note.id, note);
   }
-
   if (props.note) {
     notes.value.set(props.note.id, props.note);
     showComments(props.note.id);
   }
+  isInProgress.value = false;
 });
 
 const loadNotes = async (): Promise<Note[]> => {
@@ -92,11 +94,13 @@ const load = async ({ done }): Promise<void> => {
 };
 
 const refreshDisplay = async (): Promise<void> => {
+  isInProgress.value = true;
   const result = await loadNotes();
   notes.value.clear();
   for (const note of result) {
     notes.value.set(note.id, note);
   }
+  isInProgress.value = false;
 };
 
 const showEnlargedImage = (src: string) => {
@@ -156,8 +160,8 @@ provide('updatePosts', updatePosts);
   </v-snackbar>
   <AuthenticatedLayout>
     <template #action>
-      <v-text-field v-model="search" class="hidden-xs" density="compact" label="Search" variant="solo-filled" flat hide-details
-        single-line clearable>
+      <v-text-field v-model="search" class="hidden-xs" density="compact" label="Search" variant="solo-filled" flat
+        hide-details single-line clearable>
         <template #prepend-inner>
           <v-icon icon="mdi-magnify" :class="{ 'text-red': searchEntered }" />
         </template>
@@ -186,7 +190,7 @@ provide('updatePosts', updatePosts);
           <SelectedUserMenu :selectedUser />
         </v-col>
       </v-row>
-      <v-alert v-if="notes.size === 0" variant="text" class="text-center" text="No data available" />
+      <v-alert v-if="isInProgress === false && notes.size === 0" variant="text" class="text-center" text="No data available" />
       <v-infinite-scroll v-else :onLoad="load" class="w-100 overflow-hidden" empty-text="">
         <v-row>
           <template v-for="note in notes.values()" :key="note.id">
