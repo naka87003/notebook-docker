@@ -9,6 +9,7 @@ import Post from '@/Components/Post.vue';
 import FilterUserMenu from '@/Components/FilterUserMenu.vue';
 import SelectedUserMenu from '@/Components/SelectedUserMenu.vue';
 import Comments from '@/Components/Comments.vue';
+import SearchTextForm from '@/Components/SearchTextForm.vue';
 
 const props = defineProps<{
   user?: number;
@@ -19,7 +20,8 @@ const props = defineProps<{
 const dialog = ref({
   filterUserMenu: false,
   enlargedImage: false,
-  postComments: false
+  postComments: false,
+  searchText: false
 });
 
 const search = ref('');
@@ -102,6 +104,11 @@ const showEnlargedImage = (src: string) => {
   previewImagePath.value = src;
 };
 
+const searchApply = (newSearch: string) => {
+  dialog.value.searchText = false;
+  search.value = newSearch;
+};
+
 const filterUser = async (user: number): Promise<void> => {
   filter.value.following = false;
   filter.value.onlyMyLiked = false;
@@ -149,12 +156,16 @@ provide('updatePosts', updatePosts);
   </v-snackbar>
   <AuthenticatedLayout>
     <template #action>
-      <v-text-field v-model="search" density="compact" label="Search" variant="solo-filled" flat hide-details
+      <v-text-field v-model="search" class="hidden-xs" density="compact" label="Search" variant="solo-filled" flat hide-details
         single-line clearable>
         <template #prepend-inner>
           <v-icon icon="mdi-magnify" :class="{ 'text-red': searchEntered }" />
         </template>
       </v-text-field>
+      <v-btn class="hidden-sm-and-up" @click="dialog.searchText = true">
+        <v-icon size="x-large" icon="mdi-magnify" :class="{ 'text-red': searchEntered }" />
+        <v-tooltip activator="parent" location="bottom" text="New" />
+      </v-btn>
       <v-spacer></v-spacer>
       <v-btn :class="{ 'text-red': filter.following }" @click="filterFollowing">
         <v-icon size="x-large" icon="mdi-account-multiple-outline" />
@@ -187,6 +198,9 @@ provide('updatePosts', updatePosts);
         </v-row>
       </v-infinite-scroll>
     </v-container>
+    <v-dialog v-model="dialog.searchText" max-width="600">
+      <SearchTextForm :search @close="dialog.searchText = false" @apply="searchApply" />
+    </v-dialog>
     <v-dialog v-model="dialog.filterUserMenu" max-width="600" scrollable>
       <FilterUserMenu v-model:userItems="userItems" :filter @close="dialog.filterUserMenu = false"
         @apply="filterUser" />

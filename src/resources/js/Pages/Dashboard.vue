@@ -13,6 +13,7 @@ import NoteSortMenu from '@/Components/NoteSortMenu.vue';
 import NoteFilterMenu from '@/Components/NoteFilterMenu.vue';
 import LikedUserList from '@/Components/LikedUserList.vue';
 import Comments from '@/Components/Comments.vue';
+import SearchTextForm from '@/Components/SearchTextForm.vue';
 
 const props = defineProps<{
   tag?: number;
@@ -31,6 +32,7 @@ const dialog = ref({
   archiveConfirm: false,
   retrieveConfirm: false,
   deleteConfirm: false,
+  searchText:false,
   sortMenu: false,
   filterMenu: false,
   enlargedImage: false,
@@ -204,6 +206,11 @@ const refreshDisplay = async (): Promise<void> => {
   }
 };
 
+const searchApply = (newSearch: string) => {
+  dialog.value.searchText = false;
+  search.value = newSearch;
+};
+
 const sortApply = async (newSort: Sort): Promise<void> => {
   dialog.value.sortMenu = false;
   sort.value.key = newSort.key;
@@ -252,12 +259,16 @@ provide('updatePosts', updatePosts);
   </v-snackbar>
   <AuthenticatedLayout>
     <template #action>
-      <v-text-field v-model="search" density="compact" label="Search" variant="solo-filled" flat hide-details
-        single-line clearable>
+      <v-text-field v-model="search" class="hidden-xs" density="compact" label="Search" variant="solo-filled" flat
+        hide-details single-line clearable>
         <template #prepend-inner>
           <v-icon icon="mdi-magnify" :class="{ 'text-red': searchEntered }" />
         </template>
       </v-text-field>
+      <v-btn class="hidden-sm-and-up" @click="dialog.searchText = true">
+        <v-icon size="x-large" icon="mdi-magnify" :class="{ 'text-red': searchEntered }" />
+        <v-tooltip activator="parent" location="bottom" text="New" />
+      </v-btn>
       <v-spacer></v-spacer>
       <v-btn @click="dialog.create = true">
         <v-icon size="x-large" icon="mdi-plus" />
@@ -335,6 +346,9 @@ provide('updatePosts', updatePosts);
     <ConfirmCard icon="mdi-delete-outline" title="Delete Note" message="Are you sure you want to delete this note?"
       description="Once the note is deleted, it will be permanently deleted." confirmBtnName="Delete"
       confirmBtnColor="error" @confirmed="deleteNote" @close="dialog.deleteConfirm = false" />
+  </v-dialog>
+  <v-dialog v-model="dialog.searchText" max-width="600">
+    <SearchTextForm :search @close="dialog.searchText = false" @apply="searchApply" />
   </v-dialog>
   <v-dialog v-model="dialog.sortMenu" max-width="600" scrollable>
     <NoteSortMenu :sort @close="dialog.sortMenu = false" @apply="sortApply" />
