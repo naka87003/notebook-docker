@@ -51,7 +51,7 @@ const markAllAsRead = () => {
 
 <template>
   <v-layout>
-    <v-app-bar :extended="Boolean($slots.action)">
+    <v-app-bar :extended="Boolean($slots.action)" class="opacity-90" scroll-behavior="hide">
       <template v-if="$slots.action" #extension>
         <v-container class="mx-auto d-flex align-center justify-center">
           <slot name="action" />
