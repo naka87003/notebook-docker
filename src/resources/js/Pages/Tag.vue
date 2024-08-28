@@ -124,7 +124,7 @@ const showTaggedNotes = (item: Tag, status: number) => {
     </template>
     <v-container>
       <v-data-table-server v-model:items-per-page="itemsPerPage" :headers :items :items-length="totalItems"
-        :loading="loading" :search item-value="name" @update:options="loadItems">
+        :loading="loading" :search @update:options="loadItems">
         <template v-slot:item.name="{ item }">
           <v-icon class="me-3" size="small" :color="item.hex_color" icon="mdi-tag" />
           {{ item.name }}
