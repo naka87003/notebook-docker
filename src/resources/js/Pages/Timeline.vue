@@ -92,8 +92,8 @@ const load = async ({ done }): Promise<void> => {
 };
 
 const refreshDisplay = async (): Promise<void> => {
-  notes.value.clear();
   const result = await loadNotes();
+  notes.value.clear();
   for (const note of result) {
     notes.value.set(note.id, note);
   }
